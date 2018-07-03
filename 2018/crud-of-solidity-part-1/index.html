@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="摘要：Ethereum是Block Chain的一种实现，而Block Chain在存储方面跟接近于一种分布式账本。每个加入到Ethereum网络中的节点都会有一份COPY。数据是存储在网络中的所有节点中。在这个方面，与传统的关系数据库有着完全不一样的特点。那么在基于Solidity的编程中，也会有着不一样的思路。这篇文章，主要是分享一下编程思路上与传统关系数据库的CRUD(Create, Re">
+<meta name="keywords" content="block chain">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solidity中的CRUD — Part 1">
+<meta property="og:url" content="http://localhost:4000/2018/crud-of-solidity-part-1/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="摘要：Ethereum是Block Chain的一种实现，而Block Chain在存储方面跟接近于一种分布式账本。每个加入到Ethereum网络中的节点都会有一份COPY。数据是存储在网络中的所有节点中。在这个方面，与传统的关系数据库有着完全不一样的特点。那么在基于Solidity的编程中，也会有着不一样的思路。这篇文章，主要是分享一下编程思路上与传统关系数据库的CRUD(Create, Re">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2018/crud-of-solidity-part-1/021418_1601_SolidityCRU1.png">
+<meta property="og:updated_time" content="2018-07-02T15:26:55.772Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Solidity中的CRUD — Part 1">
+<meta name="twitter:description" content="摘要：Ethereum是Block Chain的一种实现，而Block Chain在存储方面跟接近于一种分布式账本。每个加入到Ethereum网络中的节点都会有一份COPY。数据是存储在网络中的所有节点中。在这个方面，与传统的关系数据库有着完全不一样的特点。那么在基于Solidity的编程中，也会有着不一样的思路。这篇文章，主要是分享一下编程思路上与传统关系数据库的CRUD(Create, Re">
+<meta name="twitter:image" content="http://localhost:4000/2018/crud-of-solidity-part-1/021418_1601_SolidityCRU1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2018/crud-of-solidity-part-1/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Solidity中的CRUD — Part 1 | Sonic Guo Blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/crud-of-solidity-part-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Solidity中的CRUD — Part 1
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-02-15 23:05:10" itemprop="dateCreated datePublished" datetime="2018-02-15T23:05:10+08:00">2018-02-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-07-02 23:26:55" itemprop="dateModified" datetime="2018-07-02T23:26:55+08:00">2018-07-02</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/block-chain/" itemprop="url" rel="index"><span itemprop="name">block chain</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>摘要：Ethereum是Block Chain的一种实现，而Block Chain在存储方面跟接近于一种分布式账本。每个加入到Ethereum网络中的节点都会有一份COPY。数据是存储在网络中的所有节点中。在这个方面，与传统的关系数据库有着完全不一样的特点。那么在基于Solidity的编程中，也会有着不一样的思路。这篇文章，主要是分享一下编程思路上与传统关系数据库的CRUD(Create, Read, Update, Delete)处理上的区别。<br><a id="more"></a></p>
+</blockquote>
+<p>本篇是一个系列：<br><a href="../crud-of-solidity-part-1/">第一篇谈一谈Ethereum的数据（变量）存储的位置（Data Location），以及几个常用的数据类型</a>。<br><a href="../crud-of-solidity-part-2/">第二篇会谈一谈Create，Read和Update的方法</a>。<br><a href="../crud-of-solidity-part-3/">第三篇会谈一谈如何Delete</a>.</p>
+<h1 id="Ethereum-的-Memory-意味着什么？"><a href="#Ethereum-的-Memory-意味着什么？" class="headerlink" title="Ethereum 的 Memory 意味着什么？"></a>Ethereum 的 Memory 意味着什么？</h1><p>在传统的软件开发环境中，Memory通常意味着 Physical Memory和 Virtual Memory的概念。 Physical Memory 即为物理内存，跟计算机上的物理内存有直接关系。虚拟内存则是相对于软件的内存寻址空间，是软件本身可以使用的Memory的概念。即使是存储在数据库上的数据，在被软件使用的时候，也是必须先读取到内存中，才能被软件（代码）使用。那么在Ethereum中，Memory又有着怎么样的含义。</p>
+<p>在Ethereum 环境中，有着Ethereum Virtual Machine。在EVMs上，有着3个区域可以存储数据(Data Location)。</p>
+<ol>
+<li><p><strong>Storage</strong>。Storage 是用于存放Contract State变量的地方。每一个Contract都拥有自己的Storage。Storage的数据对于这个Contract来说是持久的，类似于一个Static的数据，被多个client调用的时候是累加的。存储在Storage的数据，在Block Chain上的开销是最大的。它大概需要20,000 gas来初始化Storage Location，并将其全部清零。一旦变量存放在Storage上，那么它将维护在BlockChain上面。这样在读写的时候，就会带来实际的开销(gas) – 这就意味着要花钱。如果在Storage上读取一个word, 需要花费200 gas, 而在Memory中只需要3 gas.</p>
+</li>
+<li><p><strong>Memory</strong>。Memory 在Contract中用来存放临时数据，在External Function调用的时候会被反复擦除。在Block Chain上的开销相对会小。然而，Memory只有在smart contract被执行的时候，在context内部会维持它的值。一旦执行完成，这些数据就消失了。</p>
+</li>
+<li><p><strong>Stack</strong>。 Stack上的开销非常小，几乎是免费的，但是只能使用比较有限的变量数目。理论上，Stack的最大容量是1024个item. 不过只有顶部的16个比较容易获取，越往下，读写的效率越低。</p>
+</li>
+</ol>
+<p>变量存储在哪些区域，是取决于Context。变量按照它的Type和使用方法，会有默认的数据存储区域。但是对于Complex Data Type, 例如 string, array 和 structs, 可以在申明变量的时候通过指定修饰符(appending) storage 或者memory 来指定存放的区域。一个function的参数(parameters) 以及它的返回值，默认是存放在memory上。本地变量(local variable) 则是默认存放在Storage中。一个状态变量(state variable) 则是强制存放在storage中。</p>
+<p>Data Location 同时还会影响到assignment的行为。</p>
+<ol>
+<li>Storage variables 和 Memory variables 之间的assignment 总是会创建一份独立的copy。但如果是Complex Type, 从一个memory-stored complex type到另外一个memory-stored complex type的 assignment。那么是不会创建一个独立的copy。</li>
+<li>对于state variable ， assignment总是创建一份独立的copy。</li>
+<li>无法将memory-stored complex type 赋值给Local Storage variable。</li>
+<li>如果将state variables 赋值给local storage variables，这个local storage variable 将会是一个指针类型，并且指向 state variables。</li>
+</ol>
+<p>总的来说，EVM上面的Data Location 分为 Storage, Memory 和 Stack。从开销（gas）上看 Storage &gt; Memory &gt; Stack. 谈到gas，就是钱。而且这部分钱，是在smart contract 发布之后，每次运算的时候都需要付费的部分。说到钱，在开发的时候就应该仔细的分析各种Data Location的优劣。</p>
+<h1 id="CRUD-–-Create-Read-Update-Delete"><a href="#CRUD-–-Create-Read-Update-Delete" class="headerlink" title="CRUD – Create, Read, Update, Delete"></a>CRUD – Create, Read, Update, Delete</h1><p>现在流行的应用程序基本都是要进行数据库操作，其中最基本的操作就是CRUD。在Block Chain中的Smart Contract，也是需要做类似的操作。所不同的是，大部分的应用程序的CRUD是在数据库中进行。对应的，Smart Contract的CRUD是在on-chain table-like storage上面进行。</p>
+<p>我这里假设一个最常见的流程：</p>
+<ol>
+<li>在on-chain storage上创建一个比较简单的entity ，类似于table或者collection。Entity的内部定义了一些简单的字段(field), 类似于column 。</li>
+<li>插入一条记录，这条记录带有Key (Primary Key)。</li>
+<li>通过Key (Primary Key)，在storage中获取这个记录。</li>
+<li>获取这个entity总共插入了几条记录。类似于select count(*) from table 。</li>
+<li>读取所有的数据记录。类似于select * from table 。</li>
+<li>更新一条记录。Update。</li>
+</ol>
+<h1 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h1><p>这个例子中，要创建一个entity用来存储用户的数据记录。这个记录保护下面一些fields :</p>
+<ul>
+<li>Wallet address，这个field是用来作为一个primary key存在。</li>
+<li>Email address，一个field。</li>
+<li>Age，好吧，另一个field。</li>
+</ul>
+<p>这个例子很简单，可以扩展到更多的应用场景中，无非就是多加几个字段，增加一些应用场景相关的逻辑。</p>
+<h1 id="Mapping"><a href="#Mapping" class="headerlink" title="Mapping"></a>Mapping</h1><p>Solidity的<a href="http://solidity.readthedocs.io/en/develop/types.html" target="_blank" rel="noopener">Mapping</a>，有点类似于C#/JAVA的hashtable。提供了一个通过Key来查找value的方法。创建一个键值对的时候，value的初始值被值为全0 (byte-representation is all zeros)。Key本身并不会保存在mapping中，而是保存了Key值对应的keccak256 hash值，用来查找对应的value。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mapping (<span class="function"><span class="params">address</span> =&gt;</span> uint) userBalances;</span><br></pre></td></tr></table></figure>
+<p> 上面代码所发生的事情是：</p>
+<ol>
+<li>变量名userBalances将会分配到一个地址</li>
+<li>Mapping的键值是address 类型，例如 msg.sender</li>
+<li>Mapping的value是一个unsigned integer类型</li>
+</ol>
+<p>你可以把mapping想象成一个巨大的DataTable，主键的类型是一个Address类型。第二个column 则是一个unsigned integer类型。所有的记录(records)，在没有被赋值的情况下，初始值被赋值为全0。</p>
+<p>可以用下面的代码来赋值和取值：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">address key = msg.sender; <span class="comment">// the key is an address</span></span><br><span class="line">userBalances[key] = <span class="number">100</span>; <span class="comment">// set value</span></span><br><span class="line">uint retrievedBalance = userBalances[key]; <span class="comment">// get value</span></span><br></pre></td></tr></table></figure>
+<p>不过要注意到mapping的一些限制。由于mapping并不会存储key本身，而是存储了key对应的keccak256值。那么事实上mapping并没有直截了当的方法知道哪些key已经被写入了。也不能知道已经有多少个key被写入。即，没有userBalances.Length 或者 userBalances.Count。同时，也不能iterate整个keys。所以，foreach也不能用了。</p>
+<h1 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h1><p>没错，就是那个<a href="http://solidity.readthedocs.io/en/develop/types.html" target="_blank" rel="noopener">Array</a>。Solidity的Array即可以支持编译时指定固定长度的，也支持动态长度。为了解决上面Mapping的一些问题，在这个例子里面，我们会采用动态长度的Array。用动态长度Array来未经排序的keys的列表，这样我们就可以知道有多少个keys已被插入到mapping中。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">address[] userIndex;</span><br><span class="line">userIndex.push(anAddress);</span><br></pre></td></tr></table></figure>
+<p>通过下面的代码，则可以拿回来key的内容：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">address firstUserAddress = userIndex[<span class="number">0</span>];</span><br><span class="line">address secondUserAddress = userIndex[<span class="number">1</span>];</span><br></pre></td></tr></table></figure>
+<p>通过下面的代码，可以拿到这个Array里面已经保存了多少条记录：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uint count = userIndex.length;</span><br></pre></td></tr></table></figure>
+<p>下面的代码则是通过index拿到对应的item：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">address firstUserAddress = userIndex[<span class="number">0</span>];</span><br><span class="line">address secondUserAddress = userIndex[<span class="number">1</span>];</span><br></pre></td></tr></table></figure>
+<p>在用法上，Solidity 的Array与C#/Java的Array没有太大区别。值得注意的是，如果是storage Array， 那么它是存放任意类型，甚至是其他的Array, mapping 或者structs。如果是memory Array，就会有一些限制，必须是一个ABI type, 而且必须是一个public-visible function的参数。</p>
+<p>声明一个固定长度的Array，可以写出 T[K]，T为类型，K是fixed size。动态类型的声明方式为T[]。同样，也支持二维Array, 例如unit[][5]。</p>
+<h1 id="Struct"><a href="#Struct" class="headerlink" title="Struct"></a>Struct</h1><p>Struct这个类型，熟悉C#/JAVA的人并不陌生，它可以用来定义新的类型。</p>
+<p>Struct里面可以包含其他的类型作为它的成员。但是它并不能把自己的类型作为它的成员之一。这个限制是必须的，因为如果这么做的话，Struct的size无法确定，并且在计算它的size的时候进入循环调用而出现无限大的size的情况。</p>
+<p>下面的代码中定义一个简单的结构用来记录email和age：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">struct UserStruct &#123;</span><br><span class="line">    bytes32 userEmail;</span><br><span class="line">    uint userAge;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过下面的代码可以声明一个变量：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UserStruct aUser;</span><br></pre></td></tr></table></figure>
+<p>下面的代码则是赋值：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">aUser.userEmail = emailInHex;</span><br><span class="line">aUser.userAge = age;</span><br></pre></td></tr></table></figure>
+<p>通过下面的代码，可以将这个struct的对象存放到mapping中：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mapping(<span class="function"><span class="params">address</span> =&gt;</span> UserStruct) userStructs;</span><br></pre></td></tr></table></figure>
+<p>比如说，将要插入的数据布局会是下图这样：</p>
+<p><img src="021418_1601_SolidityCRU1.png" alt="img"></p>
+<p>通过下面的方式就可以读取/写入对应的数据：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bytes32 hisEmail = userStructs[hisAddress].email; <span class="comment">// get</span></span><br><span class="line">userStructs[hisAddress].email = newEmailInHex; <span class="comment">// set</span></span><br></pre></td></tr></table></figure>
+<p>Sonic Guo</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/block-chain/" rel="tag"># block chain</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/block-chain-guide-line/" rel="next" title="区块链是什么？它能做到什么？">
+                <i class="fa fa-chevron-left"></i> 区块链是什么？它能做到什么？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/crud-of-solidity-part-2/" rel="prev" title="Solidity中的CRUD — Part 2">
+                Solidity中的CRUD — Part 2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Ethereum-的-Memory-意味着什么？"><span class="nav-number">1.</span> <span class="nav-text">Ethereum 的 Memory 意味着什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CRUD-–-Create-Read-Update-Delete"><span class="nav-number">2.</span> <span class="nav-text">CRUD – Create, Read, Update, Delete</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#举个栗子"><span class="nav-number">3.</span> <span class="nav-text">举个栗子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mapping"><span class="nav-number">4.</span> <span class="nav-text">Mapping</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Array"><span class="nav-number">5.</span> <span class="nav-text">Array</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Struct"><span class="nav-number">6.</span> <span class="nav-text">Struct</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

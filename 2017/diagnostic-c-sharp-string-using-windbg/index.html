@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="摘要 : 最近在博客园里面看到有人在讨论 C# String的一些特性. 大部分情况下是从CODING的角度来讨论String. 本人觉得非常好奇, 在运行时态, String是如何与这些特性联系上的. 本文将侧重在通过WinDBG来观察String在进程内的布局, 以此来解释C# String的一些特性.">
+<meta name="keywords" content="windbg">
+<meta property="og:type" content="article">
+<meta property="og:title" content="透过WinDBG的视角看String">
+<meta property="og:url" content="http://localhost:4000/2017/diagnostic-c-sharp-string-using-windbg/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="摘要 : 最近在博客园里面看到有人在讨论 C# String的一些特性. 大部分情况下是从CODING的角度来讨论String. 本人觉得非常好奇, 在运行时态, String是如何与这些特性联系上的. 本文将侧重在通过WinDBG来观察String在进程内的布局, 以此来解释C# String的一些特性.">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2017/diagnostic-c-sharp-string-using-windbg/110317_0726_WinDBGStr3.png">
+<meta property="og:image" content="http://localhost:4000/2017/diagnostic-c-sharp-string-using-windbg/110317_0726_WinDBGStr6.png">
+<meta property="og:image" content="http://localhost:4000/2017/diagnostic-c-sharp-string-using-windbg/110317_0726_WinDBGStr11.jpg">
+<meta property="og:updated_time" content="2018-07-02T15:53:10.291Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="透过WinDBG的视角看String">
+<meta name="twitter:description" content="摘要 : 最近在博客园里面看到有人在讨论 C# String的一些特性. 大部分情况下是从CODING的角度来讨论String. 本人觉得非常好奇, 在运行时态, String是如何与这些特性联系上的. 本文将侧重在通过WinDBG来观察String在进程内的布局, 以此来解释C# String的一些特性.">
+<meta name="twitter:image" content="http://localhost:4000/2017/diagnostic-c-sharp-string-using-windbg/110317_0726_WinDBGStr3.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2017/diagnostic-c-sharp-string-using-windbg/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>透过WinDBG的视角看String | Sonic Guo Blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2017/diagnostic-c-sharp-string-using-windbg/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">透过WinDBG的视角看String
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-11-03 23:56:55" itemprop="dateCreated datePublished" datetime="2017-11-03T23:56:55+08:00">2017-11-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-07-02 23:53:10" itemprop="dateModified" datetime="2018-07-02T23:53:10+08:00">2018-07-02</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/windbg/" itemprop="url" rel="index"><span itemprop="name">windbg</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>摘要 : 最近在博客园里面看到有人在讨论 C# String的一些特性. 大部分情况下是从CODING的角度来讨论String. 本人觉得非常好奇, 在运行时态, String是如何与这些特性联系上的. 本文将侧重在通过WinDBG来观察String在进程内的布局, 以此来解释C# String的一些特性.</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>C# String有两个比较有趣的特性.</p>
+<ol>
+<li><p>String的恒定性.<br> 字符串横定性是指一个字符串一经创建，就不可改变。那么也就是说当我们改变string值的时候，便会在托管堆上重新分配一块新的内存空间，而不会影响到原有的内存地址上所存储的值。</p>
+</li>
+<li><p>String的驻留.<br> CLR runtime通过维护一个表来存放字符串，该表称为拘留池，它包含程序中以编程方式声明或创建的每个唯一的字符串的一个引用。因此，具有特定值的字符串的实例在系统中只有一个。</p>
+</li>
+</ol>
+<p>对应着两个特性, 我产生了一些疑问.</p>
+<ul>
+<li>String的恒定性是怎么样让string进行比较的时候出现有趣的结果的? 它的比较结果为什么会与其他引用类型的结果不一样?</li>
+<li>什么样的String会被放到拘留池中?</li>
+<li>拘留池是怎样的数据结构? 它真是个Hashtable吗?</li>
+<li>驻留在拘留池内的String会不会被GC,  它的生命周期会有多长(什么时候才会被回收)?</li>
+</ul>
+<h1 id="String的恒定性"><a href="#String的恒定性" class="headerlink" title="String的恒定性"></a>String的恒定性</h1><p>先看看下面的例子 :</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Comparation</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">string</span> a = “Test String”;</span><br><span class="line">    <span class="keyword">string</span> b = “Test String”;</span><br><span class="line">    <span class="keyword">string</span> c = a;</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(“a vs b : “ + <span class="keyword">object</span>.ReferenceEquals(a, b));</span><br><span class="line">    Console.WriteLine(“a vs c : “ + <span class="keyword">object</span>.ReferenceEquals(a, c));</span><br><span class="line"></span><br><span class="line">    SimpleObject smp1 = <span class="keyword">new</span> SimpleObject(a);</span><br><span class="line">    SimpleObject smp2 = <span class="keyword">new</span> SimpleObject(a);</span><br><span class="line"></span><br><span class="line">    Console.WriteLine(“smp1 vs smp2 : “ + <span class="keyword">object</span>.ReferenceEquals(smp1, smp2));</span><br><span class="line">    Console.ReadLine();</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">SimpleObject</span></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> name = <span class="keyword">string</span>.Empty;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SimpleObject</span>(<span class="params"><span class="keyword">string</span> name</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行后结果如下:<br><img src="110317_0726_WinDBGStr3.png" alt="logo"></p>
+<p>从结果上看, 虽然是不同的变量 a, b, c. 由于字符串的内容是相同的, 所以比较的结果也是完全相同的. 对比SimpleObject的实例, smp1和smp2的值虽然也是相同的,但是比较的结果为false.</p>
+<p>下面看一下运行时, 这些objects的的情况.</p>
+<p>在运行时态, 一切皆是地址. 判断两个变量是否是相同的对象, 直观的可以从它地址是否是相同的地址来进行判断.</p>
+<p>用!dso命令打印出栈上对应的Objects. 可以看到Test String”虽然出现了3次, 但是他们都对应了一个地址<strong>0000000002473f90</strong> . SimpleObject的对象实例出现了2次, 而且地址不一样, 分别是<strong>0000000002477670</strong><br>和 <strong>0000000002477688</strong><br>所以, 在使用String的时候, 实质上是重用了相同的String 对象. 在new一个SimpleObject的实例时候, 每一次new都会在新的地址上初始化该对象的结构. 每次都是一个新的对象.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; !dso</span><br><span class="line">OS Thread Id: 0x3f0c (0)</span><br><span class="line">RSP/REG          Object           Name</span><br><span class="line">……</span><br><span class="line"></span><br><span class="line">000000000043e730 0000000002473f90 System.String</span><br><span class="line"></span><br><span class="line">000000000043e738 0000000002473f90 System.String</span><br><span class="line"></span><br><span class="line">000000000043e740 0000000002473f90 System.String</span><br><span class="line"></span><br><span class="line">000000000043e748 0000000002477670 ConsoleApplication3.SimpleObject</span><br><span class="line"></span><br><span class="line">000000000043e750 0000000002477688 ConsoleApplication3.SimpleObject</span><br><span class="line"></span><br><span class="line">…….</span><br><span class="line"></span><br><span class="line">0:000&gt; !do 0000000002473f90</span><br><span class="line"></span><br><span class="line">Name: System.String</span><br><span class="line"></span><br><span class="line">MethodTable: 00007ffdb0817df0</span><br><span class="line"></span><br><span class="line">EEClass: 00007ffdb041e560</span><br><span class="line"></span><br><span class="line">Size: 48(0x30) bytes</span><br><span class="line"></span><br><span class="line">GC Generation: 0</span><br><span class="line"></span><br><span class="line">(C:\windows\assembly\GAC_64\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll)</span><br><span class="line"></span><br><span class="line">String: Test String</span><br><span class="line"></span><br><span class="line">Fields:</span><br><span class="line"></span><br><span class="line">              MT            Field           Offset                 Type VT             Attr            Value Name</span><br><span class="line"></span><br><span class="line">00007ffdb081f060  4000096        8         System.Int32  1 instance               12 m_arrayLength</span><br><span class="line"></span><br><span class="line">00007ffdb081f060  4000097        c         System.Int32  1 instance               11 m_stringLength</span><br><span class="line"></span><br><span class="line">00007ffdb0819838  4000098       10          System.Char  1 instance               54 m_firstChar</span><br><span class="line"></span><br><span class="line">00007ffdb0817df0  4000099       20        System.String  0   shared           static Empty</span><br><span class="line"></span><br><span class="line">                                 &gt;&gt; Domain:Value  0000000000581880:0000000002471308 &lt;&lt;</span><br><span class="line"></span><br><span class="line">00007ffdb08196e8  400009a       28        System.Char[]  0   shared           static WhitespaceChars</span><br><span class="line"></span><br><span class="line">                                 &gt;&gt; Domain:Value  0000000000581880:0000000002471be0 &lt;&lt;</span><br></pre></td></tr></table></figure>
+<p>当字符串内容发生改变的时候, 任何微小的变化都会重新创建出一个新的String对象. 在我们调用这段代码的时候</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Console.WriteLine(<span class="string">"a vs b : "</span> + <span class="keyword">object</span>.ReferenceEquals(a, b));</span><br></pre></td></tr></table></figure>
+<p>CLR runtime实际上做了两件事情. 为字符“a vs b”分配了到了一个新的地址. 将对比结果与刚才的字符拼接到了一起, 分配到了另外一个新的地址. 如果多次拼接字符串, 就会分配到更多的新地址上, 从而可能会快速的占用大量的虚拟内存. 这就是为什么微软建议在这种情况下使用StringBuilder的原因.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !dso</span><br><span class="line">Listing objects from: 0000000000435000 to 0000000000440000 from thread: 0 [3f0c]</span><br><span class="line">Address          Method Table    Heap Gen      Size Type</span><br><span class="line">…..</span><br><span class="line"></span><br><span class="line">0000000002473fc0 00007ffdb0817df0   0  0         44 System.String a vs b : False</span><br><span class="line"></span><br><span class="line">0000000002474138 00007ffdb0817df0   0  0         52 System.String a vs b : True</span><br><span class="line"></span><br><span class="line">…..</span><br></pre></td></tr></table></figure>
+<h1 id="String的驻留"><a href="#String的驻留" class="headerlink" title="String的驻留"></a>String的驻留</h1><p><strong>CLR runtime通过维护一个表来存放字符串，该表称为拘留池，它包含程序中以编程方式声明或创建的每个唯一的字符串的一个引用。因此，具有特定值的字符串的实例在系统中只有一个。</strong></p>
+<p>我们看一下如何来理解这句话.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        SimpleString(i++);</span><br><span class="line">        Console.WriteLine( i + <span class="string">": Run GC.Collect()"</span>);</span><br><span class="line">        GC.Collect();</span><br><span class="line">        Console.ReadLine();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">SimpleString</span>(<span class="params"><span class="keyword">int</span> i</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">string</span> s = <span class="string">"SimpleString method"</span>;</span><br><span class="line">    <span class="keyword">string</span> c = <span class="string">"Concat String"</span>;</span><br><span class="line">    Console.WriteLine(s + c);</span><br><span class="line">    Console.WriteLine(s + i.ToString());</span><br><span class="line">    Console.ReadLine();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是第一次的执行结果. 此时只执行到了SimpleString里面, 还没有从这个方法返回.<br><img src="110317_0726_WinDBGStr6.png" alt="logo"></p>
+<p>我们可以看到stack上有4个string. 分别是按照代码逻辑拼接起来的string的内容. 从这里我们就可以当我们在拼接字符串的时候, 实际上会在Heap上创建出多个String的对象, 以此来完成这个拼接动作.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !dso</span><br><span class="line"></span><br><span class="line">Listing objects from: 0000000000386000 to 0000000000390000 from thread: 0 [3f50]</span><br><span class="line"></span><br><span class="line">…..</span><br><span class="line"></span><br><span class="line">0000000002a93f70 00007ffdb0817df0 0 0 66 System.String SimpleString method</span><br><span class="line"></span><br><span class="line">0000000002a93fb8 00007ffdb0817df0 0 0 52 System.String Concat String</span><br><span class="line"></span><br><span class="line">0000000002a93ff0 00007ffdb0817df0 0 0 92 System.String SimpleString method Concat String</span><br><span class="line"></span><br><span class="line">0000000002a97a90 00007ffdb0817df0 0 0 28 System.String 0</span><br><span class="line"></span><br><span class="line">0000000002a97ab0 00007ffdb0817df0 0 0 68 System.String SimpleString method 0</span><br><span class="line"></span><br><span class="line">……</span><br></pre></td></tr></table></figure>
+<p>随意用其中一个来检查它的引用情况.</p>
+<p>从!gcroot的结果看, 这个string被两个地方引用到. 一个是当前的线程. 因为正在被当前线程使用到, 所以能够看到这个非常正常.</p>
+<p>另外一个是root在一个System.Object[]数组上. 这个数组被PINNED在了App Domain <strong>0000000000491880</strong> 上面. 这里显示出来, String其实是驻留在一个System.Object[]上面, 而不是很多人猜测的Hashtable. 不过料想CLR 应该有一套机制可以从这个数组中快速的获取正确的String. 不过这点不在本篇的讨论范围之内.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !gcroot 0000000002a93f70</span><br><span class="line"></span><br><span class="line">Note: Roots found on stacks may be false positives. Run “!help gcroot” for</span><br><span class="line"></span><br><span class="line">more info.</span><br><span class="line"></span><br><span class="line">Scan Thread 0 OSTHread 81a0</span><br><span class="line"></span><br><span class="line">RSP:b9e9b8:Root:0000000002a93f70(System.String)</span><br><span class="line"></span><br><span class="line">Scan Thread 2 OSTHread 7370</span><br><span class="line"></span><br><span class="line">DOMAIN(0000000000C51880):HANDLE(Pinned):217e8:Root:0000000012a93030(System.Object[])-&gt;</span><br><span class="line"></span><br><span class="line">0000000002a93f70(System.String)</span><br></pre></td></tr></table></figure>
+<p>我们可以检查一下这个System.Object[]里面都有什么.</p>
+<p>从这个数组里面可以看到代码中显示声明的的字符串. 第一个元素是一个空值, 这个里面保留的是我们最常用的String.Empty的实例. 第二个元素是”Run GC.Collect()”. 这个在code的里面的main函数中. 当前还没有被执行到, 但是已经被JITed到了该数组中. 其他两个被显示定义的字符串也能够在这个数组中被找到. 另外可以确认的是, 拼接出来的字符串, 临时生成的字符串都没有在这里出现. 然而, 通过拼接出来的String并不在这个数组里面. 虽然拼接出来的String同样分配到了heap上面, 但是不会被收纳到数组中.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !dumparray -details 0000000012a93030</span><br><span class="line">Name: System.Object[]</span><br><span class="line">MethodTable: 00007ffdb0805be0</span><br><span class="line">EEClass: 00007ffdb041eb88</span><br><span class="line"></span><br><span class="line">Size: 1056(0x420) bytes</span><br><span class="line"></span><br><span class="line">Array: Rank 1, Number of elements 128, Type CLASS</span><br><span class="line"></span><br><span class="line">Element Methodtable: 00007ffdb08176e0</span><br><span class="line"></span><br><span class="line">[0] 0000000002a91308</span><br><span class="line"></span><br><span class="line">    Name: System.String</span><br><span class="line"></span><br><span class="line">    MethodTable: 00007ffdb0817df0</span><br><span class="line"></span><br><span class="line">    EEClass: 00007ffdb041e560</span><br><span class="line"></span><br><span class="line">    Size: 26(0x1a) bytes</span><br><span class="line"></span><br><span class="line">     (C:\windows\assembly\GAC_64\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll)</span><br><span class="line"></span><br><span class="line">    String:</span><br><span class="line"></span><br><span class="line">    Fields:</span><br><span class="line"></span><br><span class="line">                  MT    Field   Offset                 Type VT     Attr            Value Name</span><br><span class="line"></span><br><span class="line">    00007ffdb081f060  4000096        8         System.Int32  1 instance                1 m_arrayLength</span><br><span class="line"></span><br><span class="line">    00007ffdb081f060  4000097        c         System.Int32  1 instance                0 m_stringLength</span><br><span class="line"></span><br><span class="line">    00007ffdb0819838  4000098       10          System.Char  1 instance                0 m_firstChar</span><br><span class="line"></span><br><span class="line">    00007ffdb0817df0  4000099       20        System.String  0   shared           static Empty</span><br><span class="line"></span><br><span class="line">                                 &gt;&gt; Domain:Value  0000000000c51880:0000000002a91308 &lt;&lt;</span><br><span class="line"></span><br><span class="line">    00007ffdb08196e8  400009a       28        System.Char[]  0   shared           static WhitespaceChars</span><br><span class="line"></span><br><span class="line">                                 &gt;&gt; Domain:Value  0000000000c51880:0000000002a91be0 &lt;&lt;</span><br><span class="line"></span><br><span class="line">[1] 0000000002a93f30</span><br><span class="line"></span><br><span class="line">    Name: System.String</span><br><span class="line"></span><br><span class="line">    MethodTable: 00007ffdb0817df0</span><br><span class="line"></span><br><span class="line">    EEClass: 00007ffdb041e560</span><br><span class="line"></span><br><span class="line">    Size: 64(0x40) bytes</span><br><span class="line"></span><br><span class="line">     (C:\windows\assembly\GAC_64\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll)</span><br><span class="line"></span><br><span class="line">    String:      : Run GC.Collect()</span><br><span class="line"></span><br><span class="line">    Fields:</span><br><span class="line"></span><br><span class="line">                  MT    Field   Offset                 Type VT     Attr            Value Name</span><br><span class="line"></span><br><span class="line">    00007ffdb081f060  4000096        8         System.Int32  1 instance               20 m_arrayLength</span><br><span class="line"></span><br><span class="line">    00007ffdb081f060  4000097        c         System.Int32  1 instance               19 m_stringLength</span><br><span class="line"></span><br><span class="line">    00007ffdb0819838  4000098       10          System.Char  1 instance               20 m_firstChar</span><br><span class="line"></span><br><span class="line">    00007ffdb0817df0  4000099       20        System.String  0   shared           static Empty</span><br><span class="line"></span><br><span class="line">                                 &gt;&gt; Domain:Value  0000000000c51880:0000000002a91308 &lt;&lt;</span><br><span class="line"></span><br><span class="line">    00007ffdb08196e8  400009a       28        System.Char[]  0   shared           static WhitespaceChars</span><br><span class="line"></span><br><span class="line">                                 &gt;&gt; Domain:Value  0000000000c51880:0000000002a91be0 &lt;&lt;</span><br><span class="line"></span><br><span class="line">[2] 0000000002a93f70</span><br><span class="line"></span><br><span class="line">    Name: System.String</span><br><span class="line"></span><br><span class="line">    MethodTable: 00007ffdb0817df0</span><br><span class="line"></span><br><span class="line">    EEClass: 00007ffdb041e560</span><br><span class="line"></span><br><span class="line">    Size: 66(0x42) bytes</span><br><span class="line"></span><br><span class="line">     (C:\windows\assembly\GAC_64\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll)</span><br><span class="line"></span><br><span class="line">    String:     SimpleString method</span><br><span class="line"></span><br><span class="line">    Fields:</span><br><span class="line"></span><br><span class="line">                  MT    Field   Offset                 Type VT     Attr            Value Name</span><br><span class="line"></span><br><span class="line">    00007ffdb081f060  4000096        8         System.Int32  1 instance               21 m_arrayLength</span><br><span class="line"></span><br><span class="line">    00007ffdb081f060  4000097        c         System.Int32  1 instance               20 m_stringLength</span><br><span class="line"></span><br><span class="line">    00007ffdb0819838  4000098       10          System.Char  1 instance               53 m_firstChar</span><br><span class="line"></span><br><span class="line">    00007ffdb0817df0  4000099       20        System.String  0   shared           static Empty</span><br><span class="line"></span><br><span class="line">                                 &gt;&gt; Domain:Value  0000000000c51880:0000000002a91308 &lt;&lt;</span><br><span class="line"></span><br><span class="line">    00007ffdb08196e8  400009a       28        System.Char[]  0   shared           static WhitespaceChars</span><br><span class="line"></span><br><span class="line">                                 &gt;&gt; Domain:Value  0000000000c51880:0000000002a91be0 &lt;&lt;</span><br><span class="line"></span><br><span class="line">[3] 0000000002a93fb8</span><br><span class="line"></span><br><span class="line">    Name: System.String</span><br><span class="line"></span><br><span class="line">    MethodTable: 00007ffdb0817df0</span><br><span class="line"></span><br><span class="line">    EEClass: 00007ffdb041e560</span><br><span class="line"></span><br><span class="line">    Size: 52(0x34) bytes</span><br><span class="line"></span><br><span class="line">     (C:\windows\assembly\GAC_64\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll)</span><br><span class="line"></span><br><span class="line">    String:     Concat String</span><br><span class="line"></span><br><span class="line">    Fields:</span><br><span class="line"></span><br><span class="line">                  MT    Field   Offset                 Type VT     Attr            Value Name</span><br><span class="line"></span><br><span class="line">    00007ffdb081f060  4000096        8         System.Int32  1 instance               14 m_arrayLength</span><br><span class="line"></span><br><span class="line">    00007ffdb081f060  4000097        c         System.Int32  1 instance               13 m_stringLength</span><br><span class="line"></span><br><span class="line">    00007ffdb0819838  4000098       10          System.Char  1 instance               43 m_firstChar</span><br><span class="line"></span><br><span class="line">    00007ffdb0817df0  4000099       20        System.String  0   shared           static Empty</span><br><span class="line"></span><br><span class="line">                                 &gt;&gt; Domain:Value  0000000000c51880:0000000002a91308 &lt;&lt;</span><br><span class="line"></span><br><span class="line">    00007ffdb08196e8  400009a       28        System.Char[]  0   shared           static WhitespaceChars</span><br><span class="line"></span><br><span class="line">                                 &gt;&gt; Domain:Value  0000000000c51880:0000000002a91be0 &lt;&lt;</span><br></pre></td></tr></table></figure>
+<p>继续让代码执行下去, 我们需要来几次GC. 验证一下驻留的字符串是否会在不使用之后被GC掉.<br><img src="110317_0726_WinDBGStr11.jpg" alt="logo"></p>
+<p>GC完成之后, 按照所设想的, CallStack上面的String都已经被清除掉了.同时因为已经做过了GC动作, GC heap进过了压缩, 没有被PINNED住的对象地址会发生改变. 所以要验证驻留的String是否会被回收, 可以从驻留数组下手. 由于该数组是被PINNED住, 所以即使发生了GC的动作, 它的地址也不会发生改变. 所以可以通过相同的命令把数组里面驻留的String都列出来.</p>
+<p>结果是与我的预期是一致的. 只有被显示定义的String保留在该数组内, 而这些String不会被回收. 通过拼接零时生产的String, 则不会加入到这个数组内, 在GC发生后, 由于没有被引用而被回收掉.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !dumparray -details 0000000012a93030</span><br><span class="line">Name: System.Object[]</span><br><span class="line">MethodTable: 00007ffdb0805be0</span><br><span class="line">EEClass: 00007ffdb041eb88</span><br><span class="line"></span><br><span class="line">Size: 1056(0x420) bytes</span><br><span class="line"></span><br><span class="line">Array: Rank 1, Number of elements 128, Type CLASS</span><br><span class="line"></span><br><span class="line">Element Methodtable: 00007ffdb08176e0</span><br><span class="line"></span><br><span class="line">[0] 0000000002a91308</span><br><span class="line"></span><br><span class="line">    Name: System.String</span><br><span class="line"></span><br><span class="line">    MethodTable: 00007ffdb0817df0</span><br><span class="line"></span><br><span class="line">    EEClass: 00007ffdb041e560</span><br><span class="line"></span><br><span class="line">    Size: 26(0x1a) bytes</span><br><span class="line"></span><br><span class="line">     (C:\windows\assembly\GAC_64\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll)</span><br><span class="line"></span><br><span class="line">    String:</span><br><span class="line"></span><br><span class="line">…</span><br><span class="line"></span><br><span class="line">[1] 0000000002a93f30</span><br><span class="line"></span><br><span class="line">    Name: System.String</span><br><span class="line"></span><br><span class="line">    MethodTable: 00007ffdb0817df0</span><br><span class="line"></span><br><span class="line">    EEClass: 00007ffdb041e560</span><br><span class="line"></span><br><span class="line">    Size: 64(0x40) bytes</span><br><span class="line"></span><br><span class="line">     (C:\windows\assembly\GAC_64\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll)</span><br><span class="line"></span><br><span class="line">    String:      : Run GC.Collect()</span><br><span class="line"></span><br><span class="line">…</span><br><span class="line"></span><br><span class="line">[2] 0000000002a93f70</span><br><span class="line"></span><br><span class="line">    Name: System.String</span><br><span class="line"></span><br><span class="line">    MethodTable: 00007ffdb0817df0</span><br><span class="line"></span><br><span class="line">    EEClass: 00007ffdb041e560</span><br><span class="line"></span><br><span class="line">    Size: 66(0x42) bytes</span><br><span class="line"></span><br><span class="line">     (C:\windows\assembly\GAC_64\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll)</span><br><span class="line"></span><br><span class="line">    String:    SimpleString method</span><br><span class="line"></span><br><span class="line">    …</span><br><span class="line"></span><br><span class="line">[3] 0000000002a93fb8</span><br><span class="line"></span><br><span class="line">    Name: System.String</span><br><span class="line"></span><br><span class="line">    MethodTable: 00007ffdb0817df0</span><br><span class="line"></span><br><span class="line">    EEClass: 00007ffdb041e560</span><br><span class="line"></span><br><span class="line">    Size: 52(0x34) bytes</span><br><span class="line"></span><br><span class="line">     (C:\windows\assembly\GAC_64\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll)</span><br><span class="line"></span><br><span class="line">    String:     Concat String</span><br><span class="line"></span><br><span class="line">    …</span><br></pre></td></tr></table></figure>
+<p>所以经过上面的观察, 可以得出的结论是驻留的String生命周期非常长. 那么, 在什么时候他才会被回收?</p>
+<p>从上面gcroot的结果, 可以看到主流数组是被PINNED住. 而引用这个数组的App Domain 0000000000C51880.</p>
+<p>用!dumpdomain -stat的命令将所有的app domain信息打印出来. 可以看到这个App Domain是我们代码运行的Domain (ConsoleApplication3.exe). 这个驻留数组是由CLR 来维护, 并且与当前的App Domain联系到一起. 所以, 理论上这些驻留数组的生命周期跟这个App Domain是一致的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !dumpdomain -stat</span><br><span class="line">————————————–</span><br><span class="line">System Domain: 00007ffdb1f16f60</span><br><span class="line">LowFrequencyHeap: 00007ffdb1f16fa8</span><br><span class="line"></span><br><span class="line">HighFrequencyHeap: 00007ffdb1f17038</span><br><span class="line"></span><br><span class="line">StubHeap: 00007ffdb1f170c8</span><br><span class="line"></span><br><span class="line">Stage: OPEN</span><br><span class="line"></span><br><span class="line">Name: None</span><br><span class="line"></span><br><span class="line">————————————–</span><br><span class="line"></span><br><span class="line">Shared Domain: 00007ffdb1f17860</span><br><span class="line"></span><br><span class="line">LowFrequencyHeap: 00007ffdb1f178a8</span><br><span class="line"></span><br><span class="line">HighFrequencyHeap: 00007ffdb1f17938</span><br><span class="line"></span><br><span class="line">StubHeap: 00007ffdb1f179c8</span><br><span class="line"></span><br><span class="line">Stage: OPEN</span><br><span class="line"></span><br><span class="line">Name: None</span><br><span class="line"></span><br><span class="line">Assembly: 000000000047fa60</span><br><span class="line"></span><br><span class="line">————————————–</span><br><span class="line"></span><br><span class="line">Domain 1: 0000000000491880</span><br><span class="line"></span><br><span class="line">LowFrequencyHeap: 00000000004918c8</span><br><span class="line"></span><br><span class="line">HighFrequencyHeap: 0000000000491958</span><br><span class="line"></span><br><span class="line">StubHeap: 00000000004919e8</span><br><span class="line"></span><br><span class="line">Stage: OPEN</span><br><span class="line"></span><br><span class="line">SecurityDescriptor: 0000000000494140</span><br><span class="line"></span><br><span class="line">Name: ConsoleApplication3.exe</span><br><span class="line"></span><br><span class="line">Assembly: 000000000047fa60 [C:\windows\assembly\GAC_64\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll]</span><br><span class="line"></span><br><span class="line">ClassLoader: 000000000047f820</span><br><span class="line"></span><br><span class="line">SecurityDescriptor: 000000000047f9a0</span><br><span class="line"></span><br><span class="line">  Module Name</span><br><span class="line"></span><br><span class="line">00007ffdb03e1000 C:\windows\assembly\GAC_64\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</span><br></pre></td></tr></table></figure>
+<h1 id="写在最后面"><a href="#写在最后面" class="headerlink" title="写在最后面"></a>写在最后面</h1><ol>
+<li>String的恒定性. 字符串横定性是指一个字符串一经创建，就不可改变。那么也就是说当我们改变string值的时候，便会在托管堆上重新分配一块新的内存空间，而不会影响到原有的内存地址上所存储的值。</li>
+<li>String的驻留. CLR runtime通过维护一个表来存放字符串，该表称为拘留池，它包含程序中以编程方式声明或创建的每个唯一的字符串的一个引用。因此，具有特定值的字符串的实例在系统(App Domain)中只有一个。</li>
+</ol>
+<p>直接在CODE里面声明的String会被CLR runtime维护在一个Object[]内.<br>临时生成的string或者拼接出来的String不会维护在这个驻留数组中.<br>驻留数组的生命周期跟它位于的App Domain一样长. 所以GC并不会影响驻留数组所引用的String, 它们不会被GC.</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://blog.csdn.net/fengshi_sh/article/details/14837445" target="_blank" rel="noopener">http://blog.csdn.net/fengshi_sh/article/details/14837445</a></li>
+<li><a href="http://www.cnblogs.com/charles2008/archive/2009/04/12/1434115.html" target="_blank" rel="noopener">http://www.cnblogs.com/charles2008/archive/2009/04/12/1434115.html</a></li>
+<li><a href="http://www.cnblogs.com/instance/archive/2011/05/24/2056091.html" target="_blank" rel="noopener">http://www.cnblogs.com/instance/archive/2011/05/24/2056091.html</a></li>
+</ul>
+<p>Sonic Guo</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/windbg/" rel="tag"># windbg</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/create-ethereum-consortium-blockchain-network-on-azure/" rel="prev" title="如何在Azure上快速创建一个Ethereum Consortium Network模板">
+                如何在Azure上快速创建一个Ethereum Consortium Network模板 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#String的恒定性"><span class="nav-number">2.</span> <span class="nav-text">String的恒定性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#String的驻留"><span class="nav-number">3.</span> <span class="nav-text">String的驻留</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后面"><span class="nav-number">4.</span> <span class="nav-text">写在最后面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

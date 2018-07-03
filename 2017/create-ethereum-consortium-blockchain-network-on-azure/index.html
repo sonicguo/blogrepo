@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="摘要 : 比特币现在越来越火，区块链的研究也成为了一个热门话题，起早尝个鲜，我也来撸一把区块链技术。调查了一下区块链的技术有很多，被称为下一代加密货币与去中心化应用平台的Ethereum进入了视野。 要学习Ethereum上面的开发，搭建一个自己的私有Ethereum Consortium Network是一个不错的选择。本文主要是介绍如何在Azure 平台上创建一个私有的Ethereum Co">
+<meta name="keywords" content="block chain">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何在Azure上快速创建一个Ethereum Consortium Network模板">
+<meta property="og:url" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="摘要 : 比特币现在越来越火，区块链的研究也成为了一个热门话题，起早尝个鲜，我也来撸一把区块链技术。调查了一下区块链的技术有很多，被称为下一代加密货币与去中心化应用平台的Ethereum进入了视野。 要学习Ethereum上面的开发，搭建一个自己的私有Ethereum Consortium Network是一个不错的选择。本文主要是介绍如何在Azure 平台上创建一个私有的Ethereum Co">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/111317_1153_Azure1.png">
+<meta property="og:image" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/111317_1153_Azure2.png">
+<meta property="og:image" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/111317_1153_Azure3.png">
+<meta property="og:image" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/111317_1153_Azure4.png">
+<meta property="og:image" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/111317_1153_Azure5.png">
+<meta property="og:image" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/111317_1153_Azure6.png">
+<meta property="og:image" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/111317_1153_Azure7.png">
+<meta property="og:image" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/111317_1153_Azure8.png">
+<meta property="og:image" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/111317_1153_Azure9.png">
+<meta property="og:image" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/111317_1153_Azure10.png">
+<meta property="og:updated_time" content="2018-07-02T15:52:41.716Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何在Azure上快速创建一个Ethereum Consortium Network模板">
+<meta name="twitter:description" content="摘要 : 比特币现在越来越火，区块链的研究也成为了一个热门话题，起早尝个鲜，我也来撸一把区块链技术。调查了一下区块链的技术有很多，被称为下一代加密货币与去中心化应用平台的Ethereum进入了视野。 要学习Ethereum上面的开发，搭建一个自己的私有Ethereum Consortium Network是一个不错的选择。本文主要是介绍如何在Azure 平台上创建一个私有的Ethereum Co">
+<meta name="twitter:image" content="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/111317_1153_Azure1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>如何在Azure上快速创建一个Ethereum Consortium Network模板 | Sonic Guo Blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何在Azure上快速创建一个Ethereum Consortium Network模板
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-11-13 23:44:52" itemprop="dateCreated datePublished" datetime="2017-11-13T23:44:52+08:00">2017-11-13</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-07-02 23:52:41" itemprop="dateModified" datetime="2018-07-02T23:52:41+08:00">2018-07-02</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/block-chain/" itemprop="url" rel="index"><span itemprop="name">block chain</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>摘要 : 比特币现在越来越火，区块链的研究也成为了一个热门话题，起早尝个鲜，我也来撸一把区块链技术。调查了一下区块链的技术有很多，被称为下一代加密货币与去中心化应用平台的Ethereum进入了视野。 要学习Ethereum上面的开发，搭建一个自己的私有Ethereum Consortium Network是一个不错的选择。本文主要是介绍如何在Azure 平台上创建一个私有的Ethereum Consortium Network.</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="关于区块链技术"><a href="#关于区块链技术" class="headerlink" title="关于区块链技术"></a>关于区块链技术</h1><p>比特币最近越来越火，成为了新闻话题。他背后所运用的技术就是区块链。然而比特币对于区块链的应用更趋向于虚拟的电子货币。区块链所能做到的与非如此。区块链（英语：blockchain 或 block chain）[1]是用分布式数据库识别、传播和记载信息的智能化对等网络, 也称为价值互联网。中本聪在2008年，于《比特币白皮书》中提出”区块链”概念，并在2009年创立了比特币社会网络，开发出第一个区块，即”创世区块”。区块链技术基于去中心化的对等网络，用开源软件把密码学原理、时序数据和共识机制相结合，来保障分布式数据库中各节点的连贯和持续，使信息能即时验证、可追溯、但难以篡改和无法屏蔽，从而创造了一套隐私、高效、安全的共享价值体系。</p>
+<p>目前来讲，非常多的应用是将数据存储在数据库上。相对的，去中心话的应用则是与Ethereum区块链进行交互。一个私有的Ethereum网络包含了许多peer-to-peer的去中心化的节点。又这些节点来存储和维护各种各样的数据存储，例如分布式账本。并且这些节点也会负责这些分布式账本的运算，以保持各个节点数据的一致性。Smart Contract这种机制则允许这些节点进行更加复杂的运算。Smart Contract大概可以理解为等同于SQL Stored Procedures.</p>
+<p>节点分为两种类型，Mining Node 以及 Transaction Node（non-mining nodes）。Transaction Node用于存储和维护分布式票据。同时也可以在网络中发布或者查找Transaction. 应用使用Ethereum的web3 JavaScript Object跟各个节点进行交互。从而可以在应用中操作或者存储这些Transactions. 一般来说，Wallet可以认为是一个Transaction Node. Mining Node则是将这些Transaction commit 到分布式账本中，并进行一致性过程的节点。</p>
+<h1 id="GETTING-STARTED"><a href="#GETTING-STARTED" class="headerlink" title="GETTING STARTED"></a>GETTING STARTED</h1><p>如果要在AZURE上搭建一个Ethereum Consortium Network， 首先必须要创建一个Azure账号。可以看这里 <a href="https://azure.microsoft.com/en-us/free/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/free/</a></p>
+<p>国内的用户创建Azure账号可以看这里 <a href="https://account.windowsazure.cn/Home/Index" target="_blank" rel="noopener">https://account.windowsazure.cn/Home/Index</a> 不过比较尴尬的是，国内的Azure比较滞后，经常会出现Global Azure上有的feature，在China Azure上没有的情况。建议是使用Global Azure的账号来做接下来的步骤。</p>
+<ol>
+<li>进入<a href="http://portal.azure.com" target="_blank" rel="noopener">Azure Portal</a>后，进入仪表盘，点右上角的创建资源。<br> <img src="111317_1153_Azure1.png" alt="img"><br> 这里有很多Azure上面已经预先创建好的模板。在模板的创建上微软还是很贴心的。</li>
+<li>在搜索栏中输入blockchain, 回车以后看到很多已经建立好Block Chain模板。选择Ethereum Consortium Blockchain. 当然你也可以尝试其他的模板。<br> <img src="111317_1153_Azure2.png" alt="img"></li>
+<li>选中这个模板，然后点击创建，进入到配置环节。<br> <img src="111317_1153_Azure3.png" alt="img"></li>
+<li>首先要进行基本配置。<ul>
+<li>Resource Prefix 是对这个资源的命名。</li>
+<li>资源组 则是将这个模板中所用到的所有资源放在一起方便管理。</li>
+<li>位置是选择这个模板所搭建的Data Center所处在的位置。在全球，Azure有非常多的Data Center。可以选择一个网络稳定，接入速度快的Data Center.<br><img src="111317_1153_Azure4.png" alt="img"></li>
+</ul>
+</li>
+<li>第二步是对服务器的性能进行设置。选择高性能的服务器会有更高的性能，但是也意味着每个月需要更多的付费。<br> <img src="111317_1153_Azure5.png" alt="img"></li>
+<li>第三步是Ethereum的基础配置。</li>
+<li>第四部检查摘要。如果没有问题的话就可以进入到下一步购买。</li>
+<li>点击购买之后，Azure会自动发布设定好的资源。只需要几分钟，整个私有网络就搭好了。</li>
+</ol>
+<p>建立好了之后就可以在仪表盘中看到刚刚建立好的资源组。里面包含了整套solution。</p>
+<h2 id="Ethereum-consortium-network在Azure上的架构"><a href="#Ethereum-consortium-network在Azure上的架构" class="headerlink" title="Ethereum consortium network在Azure上的架构"></a>Ethereum consortium network在Azure上的架构</h2><p>虽然Consortium Network没有单一的规范体系结构。但改模板提供了一个实例体系结构，用于快速入门。这个架构是有一组共享Transaction Nodes组成，应用程序可以通过这些节点进行交互以提交事务，并且每个联合会员都有一组Mining Nodes来记录事务。所有的节点都在同一个虚拟网络中，这样每个Consortium Network的成员的子网都很可以很容易的通过应用网关进入到独立的虚拟网络中。<br><img src="111317_1153_Azure6.png" alt="img"></p>
+<h2 id="MINING-NODE"><a href="#MINING-NODE" class="headerlink" title="MINING NODE"></a>MINING NODE</h2><p>每一个Consortium Network都存在着一个独立、相同的子网，其中会包含一个或者多个采矿点，关联到一个存储账号上。子网中的第一个默认VM被被指为引导节点，用于支持网络中节点的动态发现（dynamic discoverability）。Mining Node与其他Mining Node进行通信，就底层分布式账本的状态达成共识。我们的应用程序并不需要了解这些细节。我们只需要专注于Private Network。因此这些节点与Public Network的入站流量隔离，增加了二级保护。允许出站流量，但不允许出口端口。虽然每个成员的虚拟机在一个单独的子网中，但各个节点仍然通过以太坊的发现协议相互连接和通信。</p>
+<p>所有节点都有最新的Go Ethereum（Geth）客户端软件，并被配置为Mining Node。所有节点使用以太坊帐户密码保护的同一个以太坊帐户（以太坊地址和密钥对）。从提供的以太坊密码生成的公共私钥对存储在每个Geth节点上。由采矿节点来挖矿，并对其他需要消费这个计算能力的节点来收取的费用。</p>
+<h2 id="TRANSACTION-NODE"><a href="#TRANSACTION-NODE" class="headerlink" title="TRANSACTION NODE"></a>TRANSACTION NODE</h2><p>所有的Consortium Network成员都共享这一组负载均衡的Transaction Node。这些节点都可以从虚拟网络外部进行访问，以便应用程序 可以使用这些节点提交交易或执行区块链网络内的智能合约（Smart Contract）。所有节点都拥有最新的Go Ethereum（Geth）客户端软件，并配置为维护分布式账本的完整副本。 这些节点使用相同的Ethereum帐户，由以Ethereum帐户密码提供保护。</p>
+<p>Transaction Node与Mining Node的是完全分开，以确保这两个操作不会争夺相同的资源。 并且的Transaction Node进行了负载平衡，以保持高可用性。</p>
+<h2 id="ADMIN-页面"><a href="#ADMIN-页面" class="headerlink" title="ADMIN 页面"></a>ADMIN 页面</h2><p>一旦部署成功完成并且所有资源都已配置完毕，您可以转至管理员页面以获取区块链网络的简单视图。</p>
+<p>管理站点URL是负载均衡器的DNS名称; 它也是模板部署的第一个输出。 要查找模板输出，请选择刚部署的资源组。 选择Overview选项卡，然后选择Last Deployment。<br><img src="111317_1153_Azure7.png" alt="img"><br><img src="111317_1153_Azure8.png" alt="img"><br><img src="111317_1153_Azure9.png" alt="img"></p>
+<p>您可以通过查看以Ethereum节点状态部分来获得刚刚部署的拓扑的总体情况。 本部分包括所有Node的主机名和Node所属的参与者。 它还显示与对等计数的节点连接。 对等计数是网络中Mining Node数量的最小值，而在Public Ethereum网络中，二十五个配置的最大对等计数是二十五个。 不过，对等计数不会限制可以在网络中部署的节点的数量。 偶尔，你会看到对等计数波动，对某些节点来说会更少。 这并不总是一个表明节点不健康的标志，因为分类帐中的分支可能会导致对等计数的轻微变化。 最后，您可以检查网络中每个节点所看到的最新块，以确定系统中的分叉或滞后。</p>
+<p><img src="111317_1153_Azure10.png" alt="img"></p>
+<p>Sonic Guo</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/block-chain/" rel="tag"># block chain</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/diagnostic-c-sharp-string-using-windbg/" rel="next" title="透过WinDBG的视角看String">
+                <i class="fa fa-chevron-left"></i> 透过WinDBG的视角看String
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/retrieve-azure-bot-application-secrets/" rel="prev" title="如何重新找回Azure Bot Service的Application Secrets">
+                如何重新找回Azure Bot Service的Application Secrets <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#关于区块链技术"><span class="nav-number">1.</span> <span class="nav-text">关于区块链技术</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GETTING-STARTED"><span class="nav-number">2.</span> <span class="nav-text">GETTING STARTED</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Ethereum-consortium-network在Azure上的架构"><span class="nav-number">2.1.</span> <span class="nav-text">Ethereum consortium network在Azure上的架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MINING-NODE"><span class="nav-number">2.2.</span> <span class="nav-text">MINING NODE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TRANSACTION-NODE"><span class="nav-number">2.3.</span> <span class="nav-text">TRANSACTION NODE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ADMIN-页面"><span class="nav-number">2.4.</span> <span class="nav-text">ADMIN 页面</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

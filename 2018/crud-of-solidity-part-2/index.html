@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="摘要：Ethereum是Block Chain的一种实现，而Block Chain在存储方面跟接近于一种分布式账本。每个加入到Ethereum网络中的节点都会有一份COPY。数据是存储在网络中的所有节点中。在这个方面，与传统的关系数据库有着完全不一样的特点。那么在基于Solidity的编程中，也会有着不一样的思路。这篇文章，主要是分享一下编程思路上与传统关系数据库的CRUD(Create, Re">
+<meta name="keywords" content="block chain">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solidity中的CRUD — Part 2">
+<meta property="og:url" content="http://localhost:4000/2018/crud-of-solidity-part-2/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="摘要：Ethereum是Block Chain的一种实现，而Block Chain在存储方面跟接近于一种分布式账本。每个加入到Ethereum网络中的节点都会有一份COPY。数据是存储在网络中的所有节点中。在这个方面，与传统的关系数据库有着完全不一样的特点。那么在基于Solidity的编程中，也会有着不一样的思路。这篇文章，主要是分享一下编程思路上与传统关系数据库的CRUD(Create, Re">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2018/crud-of-solidity-part-2/021918_1518_SolidityCRU1.png">
+<meta property="og:updated_time" content="2018-07-02T15:52:29.572Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Solidity中的CRUD — Part 2">
+<meta name="twitter:description" content="摘要：Ethereum是Block Chain的一种实现，而Block Chain在存储方面跟接近于一种分布式账本。每个加入到Ethereum网络中的节点都会有一份COPY。数据是存储在网络中的所有节点中。在这个方面，与传统的关系数据库有着完全不一样的特点。那么在基于Solidity的编程中，也会有着不一样的思路。这篇文章，主要是分享一下编程思路上与传统关系数据库的CRUD(Create, Re">
+<meta name="twitter:image" content="http://localhost:4000/2018/crud-of-solidity-part-2/021918_1518_SolidityCRU1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2018/crud-of-solidity-part-2/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Solidity中的CRUD — Part 2 | Sonic Guo Blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/crud-of-solidity-part-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Solidity中的CRUD — Part 2
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-02-19 23:27:23" itemprop="dateCreated datePublished" datetime="2018-02-19T23:27:23+08:00">2018-02-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-07-02 23:52:29" itemprop="dateModified" datetime="2018-07-02T23:52:29+08:00">2018-07-02</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/block-chain/" itemprop="url" rel="index"><span itemprop="name">block chain</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>摘要：Ethereum是Block Chain的一种实现，而Block Chain在存储方面跟接近于一种分布式账本。每个加入到Ethereum网络中的节点都会有一份COPY。数据是存储在网络中的所有节点中。在这个方面，与传统的关系数据库有着完全不一样的特点。那么在基于Solidity的编程中，也会有着不一样的思路。这篇文章，主要是分享一下编程思路上与传统关系数据库的CRUD(Create, Read, Update, Delete)处理上的区别。<br><a id="more"></a></p>
+</blockquote>
+<p>本篇是一个系列：<br><a href="../crud-of-solidity-part-1/">第一篇谈一谈Ethereum的数据（变量）存储的位置（Data Location），以及几个常用的数据类型</a>。<br><a href="../crud-of-solidity-part-2/">第二篇会谈一谈Create，Read和Update的方法</a>。<br><a href="../crud-of-solidity-part-3/">第三篇会谈一谈如何Delete</a>.</p>
+<h1 id="Create-amp-Insert"><a href="#Create-amp-Insert" class="headerlink" title="Create &amp; Insert"></a>Create &amp; Insert</h1><p>下面要完成的内容是：</p>
+<ol>
+<li>给Struct里面赋值。</li>
+<li>将Struct的对象保存在mapping中。</li>
+<li>将Key插入到Array中。<br>将interface定义成下面的样子：</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">insertUser</span>(<span class="params">address userAddress, bytes32 userEmail, uint userAge</span>)</span></span><br><span class="line"><span class="function"><span class="title">public</span></span></span><br><span class="line"><span class="function"><span class="title">returns</span>(<span class="params">bool success</span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>步骤1和2由下面的代码来完成：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">insertUser</span>(<span class="params">address userAddress, bytes32 userEmail, uint userAge</span>)</span></span><br><span class="line"><span class="function"><span class="title">public</span></span></span><br><span class="line"><span class="function"><span class="title">returns</span>(<span class="params">bool success</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    userStructs[userAddress].userEmail = userEmail;</span><br><span class="line">    userStructs[userAddress].userAge = userAge;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第三步骤，将key插入到Array中：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">userIndex.push(userAddress);</span><br></pre></td></tr></table></figure>
+<h1 id="Read"><a href="#Read" class="headerlink" title="Read"></a>Read</h1><p>下一步要演示一下如何在mapping中通过Key重现拿回value.</p>
+<p>这个function本身并不返回key。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getUser</span>(<span class="params">address userAddress</span>)</span></span><br><span class="line"><span class="function"><span class="title">public</span></span></span><br><span class="line"><span class="function"><span class="title">constant</span></span></span><br><span class="line"><span class="function"><span class="title">returns</span>(<span class="params">bytes32 userEmail, uint userAge</span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>这个function比较简单的展示了返回userEmail和userAge。Sample Code可以比较简单的做如下的实现：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getUser</span>(<span class="params">address userAddress</span>)</span></span><br><span class="line"><span class="function"><span class="title">constant</span></span></span><br><span class="line"><span class="function"><span class="title">returns</span>(<span class="params">bytes32 userEmail, uint userAge</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span>(</span><br><span class="line">        userStructs[userAddress].userEmail,</span><br><span class="line">        userStructs[userAddress].userAge);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Update"><a href="#Update" class="headerlink" title="Update"></a>Update</h1><p>下一步，按照输入的Key来更新mapping中的一个value. Interface可以简单的做如下定义：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">updateUserEmail</span>(<span class="params">address userAddress, bytes33 userEmail</span>)</span></span><br><span class="line"><span class="function"><span class="title">public</span></span></span><br><span class="line"><span class="function"><span class="title">returns</span>(<span class="params">bool success</span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>或者update整个entity:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">updateUser</span>(<span class="params">address userAddress, bytes32 userEmail, uint userAge</span>)</span></span><br><span class="line"><span class="function"><span class="title">public</span></span></span><br><span class="line"><span class="function"><span class="title">returns</span>(<span class="params">bool success</span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="如何判断Key是否存在？"><a href="#如何判断Key是否存在？" class="headerlink" title="如何判断Key是否存在？"></a>如何判断Key是否存在？</h1><p>在Create, Read, Update的时候，为了确保操作争取，我们第一步总是要验证这个Key是否已经存在，然后才能放心的做下一步操作。例如，在Update的时候，先检查Update的Key是否存在，如果存在，那么就可以进行更新。如果不存在，则可以选择插入数据生成一条新的，或者抛出异常。</p>
+<p>在C#中，可以用<a href="https://msdn.microsoft.com/en-us/library/system.collections.hashtable.containskey%28v=vs.110%29.aspx?f=255&amp;MSPPError=-2147217396" target="_blank" rel="noopener">Hashtable.ContainsKey</a>，这样的method来判断Key是否存在。那么在 Solidity中，如何检查mapping里是否由某个Key已经 存在？Part 1 已经解释过，”Key本身并不会保存在mapping中，而是保存了Key值对应的keccak256 hash值，用来查找对应的value“。所以不可能遍历所有的已知KEY来判断某个KEY是否存在。</p>
+<p>Ethereum的整个storage space在初始化的时候都回被置为0。如果想通过判断value是否为0，预判KEY是否存在，也是不可行的。因为从逻辑上说，value为0也有它自身的意义。</p>
+<p>为了解决这个问题，就需要在UserStruct中加入一个flag来标识里面的数据是否已经被初始化过。然后通过判断这个flag是否为true，可以知道是否真实的有这个值存在（被赋值过）。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct UserStruct &#123;</span><br><span class="line">    bytes32 userEmail;</span><br><span class="line">    uint userAge;</span><br><span class="line">    bool isUser;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在创建这个UserStruct的对象的时候，就对这个flag赋值为true. 那么在读取这个value的时候，我们也可以通过这个flag来判断是否已经赋值过，或者是一个default值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isUser</span>(<span class="params">address userAddress</span>)</span></span><br><span class="line"><span class="function"><span class="title">public</span></span></span><br><span class="line"><span class="function"><span class="title">constant</span></span></span><br><span class="line"><span class="function"><span class="title">returns</span>(<span class="params">bool isIndeed</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> userStructs[userAddress].isUser;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过这个方法，我们可以给代码逻辑添加更多的logical constraints, 保证代码逻辑的健壮性：</p>
+<ol>
+<li>不能Insert一个已经存在的Key</li>
+<li>不能Update一个不存在的Key</li>
+<li>不能Read一个不存在的Key</li>
+</ol>
+<p>这种设计在并不需要DELETE的时候是可以正常工作的。如果需要DELETE的功能，那么需要进行一些修改。我会在下一篇进行这方面的讨论。</p>
+<p>用于替代这个flag ，可以加入一个Pointer。这个Pointer的作用，不仅仅可以确定是否已经做过初始化，同时也可以标识key所在的位置。命名为userIndex。代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct UserStruct &#123;</span><br><span class="line">    bytes32 userEmail;</span><br><span class="line">    uint userAge;</span><br><span class="line">    uint index; <span class="comment">// == this</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Pointer的作用"><a href="#Pointer的作用" class="headerlink" title="Pointer的作用"></a>Pointer的作用</h1><p>为了达到目的，在insert的时候要增加一些步骤。在UserStruct中增加的index pointer，在将UserStruct的对象插入到mapping的时候，同时将key所保存在Array的位置也一同赋值给UserStruct的index。总是将index赋值为userIndex.length。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">userStructs[newKey].index = userIndex.length;</span><br><span class="line">userIndex.push(newKey);</span><br></pre></td></tr></table></figure>
+<p>这种方式，Index的起始值为0，标识为Array的第一个位置。当userIndex –Array– , 压入一个新的KEY的时候，同时也将userIndex.Lenght – 1， 就是这个KEY所在的位置。明白了这个道理，为了减少gas的开销，上面的代码也可以优化为下面这种写法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">userStructs[newKey].index = userIndex.push(userAddress)<span class="number">-1</span>;</span><br></pre></td></tr></table></figure>
+<h1 id="参照的完整性"><a href="#参照的完整性" class="headerlink" title="参照的完整性"></a>参照的完整性</h1><p>这个设计下，我们有了两个结构来存储数据。Array (userIndex) 和 Mapping (userStructs)。Array 用来作为KEY的索引，保存了我们所有已知的KEYs。Mapping用来存放UserStruct的记录。UserStruct对象的index，用来记录userIndex中KEY所存放的位置，从而能够取回KEY的内容。</p>
+<p>然而这种设计存在一个重大的问题。一旦索引与存储的记录不同步，我们将面临严重的问题，可能会造成严重的BUG。Solidity本身特别擅长确保数据的完整行，代码执行也不会再这方面出错。所有我们要专注的在自己的代码逻辑方面的设计。</p>
+<ol>
+<li>映射结构与索引之间存在双向绑定。</li>
+<li>不允许任何操作违反规则＃1。业务逻辑必须是原子性的。 必须以”全部”的方式执行。 没有完全成功的操作要进行rollback。</li>
+</ol>
+<p>同时建议将索引和映射设置为private，以确不会被child contracts意外的overwrite.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mapping (address =&amp;gt; UserStruct) private userStructs;</span><br><span class="line">address[] private userIndex;</span><br></pre></td></tr></table></figure>
+<h1 id="检查KEY是否存在"><a href="#检查KEY是否存在" class="headerlink" title="检查KEY是否存在"></a>检查KEY是否存在</h1><p>如果说给定了一个KEY值(userAddress), 怎么来判断mapping中，它是否存在。为了要验证这个KEY是否存在，我们可以采用下面的步骤：</p>
+<ol>
+<li>先从mapping中通过KEY拿到这个structure的对象，从里面拿到index pointer。<br> 注意，这个时候，无论KEY是否真的存在，都会获得返回值。如果是真事存在的KEY，那么会返回有意义的值。如果是不存在的KEY，返回的会是0 （默认值）。但，反过来，如果这个时候读取到的是0，无法判断是否是存在或者不存在，因为原本保存的值可能就是0. 所以需要做下一步的判断。</li>
+<li>通过index的值，在Array中获取保存的KEY值。</li>
+<li>比较从Array中获取的KEY和输入的KEY，是否一致。</li>
+</ol>
+<p>下面来举个栗子，比如说在mapping中减少是否有”G”这个KEY的值真实存在：</p>
+<ol>
+<li>首先我们假设mapping不是空的，Array也不是空的，G真的存在。</li>
+<li>在mapping中查找KEY为G的value。这个value的index的值是3.</li>
+<li>在Array中查找userIndex[3]里面保存的内容。这里能够拿到它保存的值是”G”。</li>
+<li>比较一个，我们要查找的KEY和Array里面保存的KEY的内容是否一致。”G” == “G”。可以证明G是存在的。</li>
+</ol>
+<p><img src="021918_1518_SolidityCRU1.png" alt="img"></p>
+<p>同样还是上面这张图。键入说我们要验证一个<strong>不存在</strong>的KEY—“X”。</p>
+<ol>
+<li>如果Array是空的，那么这个值肯定不存在。</li>
+<li>在mapping中查找KEY为X的value。由于X实际是不能存在的，这个value的index的值是0， 一个默认值。</li>
+<li>在Array中查找userIndex[0], 这个时候返回的是KEY的内容—”A”。</li>
+<li>比较A和X，不匹配。那么X是不存在的。</li>
+</ol>
+<p>下面是示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isUser</span>(<span class="params">address userAddress</span>)</span></span><br><span class="line"><span class="function"><span class="title">public</span></span></span><br><span class="line"><span class="function"><span class="title">constant</span></span></span><br><span class="line"><span class="function"><span class="title">returns</span>(<span class="params">bool isIndeed</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(userIndex.length == <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span> (userIndex[userStructs[userAddress].index] == userAddress);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在调用这个function的时候，如果检测到KEY不存在，我们可以抛出一个异常，让应用程序第一时间注意到这个问题：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!isUser(userAddress) <span class="keyword">throw</span>; <span class="comment">// missing key</span></span><br></pre></td></tr></table></figure>
+<h1 id="Iterable-Interface"><a href="#Iterable-Interface" class="headerlink" title="Iterable Interface"></a>Iterable Interface</h1><p>总共插入了多少条数据在mapping中，这是一个比较常见的需求。Mapping不能获得已经插入了多少条数据，但是Array可以。这是我们设计Array这个结构在这里的目的之一。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getUserAtIndex</span>(<span class="params">uint index</span>)</span></span><br><span class="line"><span class="function"><span class="title">public</span></span></span><br><span class="line"><span class="function"><span class="title">constant</span></span></span><br><span class="line"><span class="function"><span class="title">returns</span>(<span class="params">address userAddress</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> userIndex[index];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于一个web3 client代码，可以这样调用：</p>
+<p>先获得index的大小：UserCrud.getUserCount.call()*。然后，在for循环中，获取KEY值。在调用对应的function，从mapping中获取struct的对象值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(row=<span class="number">0</span>; row &amp;lt; count; row++) &#123;</span><br><span class="line">    UserCrud.getUserAtIndex.call(row)</span><br><span class="line">    UserCrud.getUser.call(theAddressFromStep2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Event-Emitters"><a href="#Event-Emitters" class="headerlink" title="Event Emitters"></a>Event Emitters</h1><p>Smart Contract的一个特点就是可以回调contract外部的一些方法。在Smart Contract中嵌入一个event, 当contract内部的state发生变化的时候，调用这个事件。可以让外部的client application得到响应。这样，client app跟on-chain storage的数据进行双向互动了。为了方便理解，可以认为是数据库的数据发生改变的时候，会同时通知到client app。Client app可以同步更新本地的cache，而不需要时时刻刻去请求数据库。</p>
+<p>为了实现这个目的，我们可以进行如下的实现：</p>
+<ol>
+<li>定义一个getter，获取当前的状态</li>
+<li>嵌入event 用了来update state changes</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">event LogNewUser (address indexed userAddress, uint index, bytes32 userEmail, uint userAge);</span><br><span class="line">event LogUpdateUser(address indexed userAddress, uint index, bytes32 userEmail, uint userAge);</span><br></pre></td></tr></table></figure>
+<p>跟C#/JAVA的event一样。先是定义某种意义的事件。在状态发生相应变化的时候，回调这个事件。那么注册了这些事件的client application就会得到事件相应。例如，这里声明了一个LogNewUser, 在插入新用户的时候会被触发。LogUpdateUser在用户信息被更新的时候会触发。</p>
+<h1 id="DELETE"><a href="#DELETE" class="headerlink" title="DELETE"></a>DELETE</h1><p>这篇的内容只是正对没有DELETE的情况下来进行讨论。userStructs 和userIndex的设计，在没有delete的时候可以很好的工作。但是一旦发生了DELETE动作，userStructs和记录的UserStrct对象的index就必须做相应的改变才能保持userStructs和userIndex中记录保持一致性。</p>
+<p>对于这一点，将会在Part 3中进行讨论.</p>
+<p><strong>SAMPLE CODE :</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^<span class="number">0.4</span><span class="number">.6</span>;</span><br><span class="line">contract UserCrud &#123;</span><br><span class="line"></span><br><span class="line">    struct UserStruct &#123;</span><br><span class="line">        bytes32 userEmail;</span><br><span class="line">        uint userAge;</span><br><span class="line">        uint index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    mapping(address =&amp;gt; UserStruct) private userStructs;</span><br><span class="line">    address[] private userIndex; </span><br><span class="line">    event LogNewUser (address indexed userAddress, uint index, bytes32 userEmail, uint userAge);</span><br><span class="line">    event LogUpdateUser(address indexed userAddress, uint index, bytes32 userEmail, uint userAge);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">isUser</span>(<span class="params">address userAddress</span>)</span></span><br><span class="line"><span class="function">    <span class="title">public</span></span></span><br><span class="line"><span class="function">    <span class="title">constant</span></span></span><br><span class="line"><span class="function">    <span class="title">returns</span>(<span class="params">bool isIndeed</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(userIndex.length == <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">return</span> (userIndex[userStructs[userAddress].index] == userAddress);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">insertUser</span>(<span class="params">address userAddress, bytes32 userEmail, uint userAge</span>)</span></span><br><span class="line"><span class="function">    <span class="title">public</span></span></span><br><span class="line"><span class="function">    <span class="title">returns</span>(<span class="params">uint index</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(isUser(userAddress)) <span class="keyword">throw</span>;</span><br><span class="line">        userStructs[userAddress].userEmail = userEmail;</span><br><span class="line">        userStructs[userAddress].userAge = userAge;</span><br><span class="line">        userStructs[userAddress].index = userIndex.push(userAddress)<span class="number">-1</span>;</span><br><span class="line">        LogNewUser(</span><br><span class="line">            userAddress,</span><br><span class="line">            userStructs[userAddress].index,</span><br><span class="line">            userEmail,</span><br><span class="line">            userAge);</span><br><span class="line">        <span class="keyword">return</span> userIndex.length<span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">getUser</span>(<span class="params">address userAddress</span>)</span></span><br><span class="line"><span class="function">    <span class="title">public</span></span></span><br><span class="line"><span class="function">    <span class="title">constant</span></span></span><br><span class="line"><span class="function">    <span class="title">returns</span>(<span class="params">bytes32 userEmail, uint userAge, uint index</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!isUser(userAddress)) <span class="keyword">throw</span>;</span><br><span class="line">        <span class="keyword">return</span>(</span><br><span class="line">            userStructs[userAddress].userEmail,</span><br><span class="line">            userStructs[userAddress].userAge,</span><br><span class="line">            userStructs[userAddress].index);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">updateUserEmail</span>(<span class="params">address userAddress, bytes32 userEmail</span>)</span></span><br><span class="line"><span class="function">    <span class="title">public</span></span></span><br><span class="line"><span class="function">    <span class="title">returns</span>(<span class="params">bool success</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!isUser(userAddress)) <span class="keyword">throw</span>;</span><br><span class="line">        userStructs[userAddress].userEmail = userEmail;</span><br><span class="line">        LogUpdateUser(</span><br><span class="line">            userAddress,</span><br><span class="line">            userStructs[userAddress].index,</span><br><span class="line">            userEmail,</span><br><span class="line">            userStructs[userAddress].userAge);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">updateUserAge</span>(<span class="params">address userAddress, uint userAge</span>)</span></span><br><span class="line"><span class="function">    <span class="title">public</span></span></span><br><span class="line"><span class="function">    <span class="title">returns</span>(<span class="params">bool success</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!isUser(userAddress)) <span class="keyword">throw</span>;</span><br><span class="line">        userStructs[userAddress].userAge = userAge;</span><br><span class="line">        LogUpdateUser(</span><br><span class="line">            userAddress,</span><br><span class="line">            userStructs[userAddress].index,</span><br><span class="line">            userStructs[userAddress].userEmail,</span><br><span class="line">            userAge);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">getUserCount</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    <span class="title">public</span></span></span><br><span class="line"><span class="function">    <span class="title">constant</span></span></span><br><span class="line"><span class="function">    <span class="title">returns</span>(<span class="params">uint count</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> userIndex.length;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">getUserAtIndex</span>(<span class="params">uint index</span>)</span></span><br><span class="line"><span class="function">    <span class="title">public</span></span></span><br><span class="line"><span class="function">    <span class="title">constant</span></span></span><br><span class="line"><span class="function">    <span class="title">returns</span>(<span class="params">address userAddress</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> userIndex[index];</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>Sonic Guo</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/block-chain/" rel="tag"># block chain</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/crud-of-solidity-part-1/" rel="next" title="Solidity中的CRUD — Part 1">
+                <i class="fa fa-chevron-left"></i> Solidity中的CRUD — Part 1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/crud-of-solidity-part-3/" rel="prev" title="Solidity中的CRUD — Part 3">
+                Solidity中的CRUD — Part 3 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Create-amp-Insert"><span class="nav-number">1.</span> <span class="nav-text">Create &amp; Insert</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Read"><span class="nav-number">2.</span> <span class="nav-text">Read</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Update"><span class="nav-number">3.</span> <span class="nav-text">Update</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何判断Key是否存在？"><span class="nav-number">4.</span> <span class="nav-text">如何判断Key是否存在？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pointer的作用"><span class="nav-number">5.</span> <span class="nav-text">Pointer的作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参照的完整性"><span class="nav-number">6.</span> <span class="nav-text">参照的完整性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#检查KEY是否存在"><span class="nav-number">7.</span> <span class="nav-text">检查KEY是否存在</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Iterable-Interface"><span class="nav-number">8.</span> <span class="nav-text">Iterable Interface</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Event-Emitters"><span class="nav-number">9.</span> <span class="nav-text">Event Emitters</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DELETE"><span class="nav-number">10.</span> <span class="nav-text">DELETE</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
