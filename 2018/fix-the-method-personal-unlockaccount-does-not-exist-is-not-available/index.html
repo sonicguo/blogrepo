@@ -117,7 +117,7 @@
 <meta property="og:description" content="摘要 ： 动手实践笔记，在自己搭建私有区块链并且开发Smart Contract的过程中遇到一些问题。记录一下，以便以后翻阅。The method personal_unlockAccount does not exist/is not available">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://localhost:4000/2018/fix-the-method-personal-unlockaccount-does-not-exist-is-not-available/031918_1448_FIXThemetho1.png">
-<meta property="og:updated_time" content="2018-07-02T16:26:42.782Z">
+<meta property="og:updated_time" content="2018-07-03T16:12:50.506Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="FIX – The method personal_unlockAccount does not exist&#x2F;is not available">
 <meta name="twitter:description" content="摘要 ： 动手实践笔记，在自己搭建私有区块链并且开发Smart Contract的过程中遇到一些问题。记录一下，以便以后翻阅。The method personal_unlockAccount does not exist/is not available">
@@ -368,7 +368,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-07-03 00:26:42" itemprop="dateModified" datetime="2018-07-03T00:26:42+08:00">2018-07-03</time>
+                <time title="Modified: 2018-07-04 00:12:50" itemprop="dateModified" datetime="2018-07-04T00:12:50+08:00">2018-07-04</time>
               
             
           </span>
@@ -420,27 +420,28 @@
 
       
         <blockquote>
-<p>摘要 ： 动手实践笔记，在自己搭建私有区块链并且开发Smart Contract的过程中遇到一些问题。记录一下，以便以后翻阅。The method personal_unlockAccount does not exist/is not available</p>
+<p>摘要 ： 动手实践笔记，在自己搭建私有区块链并且开发Smart Contract的过程中遇到一些问题。记录一下，以便以后翻阅。<br><strong>The method personal_unlockAccount does not exist/is not available</strong></p>
 </blockquote>
 <a id="more"></a>
 <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>在自己搭建私有区块链并且开发Smart Contract的过程中遇到一些问题。记录一下，以便以后翻阅。</p>
 <p>我在Azure平台上搭建了一个基于Ethereum的私有区块链的环境。 具体步骤可以参考我之前的blog <a href="https://gist.github.com/tomconte/4edb83cf505f1e7faf172b9252fff9bf/stargazers" target="_blank" rel="noopener">如何在Azure上快速创建一个Ethereum Consortium Network</a>模板. 在这基础上，编写好一个测试的<a href="https://4edb83cf505f1e7faf172b9252fff9bf" target="_blank" rel="noopener">smart contract</a>。下一步就是去做 smart contract的deploy.</p>
 <p>在deploy的过程中，遇到一个问题，deploy需要一个上手有ether的account 提供gas。 Account本身很好弄，可以创建一个新的，并且提供一些ether作为gas. 但是在unlock 这个新user的时候，遇到了下面的错误。</p>
-<p>|Error: The method personal_unlockAccount does not exist/is not available<br>at Object.InvalidResponse (c:\Projects\nanoeth\node_modules\web3\lib\web3\errors.js:38:16)<br>at RequestManager.send (c:\Projects\nanoeth\node_modules\web3\lib\web3\requestmanager.js:61:22)<br>at Personal.send [as unlockAccount] (c:\Projects\nanoeth\node_modules\web3\lib\web3\method.js:145:58)<br>at Object.<anonymous> (c:\Projects\nanoeth\index.js:27:23)<br>at Module._compile (module.js:649:14)<br>at Object.Module._extensions..js (module.js:663:10)<br>at Module.load (module.js:565:32)<br>at tryModuleLoad (module.js:505:12)<br>at Function.Module._load (module.js:497:3)<br>at Function.Module.runMain (module.js:693:10)|</anonymous></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Error: The method personal_unlockAccount does not exist/is not available</span><br><span class="line">at Object.InvalidResponse (c:\Projects\nanoeth\node_modules\web3\lib\web3\errors.js:38:16)</span><br><span class="line">at RequestManager.send (c:\Projects\nanoeth\node_modules\web3\lib\web3\requestmanager.js:61:22)</span><br><span class="line">at Personal.send [as unlockAccount] (c:\Projects\nanoeth\node_modules\web3\lib\web3\method.js:145:58)</span><br><span class="line">at Object.&lt;anonymous&gt; (c:\Projects\nanoeth\index.js:27:23)</span><br><span class="line">at Module._compile (module.js:649:14)</span><br><span class="line">at Object.Module._extensions..js (module.js:663:10)</span><br><span class="line">at Module.load (module.js:565:32)</span><br><span class="line">at tryModuleLoad (module.js:505:12)</span><br><span class="line">at Function.Module._load (module.js:497:3)</span><br><span class="line">at Function.Module.runMain (module.js:693:10)</span><br></pre></td></tr></table></figure>
 <h1 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h1><p>出于安全的原因，Ethereum Consortim Network的模板在创建出来的以太网络不允许从远端执行personal.newAccount 或者 personal.unlockAccount的命令。这个命令可以登陆到transaction Node上在本地做。当然，这样也就非常不方便。毕竟我的开发环境并不在transaction node上。</p>
 <h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>在查阅了很多文章之后，得到了启发。解决发放就是登陆到transaction node上修改$/start-private-blockchain.sh 配置文件中的内容。添加 –rpcapi “eth,net,web3,admin,personal” 的内容，从而开启 RPCAPI的personal的功能。</p>
 <h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><ol>
-<li><p>打开 MobaXterm， 并且登陆到Transaction Node上。SSH CONSOLE的连接字符串可以参考 ETHEREUM-RPC-ENDPOINT。这个连接字串大概看起来像是这样：<br>ssh -p 3000 <a href="mailto:gethadmin@yourVM.southeastasia.cloudapp.azure.com" target="_blank" rel="noopener">gethadmin@yourVM.southeastasia.cloudapp.azure.com</a></p>
-</li>
-<li><p>如何在Azure Portal上找到<a href="">ETHEREUM-RPC-ENDPOINT</a>可以参考这个文章。</p>
+<li><p>打开 MobaXterm， 并且登陆到Transaction Node上。SSH CONSOLE的连接字符串可以参考 ETHEREUM-RPC-ENDPOINT。这个连接字串大概看起来像是这样：<br> <code>ssh -p 3000 gethadmin@yourVM.southeastasia.cloudapp.azure.com</code><br> 如何在Azure Portal上找到<a href="http://sonicguo.top/create-ethereum-consortium-blockchain-network-on-azure/" target="_blank" rel="noopener">ETHEREUM-RPC-ENDPOINT</a>可以参考这个文章。</p>
 </li>
 <li><p>在 MobaXterm 的左侧导航栏上很方便的就能看到远端服务器上的文件。双击点开 start-private-blockchain.sh</p>
+<p> <img src="031918_1448_FIXThemetho1.png" alt="img"></p>
 </li>
-</ol>
-<p><img src="031918_1448_FIXThemetho1.png" alt="img"></p>
-<p>MobaTextEditor会自动下载并且打开这个文件。找到下面这段内容<br><code>nohup geth --datadir $GETH_HOME -verbosity $VERBOSITY $BOOTNODE_URLS --maxpeers $MAX_PEERS --nat none --networkid $NETWORK_ID --identity $IDENTITY $MINE_OPTIONS $FAST_SYNC --rpc --rpcaddr &quot;$IPADDR&quot; --rpccorsdomain &quot;*&quot; &gt;&gt; $GETH_LOG_FILE_PATH 2&gt;&amp;1 &amp;</code></p>
-<ol start="4">
-<li>用MobaTextEditor 保存并且上传到服务器端。</li>
+<li><p>MobaTextEditor会自动下载并且打开这个文件。找到下面这段内容</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup geth --datadir $GETH_HOME -verbosity $VERBOSITY $BOOTNODE_URLS --maxpeers $MAX_PEERS --nat none --networkid $NETWORK_ID --identity $IDENTITY $MINE_OPTIONS $FAST_SYNC --rpc --rpcaddr &quot;$IPADDR&quot; --rpccorsdomain &quot;*&quot; &gt;&gt; $GETH_LOG_FILE_PATH 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<p> 将这段配置修改为如下内容：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup geth –datadir $GETH_HOME -verbosity $VERBOSITY $BOOTNODE_URLS –maxpeers $MAX_PEERS –nat none –networkid $NETWORK_ID –identity $IDENTITY $MINE_OPTIONS $FAST_SYNC –rpc –rpcaddr &quot;$IPADDR&quot; –rpccorsdomain &quot;*&quot; –rpcapi &quot;eth,net,web3,admin,personal&quot; &gt;&gt; $GETH_LOG_FILE_PATH 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>用MobaTextEditor 保存并且上传到服务器端。</p>
+</li>
 <li>在Azure Portal上重启Transaction Node, 使其生效。</li>
 </ol>
 <h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><ul>
