@@ -4,6 +4,26 @@
 
     
   <url>
+    <loc>http://localhost:4000/2018/blockchain-deploy-smart-contract/</loc>
+    <lastmod>2018-07-04T07:47:20.092Z</lastmod>
+    <data>
+        <display>
+        <title>BlockChain - 从搭建到发布Smart Contract</title>
+        <pubTime>2018-05-02T05:39:53.000Z</pubTime>
+        
+        <tag>block chain</tag>
+         
+         
+           
+             
+              <breadCrumb title="block chain" url="http://localhost:4000/categories/block-chain/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2018/fix-the-method-personal-unlockaccount-does-not-exist-is-not-available/</loc>
     <lastmod>2018-07-03T16:12:50.506Z</lastmod>
     <data>
