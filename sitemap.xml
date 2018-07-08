@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://localhost:4000/2018/ethereum-eos-comparison/</loc>
+    
+    <lastmod>2018-07-08T12:39:19.314Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://localhost:4000/2018/crud-of-solidity-part-3/</loc>
+    
+    <lastmod>2018-07-07T10:15:36.118Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://localhost:4000/2018/blockchain-deploy-smart-contract/</loc>
     
     <lastmod>2018-07-04T07:47:20.092Z</lastmod>
@@ -12,13 +26,6 @@
     <loc>http://localhost:4000/2018/fix-the-method-personal-unlockaccount-does-not-exist-is-not-available/</loc>
     
     <lastmod>2018-07-03T16:12:50.506Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://localhost:4000/2018/crud-of-solidity-part-3/</loc>
-    
-    <lastmod>2018-07-02T16:06:52.416Z</lastmod>
     
   </url>
   
