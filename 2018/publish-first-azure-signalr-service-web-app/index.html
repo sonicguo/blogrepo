@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="SignalR是五年前开发的一个库，最初是作为ASP.NET namespace下面的一部分。随着ASP.NET Core的推行，也发布到了ASP.NET Core中。但是一直以来，都是作为SignalR SDK的形式出现，必须运行在 ASP.NET或者ASP.NET CORE上面。 微软今年年初在西雅图举行的年度Build开发者大会上宣布了Azure SignalR服务的公开预览。 Signa">
+<meta name="keywords" content="SignalR Serivce">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Azure Web Apps上面发布Azure SignalR Service的应用">
+<meta property="og:url" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="SignalR是五年前开发的一个库，最初是作为ASP.NET namespace下面的一部分。随着ASP.NET Core的推行，也发布到了ASP.NET Core中。但是一直以来，都是作为SignalR SDK的形式出现，必须运行在 ASP.NET或者ASP.NET CORE上面。 微软今年年初在西雅图举行的年度Build开发者大会上宣布了Azure SignalR服务的公开预览。 Signa">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice01.png">
+<meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice03.png">
+<meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice04.png">
+<meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice05.png">
+<meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice06.png">
+<meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice02.png">
+<meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice07.png">
+<meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice08.png">
+<meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice09.png">
+<meta property="og:updated_time" content="2018-07-10T13:10:06.696Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在Azure Web Apps上面发布Azure SignalR Service的应用">
+<meta name="twitter:description" content="SignalR是五年前开发的一个库，最初是作为ASP.NET namespace下面的一部分。随着ASP.NET Core的推行，也发布到了ASP.NET Core中。但是一直以来，都是作为SignalR SDK的形式出现，必须运行在 ASP.NET或者ASP.NET CORE上面。 微软今年年初在西雅图举行的年度Build开发者大会上宣布了Azure SignalR服务的公开预览。 Signa">
+<meta name="twitter:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice01.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>在Azure Web Apps上面发布Azure SignalR Service的应用 | Sonic Guo Blog</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109686353-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109686353-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">在Azure Web Apps上面发布Azure SignalR Service的应用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-07-09 23:44:29" itemprop="dateCreated datePublished" datetime="2018-07-09T23:44:29+08:00">2018-07-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-07-10 21:10:06" itemprop="dateModified" datetime="2018-07-10T21:10:06+08:00">2018-07-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Development/" itemprop="url" rel="index"><span itemprop="name">Development</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>SignalR是五年前开发的一个库，最初是作为ASP.NET namespace下面的一部分。随着ASP.NET Core的推行，也发布到了ASP.NET Core中。但是一直以来，都是作为SignalR SDK的形式出现，必须运行在 ASP.NET或者ASP.NET CORE上面。 微软今年年初在西雅图举行的年度Build开发者大会上宣布了Azure SignalR服务的公开预览。 SignalR支持通过启用服务器和客户端之间的双向通信来实现实时Web功能。 SignalR可作为单独的ASP.NET库下载，而且这是第一次作为完全托管服务提供。我正好有机会参加了内测和公开预览的阶段，赶早尝鲜。 在公开预览阶段，可用的文档比较少。所以，用Azure Web App 上面搭建ASP.NET CORE 应用和SignalR Service的时候踩到了不少坑，这个POST主要聊一下如何在建立类似的项目的时候注意躲坑。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="什么是Azure-SignalR-Service"><a href="#什么是Azure-SignalR-Service" class="headerlink" title="什么是Azure SignalR Service"></a>什么是Azure SignalR Service</h1><p>SignalR是五年前开发的一个库，可用于为Web应用程序（如实时仪表板）提供实时体验。 它通过将内容从服务器端代码实时推送到连接的客户端来实现这一目标。 该功能通过WebSockets提供，但在不支持WebSockets时，可以回退到服务器端事件，永久帧和长轮询。</p>
+<ul>
+<li>ASP.NET SignalR是ASP.NET开发人员的新类库，可以轻松开发实时Web功能。</li>
+<li>SignalR允许服务器和客户端之间的双向通信。 在最初的HTTP请求的时代，服务器不会主动相应客户端。必须由客户端请求服务器来获得相应。SignalR可以让服务器在已连接的客户端可用时，立即将消息推送到已连接的客端上。</li>
+<li>SignalR支持Web套接字，并且可以回退到旧版浏览器的其他兼容技术。</li>
+<li>SignalR包括用于连接管理的API（例如，连接和断开事件），分组连接和授权。</li>
+<li>SignalR取代用户轮询和Ajax long pooling/comet。</li>
+</ul>
+<p>微软最近在西雅图举行的年度Build开发者大会上宣布了Azure SignalR服务的公开预览。 SignalR支持通过启用服务器和客户端之间的双向通信来实现实时Web功能。 SignalR可作为单独的ASP.NET库下载，但这是第一次作为完全托管服务提供。</p>
+<p><img src="signalrservice01.png" alt="img"></p>
+<h1 id="为什么要用Azure-Web-Apps"><a href="#为什么要用Azure-Web-Apps" class="headerlink" title="为什么要用Azure Web Apps"></a>为什么要用Azure Web Apps</h1><p>使用Azure Web Apps 主要基于下面几种原因：</p>
+<ol>
+<li>支持多种语言和框架 - 目前Azure Web App 支持  ASP.NET, ASP.NET Core, Java, Ruby, Node.js, PHP, or Python.</li>
+<li>DevOps 优化 - <a href="https://docs.microsoft.com/en-us/azure/devops/what-is-devops" target="_blank" rel="noopener">DevOps</a>是一个很热门的词。Web Apps对<a href="https://docs.microsoft.com/en-us/azure/app-service/app-service-continuous-deployment" target="_blank" rel="noopener">持续性发布</a>和站点的管理提供了非常多的便利。</li>
+<li>Global scale with high availability. 网站应用比较头疼的问题之一，扩容和高可用性。Web App能够非常方便的scale up和scale out, 仅仅需要通过配置就能做到。</li>
+<li>能够连接到SaaS 平台以及 on-premises的数据。</li>
+<li>安全，安全还是安全。</li>
+<li>应用模板 - 可以通过Mark Place上的模板快速创建网站应用，例如WordPress的博客模板，一键部署。</li>
+<li>以及各种好处 ….</li>
+</ol>
+<p>除了App Service中的Web Apps，Azure还提供可用于托管网站和Web应用程序的其他服务。 对于大多数情况，Web Apps是最佳选择。关键是，其他的几个选择中，Web Apps相对比较便宜。。。</p>
+<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><ol>
+<li>Azure Subcription. 如果你没有的话，创建一个<a href="https://azure.microsoft.com/zh-cn/free/?ref=microsoft.com&amp;utm_source=microsoft.com&amp;utm_medium=docs&amp;utm_campaign=visualstudio" target="_blank" rel="noopener">免费账号</a>.</li>
+<li>安装最新的<a href="https://www.microsoft.com/net/download/windows" target="_blank" rel="noopener">.NET CORE SDK</a> .<br> <strong>安装最新的.NET CORE SDK</strong><br> <strong>安装最新的.NET CORE SDK</strong><br> <strong>安装最新的.NET CORE SDK</strong><br> <strong>重要的事情说3遍</strong></li>
+<li>代码可以从<a href="https://github.com/aspnet/AzureSignalR-samples" target="_blank" rel="noopener">AzureSignalR-sample</a>下载。</li>
+</ol>
+<h1 id="创建一个SignalR-Service-Resource"><a href="#创建一个SignalR-Service-Resource" class="headerlink" title="创建一个SignalR Service Resource"></a>创建一个SignalR Service Resource</h1><p>首先要在Azure上面创建一个SignalR Service的资源。</p>
+<ol>
+<li>登陆到<a href="https://portal.azure.com" target="_blank" rel="noopener">Azure Portal</a></li>
+<li>点右上角的 Create a Resource. 在Market Place中搜索 SignalR Service<br> <img src="signalrservice03.png" alt="img"></li>
+<li>从搜索结果中选中SignalR Service，点创建。</li>
+<li>Resrouce Name是这个资源的名字。Resource Group，可以选择创建一个新Resource Group，也可以使用已经存在的。Location指的是这个service所在的区域，理论上，把服务器搭在使用者比较近的数据中心会比好。Pricing Tier指的是否付费的模式，目前只有2档，Free和Starndard. Unit Count目前最高限制在10个。等到正式发布以后，这个限制会提高。<br> <img src="signalrservice04.png" alt="img"></li>
+<li>选择好以后点击创建。稍等几分钟这个resource就创建好了。</li>
+</ol>
+<h1 id="如何找到-Connection-String"><a href="#如何找到-Connection-String" class="headerlink" title="如何找到 Connection String"></a>如何找到 Connection String</h1><p>在我们的Web Applicaiton需要指定 SignalR Service的Connection String。 这个Connection String可以在刚刚创建好的SignalR Service上面找到。</p>
+<ol>
+<li>打开到创建好的Signal Serivce上。</li>
+<li>在左侧点击Keys。<br> <img src="signalrservice05.png" alt="img"></li>
+<li>里面会有两个Key, 这两个都可以使用，必要的时候可以refresh这些key，会重新生成新的key. 把EndPoint的connection string COPY下来，在Web Apps上面会使用到。<br> Endpoint=https://<em>youservice</em>.service.signalr.net;AccessKey=<em>KEYVALUESHERE</em>=;</li>
+</ol>
+<h1 id="本地调试"><a href="#本地调试" class="headerlink" title="本地调试"></a>本地调试</h1><p>在上传到Azure Web Apps之前，可以先做本地调试，以确保程序的正确性。<br>代码可以在<a href="https://github.com/aspnet/AzureSignalR-samples" target="_blank" rel="noopener">AzureSignalR-samples</a>上面下载。</p>
+<p>这里要说的第一个坑，安装最新的<a href="https://www.microsoft.com/net/download/windows" target="_blank" rel="noopener">.NET CORE SDK</a>。<strong>安装最新的.NET CORE SDK！安装最新的.NET CORE SDK！安装最新的.NET CORE SDK！</strong> <strong>重要的事情说3遍</strong> 这么重要的问题，官方github文档上也给出来一段话。基本上，现在处于公开预览的阶段，所以仅仅支持最新的.Net Core版本。将来正式发布之后，据说会兼容到.Net Core 2.0版本。</p>
+<blockquote><p>We have made some changes to Azure SignalR Service Runtime, as well as Service SDK. You have to upgrade to the latest Service SDK to connect to the latest Service Runtime. In the latest Service SDK</p>
+<footer><strong>Updates of Azure SignalR Service Runtime and SDK</strong><cite><a href="https://github.com/aspnet/AzureSignalR-samples#updates-of-azure-signalr-service-runtime-and-sdk" target="_blank" rel="noopener">github.com/aspnet/AzureSignalR-samples#updates-of-azure-signalr-service-runtime-and-sdk</a></cite></footer></blockquote>
+<ol>
+<li>安装好.NET CORE SDK</li>
+<li>下载最新的Chatroom Sample Code</li>
+<li>用Visual Studio Code 打开 这个项目</li>
+<li><p>在Terminal 窗口中执行下面的命令</p>
+ <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dotnet restore</span><br><span class="line">dotnet user-secrets set Azure:SignalR:ConnectionString <span class="string">"&lt;your connection string&gt;"</span></span><br><span class="line">dotnet run</span><br></pre></td></tr></table></figure>
+<p> Connection String 是从Azure SignalR Service上面COPY下来的EndPoint Connection String <strong>_Endpoint=https://<em>youservice</em>.service.signalr.net;AccessKey=<em>KEYVALUESHERE</em>=;_</strong></p>
+</li>
+<li><p>用浏览器访问<a href="http://localhost:5000">http://localhost:5000</a> 就能打开聊天室的界面。用另外一个浏览器打开，就能进入聊天室进行对话了。<br> <img src="signalrservice06.png" alt="img"></p>
+</li>
+</ol>
+<h1 id="发布到Azure-Web-App"><a href="#发布到Azure-Web-App" class="headerlink" title="发布到Azure Web App"></a>发布到Azure Web App</h1><p>本地调试成功以后，就可以把Chatroom发布到Azure Web App.</p>
+<p>首先要创建一个Web Apps，作为发布这个应用的地点。 如果使用Visual Studio 2017 进行程序开发。创建Web Apps和发布可以一次性通过VS 2017做完。—-&gt; <a href="https://github.com/Microsoft/HealthClinic.biz/wiki/Create-and-deploy-an-ASP.NET-web-app-in-Azure-App-Service" target="_blank" rel="noopener">看这里的传送门</a></p>
+<p>如果是使用Visual Studio Code, 需要分两步走。</p>
+<ol>
+<li>首先在portal上面创建一个Web Apps instance. —-&gt; <a href="https://azure.microsoft.com/en-us/resources/videos/create-a-web-app-with-aspnet-and-azure-app-service/" target="_blank" rel="noopener">对方打开了一个传送门</a></li>
+<li>然后使用Visual Studio Code 发布到Web App. —-&gt;<a href="https://azure.microsoft.com/en-us/blog/visual-studio-code-and-azure-app-service-a-perfect-fit/" target="_blank" rel="noopener">第二扇传送门</a></li>
+</ol>
+<p>这里主要躲坑的地方，因为Chatroom是基于.Net Core 2.0的版本， 所以发布到Web App上的需要选择对应的framework. 如果通过Visual Studio 2017 创建并且发布Chatroom 可以略过这个问题。如果是自己创建的Web Apps Instance，就需要注意避坑。如果framework版本不对的话，可能会遇到下面的错误。<br><img src="signalrservice02.png" alt="img"></p>
+<p>确认Web App的.Net Core Framework的版本信息可以通过下面的步骤做到。</p>
+<ol>
+<li>登陆到Azure Portal. 打开到创建好的Web Apps 上。</li>
+<li>在左侧导航栏上方的搜索栏上面搜索console. 点击Console.<br><img src="signalrservice07.png" alt="img"></li>
+<li>如果环境配置正确的话，会看到类似的信息。<br><img src="signalrservice08.png" alt="img"></li>
+</ol>
+<h1 id="在Web-Apps配置SignalR-Service的连接字符串"><a href="#在Web-Apps配置SignalR-Service的连接字符串" class="headerlink" title="在Web Apps配置SignalR Service的连接字符串"></a>在Web Apps配置SignalR Service的连接字符串</h1><p>在开发的环境中，SignalR Service的连接字符串是用命令行通过user-secrets将</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dotnet user-secrets set Azure:SignalR:ConnectionString &quot;&lt;your connection string&gt;&quot;</span><br></pre></td></tr></table></figure>
+<p>这个命令使用了user-secrets的工具帮助加密SignalR Connection String. 这样一来，connection string 就不会明文的保存在配置文件中。当你使用这个命令的时候，这个键值事实上是被保存到了 %APPDATA%\microsoft\UserSecrets\<usersecretsid>\secrets.json. 的位置。由于这个connection string并不在项目的配置文件中，当你使用上述的方法去发布到Web Apps的时候，这个键值并不会被同步到Web Apps上面。这里也是一个比较坑的地方。因为这里没有同步上去，Chatroom能够显示出来一个静态页面，事实上后台的功能是无法工作的。这就是我们通常遇到的问题 – 我的开发环境明明是好的啊，为什么到了你这里就不行，一定是你环境有问题。 是的，这确实是发布好以后的环境没配置正确的问题。</usersecretsid></p>
+<p>躲坑技巧。在发布好Web App之后，可以手工配置这个Conneciton String.</p>
+<ol>
+<li>打开到创建好的Web Apps。在左侧搜索栏搜索Application settings.</li>
+<li>点击Application settings.</li>
+<li><p>下拉到Application settings， 在这里点”Add”, 增加下面的键值.</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Azure__SignalR__ConnectionString</span><br><span class="line">Endpoint=https://_youservice_.service.signalr.net;AccessKey=_KEYVALUESHERE_=;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注意将右侧的slot setting勾上。点”Save”进行保存。<br> <img src="signalrservice09.png" alt="img"></p>
+</li>
+</ol>
+<p>到目前为止，整个Web Apps就发布成功了。在Web Apps上面找到Web Site的地址，就可以把这个地址分享给其他的朋友，通过在浏览器上面直接访问可以使用。</p>
+<p>Sonic Guo</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SignalR-Serivce/" rel="tag"># SignalR Serivce</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/ethereum-eos-comparison/" rel="next" title="Ethereum vs EOS">
+                <i class="fa fa-chevron-left"></i> Ethereum vs EOS
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是Azure-SignalR-Service"><span class="nav-number">1.</span> <span class="nav-text">什么是Azure SignalR Service</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要用Azure-Web-Apps"><span class="nav-number">2.</span> <span class="nav-text">为什么要用Azure Web Apps</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前期准备"><span class="nav-number">3.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建一个SignalR-Service-Resource"><span class="nav-number">4.</span> <span class="nav-text">创建一个SignalR Service Resource</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何找到-Connection-String"><span class="nav-number">5.</span> <span class="nav-text">如何找到 Connection String</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#本地调试"><span class="nav-number">6.</span> <span class="nav-text">本地调试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#发布到Azure-Web-App"><span class="nav-number">7.</span> <span class="nav-text">发布到Azure Web App</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#在Web-Apps配置SignalR-Service的连接字符串"><span class="nav-number">8.</span> <span class="nav-text">在Web Apps配置SignalR Service的连接字符串</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
