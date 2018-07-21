@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在使用Azure SignalR Service的过程中发现它对可以支持REST API，能够同通过直接通过POST请求来访问架设好的Azure SignalR Service，与其他的客户端进行通信。然而文档仅仅是做了比较简单的描述，示例代码不太详细。进行了很多调查研究，终于发现了里面的一些门道。这里分享给大家。">
+<meta name="keywords" content="SignalR Serivce">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Azure-SignalR-Service-REST-API-Call">
+<meta property="og:url" content="http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="在使用Azure SignalR Service的过程中发现它对可以支持REST API，能够同通过直接通过POST请求来访问架设好的Azure SignalR Service，与其他的客户端进行通信。然而文档仅仅是做了比较简单的描述，示例代码不太详细。进行了很多调查研究，终于发现了里面的一些门道。这里分享给大家。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/restapicall02.png">
+<meta property="og:image" content="http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/restapicall03.png">
+<meta property="og:image" content="http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/restapicall04.png">
+<meta property="og:image" content="http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/restapicall05.png">
+<meta property="og:image" content="http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/restapicall06.png">
+<meta property="og:image" content="http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/restapicall01.png">
+<meta property="og:updated_time" content="2018-07-21T08:44:10.876Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Azure-SignalR-Service-REST-API-Call">
+<meta name="twitter:description" content="在使用Azure SignalR Service的过程中发现它对可以支持REST API，能够同通过直接通过POST请求来访问架设好的Azure SignalR Service，与其他的客户端进行通信。然而文档仅仅是做了比较简单的描述，示例代码不太详细。进行了很多调查研究，终于发现了里面的一些门道。这里分享给大家。">
+<meta name="twitter:image" content="http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/restapicall02.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Azure-SignalR-Service-REST-API-Call | Sonic Guo Blog</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109686353-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109686353-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Azure-SignalR-Service-REST-API-Call
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-07-20 00:07:18" itemprop="dateCreated datePublished" datetime="2018-07-20T00:07:18+08:00">2018-07-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-07-21 16:44:10" itemprop="dateModified" datetime="2018-07-21T16:44:10+08:00">2018-07-21</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Development/" itemprop="url" rel="index"><span itemprop="name">Development</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>在使用Azure SignalR Service的过程中发现它对可以支持REST API，能够同通过直接通过POST请求来访问架设好的Azure SignalR Service，与其他的客户端进行通信。然而文档仅仅是做了比较简单的描述，示例代码不太详细。进行了很多调查研究，终于发现了里面的一些门道。这里分享给大家。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="这篇文章包括下面的一些内容"><a href="#这篇文章包括下面的一些内容" class="headerlink" title="这篇文章包括下面的一些内容"></a>这篇文章包括下面的一些内容</h1><ol>
+<li>为什么要使用Azure SignalR Service的REST API。</li>
+<li>Azure SignalR Service对RESTFUL API的支持。</li>
+<li>如何做Authentication</li>
+<li>如何打包message</li>
+</ol>
+<h1 id="为什么要使用Azure-SignalR-Service-REST-API"><a href="#为什么要使用Azure-SignalR-Service-REST-API" class="headerlink" title="为什么要使用Azure SignalR Service REST API"></a>为什么要使用Azure SignalR Service REST API</h1><p>本文的主要目的是通过RESTful的方式来使用Azure SignalR功能，这样依赖REST的 Client/Service 将有可以实时广播/发送消息。这种方式有一下几种优势：</p>
+<ol>
+<li>数据库服务器可以通过REST服务实时 广播/发送 数据的修改（插入/更新/删除），然后将数据的状态立刻同步给它的订阅者，（有点像Service Hub）。</li>
+<li>应用服务器可以通过RESTful的方式实时的 广播/发送 消息。 例如，使用能够使用REST服务的其他编程语言开发的应用程序将有机会实时广播/发送消息。从而做到应用程序的开发语言无关性。</li>
+<li>物联网硬件（如NetdunioPlus2，Arduino，Raspberry PI）有机会发送有关它的状态的实时消息。</li>
+<li>使用基于内存的缓存机制的Web应用程序可以在缓存过期之前 侦听/接收 对缓存的实时更改，从而不需要重新启动Web应用程序。</li>
+<li>它有助于设计高度去耦系统，这些系统几乎无法相互了解，完全具备REST和SignalR技术的能力。</li>
+</ol>
+<p><img src="restapicall02.png" alt="img"></p>
+<h1 id="Azure-SignalR-Service对RESTFUL-API的支持。"><a href="#Azure-SignalR-Service对RESTFUL-API的支持。" class="headerlink" title="Azure SignalR Service对RESTFUL API的支持。"></a>Azure SignalR Service对RESTFUL API的支持。</h1><p>Azure SignalR Service提供了一组REST API，因此您可以使用任何编程语言或任何REST客户端（如Postman, Curl, Fiddler）从任何地方向连接的客户端发送消息。 REST API的定义在此<a href="https://github.com/Azure/azure-signalr/blob/dev/docs/swagger.json" target="_blank" rel="noopener">swagger</a>文件中描述。<br>目前Azure SignalR Service 仅仅支持下面几种方式的REST API :</p>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>/api/v1-preview/hub/{hub}/user/{id}</td>
+<td>将消息发送到某一指定用户</td>
+</tr>
+<tr>
+<td>/api/v1-preview/hub/{hub}/users/{userList}</td>
+<td>将消息发送给多个用户</td>
+</tr>
+<tr>
+<td>/api/v1-preview/hub/{hub}</td>
+<td>向所有连入了hub的用户广播消息</td>
+</tr>
+<tr>
+<td>/api/v1-preview/hub/{hub}/group/{group}</td>
+<td>将消息广播到指定的group中</td>
+</tr>
+<tr>
+<td>/api/v1-preview/hub/{hub}/groups/{groupList}</td>
+<td>将消息广播到指定的多个group中</td>
+</tr>
+</tbody>
+</table>
+<p>对于swagger.json, 可以通过<a href="https://editor.swagger.io/" target="_blank" rel="noopener">Swagger Editor</a> 来进行查看。将swagger.json中的内容，COPY到Swagger Editor中。右侧会自动显示API的定义。<br><img src="restapicall03.png" alt="img"></p>
+<p>在右侧，点开某个特定的API后，可以看到详细的描述。在输入指定的参数以后，点[try it out],还能自动生成curl的命令行，非常的方便。<br><img src="restapicall04.png" alt="img"></p>
+<p>特别值得提及的是，Azure SignalR Service只提供端口<strong>5002</strong>来作为REST API的支持接口。5001则是作为客户端的访问端口。</p>
+<h1 id="如何做Authentication"><a href="#如何做Authentication" class="headerlink" title="如何做Authentication"></a>如何做Authentication</h1><p>使用过Azure SignalR Service的用户都知道，在使用客户端访问Service的时候，需要提供相应的Key来做authentication. 这一点，在使用Restful API进行访问的时候也不例外，在每一个Http请求，都需要通过Http Header中的authentication header来做authentication. 这个authentication header必须符合<a href="https://en.wikipedia.org/wiki/JSON_Web_Token" target="_blank" rel="noopener">JSON Web Token (JWT)</a>.<br>Json web token (JWT), 是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准（(RFC 7519).该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。</p>
+<p>JWT是由三段信息构成的，中间由”.”进行分隔。将这三段信息文本用.链接一起就构成了Jwt字符串。就像这样:</p>
+<p><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</code></p>
+<p>三个部分都有自己明确的意义。</p>
+<ul>
+<li>第一部分我们称它为头部（header).<br>  <code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</code></li>
+<li>第二部分我们称其为载荷(payload), 信息的内容存放在payload中，<br>  <code>eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9</code></li>
+<li>第三部分是签证（signature).<br>  <code>TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</code></li>
+<li>其中每一段的内容都需要<strong>进行base64加密</strong>。更多的内容可以参考这里<a href="https://medium.com/vandium-software/5-easy-steps-to-understanding-json-web-tokens-jwt-1164c0adfcec" target="_blank" rel="noopener">5 Easy Steps to Understanding JSON Web Tokens (JWT)</a></li>
+<li>每一段都需要用”<strong>.</strong>“进行分隔。</li>
+</ul>
+<h2 id="Header"><a href="#Header" class="headerlink" title="Header"></a>Header</h2><p>根据Azure SignalR Service Rest API定义，Header <a href="https://github.com/Azure/azure-signalr#signing-algorithm-and-signature" target="_blank" rel="noopener">必须为HS256的签名算法</a>。</p>
+<p>因此Header的组成内容应该为 ：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  "alg": "HS256",</span><br><span class="line">  "typ": "JWT"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以通过<a href="https://simplycalc.com/base64url-encode.php" target="_blank" rel="noopener">base64url encoder</a> 将上述的内容转换为based64<br><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</code></p>
+<h2 id="payload-amp-signature"><a href="#payload-amp-signature" class="headerlink" title="payload &amp; signature"></a>payload &amp; signature</h2><p>Payload中，按照标准中注册的声明 (建议但不强制使用) ：</p>
+<p>iss: jwt签发者<br>sub: jwt所面向的用户<br><strong>aud: 接收jwt的一方</strong><br><strong>exp: jwt的过期时间，这个过期时间必须要大于签发时间</strong><br><strong>nbf: 定义在什么时间之前，该jwt都是不可用的.</strong><br><strong>iat: jwt的签发时间</strong><br>jti: jwt的唯一身份标识，主要用来作为一次性token,从而回避重放攻击。</p>
+<p>exp, nbf 以及 iat中均为时间相关的数据。 nbf 和 iat可以复制为当前时间，exp可以设定了当前时间加上一个过期时间。</p>
+<p>里面最值得注意的是<strong>aud</strong>. 按照API的定义， aud 必须通过AccessKey 来对进行签名。这个AccessKey来自于所请求的HTTP Url <code>https://example.service.signalr.net:5002/api/v1-preview/hub/myhub</code>. 这个AccessKey指的是Azure SingalR Service上面的创建出来的AccessKey。<a href="./2018/publish-first-azure-signalr-service-web-app/#more">它可以在portal上面得到</a>，同时也是connectionstring上面的一部分。<br><code>Endpoint=https://youservice.service.signalr.net;AccessKey=**KEYVALUESHERE**=;</code></p>
+<p>在portal上面找到这个accesskey之后，把他们都拼到jwt token的payload部分。下面是拼接payload部分的示例代码。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> AzureSignalRConnectionInfo <span class="title">GetServerConnectionInfo</span>(<span class="params"><span class="keyword">string</span> hubName</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> hubUrl = <span class="string">$"<span class="subst">&#123;BaseEndpoint&#125;</span>:5002/api/v1-preview/hub/<span class="subst">&#123;hubName&#125;</span>"</span>;</span><br><span class="line">    <span class="keyword">var</span> token = GenerateJwtBearer(<span class="literal">null</span>, hubUrl, <span class="literal">null</span>, DateTime.UtcNow.AddMinutes(<span class="number">30</span>), AccessKey);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> AzureSignalRConnectionInfo</span><br><span class="line">    &#123;</span><br><span class="line">        Endpoint = hubUrl,</span><br><span class="line">        AccessKey = token</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">string</span> <span class="title">GenerateJwtBearer</span>(<span class="params"><span class="keyword">string</span> issuer, <span class="keyword">string</span> audience, ClaimsIdentity subject, DateTime? expires, <span class="keyword">string</span> signingKey</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    SigningCredentials credentials = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">string</span>.IsNullOrEmpty(signingKey))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> securityKey = <span class="keyword">new</span> SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));</span><br><span class="line">        credentials = <span class="keyword">new</span> SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> jwtTokenHandler = <span class="keyword">new</span> JwtSecurityTokenHandler();</span><br><span class="line">    <span class="keyword">var</span> token = jwtTokenHandler.CreateJwtSecurityToken(</span><br><span class="line">        issuer: issuer,</span><br><span class="line">        audience: audience, <span class="comment">// https://example.service.signalr.net:5002/api/v1-preview/hub/myhub</span></span><br><span class="line">        subject: subject,</span><br><span class="line">        expires: expires,</span><br><span class="line">        signingCredentials: credentials); <span class="comment">// access key</span></span><br><span class="line">    <span class="keyword">return</span> jwtTokenHandler.WriteToken(token);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个sample code 生成出来的jwt结果如下 :<br><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1MzIwMTQ3NDMsImV4cCI6MTUzMjAxNjU0MywiaWF0IjoxNTMyMDE0NzQzLCJhdWQiOiJodHRwczovL3NyY2hhdHJvb20uc2VydmljZS5zaWduYWxyLm5ldDo1MDAyL2FwaS92MS1wcmV2aWV3L2h1Yi9jaGF0In0.34gbXBtY6f2Blzm-2xFwb2g8iCy-cIAph6VqXeXTtqk</code></p>
+<p>这段内容，拿到 <a href="https://jwt.io/" target="_blank" rel="noopener">jwt.io</a> 上面进行解码的话，就能看到我们之前的设定。</p>
+<p><img src="restapicall05.png" alt="img"></p>
+<p>这段jwt的内容，是作为 header中 作为authentiacation的部分，所有还需要在前面加入相关的内容。整个header字串拼完之后应该是</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1MzIwMTQ3NDMsImV4cCI6MTUzMjAxNjU0MywiaWF0IjoxNTMyMDE0NzQzLCJhdWQiOiJodHRwczovL3NyY2hhdHJvb20uc2VydmljZS5zaWduYWxyLm5ldDo1MDAyL2FwaS92MS1wcmV2aWV3L2h1Yi9jaGF0In0.VWzp0lLW1OL7-wWfN0nsfxjy7glr6Yq5BSdvE1dRdcE</span><br></pre></td></tr></table></figure>
+<h1 id="如何打包message"><a href="#如何打包message" class="headerlink" title="如何打包message"></a>如何打包message</h1><p>把HttpHeader组装好之后，开始组装message body，在swagger.json中有描述。<br>Target 是用来指定客户端将要被invoke的方面名。 Arguments应为要传入的参数。<br><img src="restapicall06.png" alt="img"><br>这里，客户端的我使用了Azure Signalr Service Sample中的chatroom. 这个sample中的web app的客户端页面invoke后台的BroadcastMessage方法，并且浏览器上的页面的功能也是订阅在这个方法方法上。一旦Chat hub有消息传入，websocket就会将消息通知给客户端。<br>我的sample 就是要通过5002的端口，使用RESTFUL的方式，发送http请求来通知到注册在这个hub上面的客户端。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Microsoft.Azure.SignalR.Samples.ChatRoom</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Chat</span> : <span class="title">Hub</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">BroadcastMessage</span>(<span class="params"><span class="keyword">string</span> name, <span class="keyword">string</span> message</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            Clients.All.SendAsync(<span class="string">"broadcastMessage"</span>, name, message);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Echo</span>(<span class="params"><span class="keyword">string</span> name, <span class="keyword">string</span> message</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            Clients.Client(Context.ConnectionId).SendAsync(<span class="string">"echo"</span>, name, message + <span class="string">" (echo from server)"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面是发送HTTP请求的客户端代码。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> (<span class="keyword">var</span> httpClient = <span class="keyword">new</span> HttpClient())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> connectionInfo = signalR.GetServerConnectionInfo(<span class="string">"chat"</span>);</span><br><span class="line"></span><br><span class="line">    SignalRMessage item = <span class="keyword">new</span> SignalRMessage()</span><br><span class="line">    &#123;</span><br><span class="line">        Arguments = <span class="keyword">new</span> <span class="keyword">string</span>[] &#123; <span class="string">"_SYSTEM_"</span>,<span class="string">"SonicGuo JOINED"</span>&#125;,</span><br><span class="line">        Target = <span class="string">"broadcastMessage"</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    Program instance = <span class="keyword">new</span> Program();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> json = instance.PostJsonAsync(httpClient, connectionInfo.Endpoint, item, connectionInfo.AccessKey);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> message = json.Result;</span><br><span class="line"></span><br><span class="line">    item = <span class="keyword">new</span> SignalRMessage()</span><br><span class="line">    &#123;</span><br><span class="line">        Arguments = <span class="keyword">new</span> <span class="keyword">string</span>[] &#123; <span class="string">"SonicGuo"</span>, <span class="string">"HELLO ALL"</span> &#125;,</span><br><span class="line">        Target = <span class="string">"broadcastMessage"</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    json = instance.PostJsonAsync(httpClient, connectionInfo.Endpoint, item, connectionInfo.AccessKey);</span><br><span class="line">    message = json.Result;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>发送成功后，通过fiddler看到发送的HTTP请求的内容如下。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST https://srchatroom.service.signalr.net:5002/api/v1-preview/hub/chat HTTP/1.1</span><br><span class="line">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1MzIwMTQ3NDMsImV4cCI6MTUzMjAxNjU0MywiaWF0IjoxNTMyMDE0NzQzLCJhdWQiOiJodHRwczovL3NyY2hhdHJvb20uc2VydmljZS5zaWduYWxyLm5ldDo1MDAyL2FwaS92MS1wcmV2aWV3L2h1Yi9jaGF0In0.VWzp0lLW1OL7-wWfN0nsfxjy7glr6Yq5BSdvE1dRdcE</span><br><span class="line">Accept: application/json</span><br><span class="line">Accept-Charset: UTF-8</span><br><span class="line">Content-Type: application/json; charset=utf-8</span><br><span class="line">Content-Length: 72</span><br><span class="line">Host: srchatroom.service.signalr.net:5002</span><br><span class="line"></span><br><span class="line">&#123;&quot;Target&quot;:&quot;broadcastMessage&quot;,&quot;Arguments&quot;:[&quot;_SYSTEM_&quot;,&quot;SonicGuo JOINED&quot;]&#125;</span><br></pre></td></tr></table></figure></p>
+<p>发送成功会收到202的返回，表示accepted. 其他的客户端(网页)就会收到这样的广播消息。<br><img src="restapicall01.png" alt="img"></p>
+<p>Sonic Guo</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SignalR-Serivce/" rel="tag"># SignalR Serivce</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/publish-first-azure-signalr-service-web-app/" rel="next" title="在Azure Web Apps上面发布Azure SignalR Service的应用">
+                <i class="fa fa-chevron-left"></i> 在Azure Web Apps上面发布Azure SignalR Service的应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#这篇文章包括下面的一些内容"><span class="nav-number">1.</span> <span class="nav-text">这篇文章包括下面的一些内容</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要使用Azure-SignalR-Service-REST-API"><span class="nav-number">2.</span> <span class="nav-text">为什么要使用Azure SignalR Service REST API</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Azure-SignalR-Service对RESTFUL-API的支持。"><span class="nav-number">3.</span> <span class="nav-text">Azure SignalR Service对RESTFUL API的支持。</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何做Authentication"><span class="nav-number">4.</span> <span class="nav-text">如何做Authentication</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Header"><span class="nav-number">4.1.</span> <span class="nav-text">Header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#payload-amp-signature"><span class="nav-number">4.2.</span> <span class="nav-text">payload &amp; signature</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何打包message"><span class="nav-number">5.</span> <span class="nav-text">如何打包message</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -4,6 +4,26 @@
 
     
   <url>
+    <loc>http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/</loc>
+    <lastmod>2018-07-21T08:44:10.876Z</lastmod>
+    <data>
+        <display>
+        <title>Azure-SignalR-Service-REST-API-Call</title>
+        <pubTime>2018-07-19T16:07:18.000Z</pubTime>
+        
+        <tag>SignalR Serivce</tag>
+         
+         
+           
+             
+              <breadCrumb title="Development" url="http://localhost:4000/categories/Development/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/</loc>
     <lastmod>2018-07-10T13:27:50.266Z</lastmod>
     <data>
