@@ -125,7 +125,7 @@
 <meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice07.png">
 <meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice08.png">
 <meta property="og:image" content="http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/signalrservice09.png">
-<meta property="og:updated_time" content="2018-07-10T13:27:50.266Z">
+<meta property="og:updated_time" content="2018-07-21T09:00:09.228Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在Azure Web Apps上面发布Azure SignalR Service的应用">
 <meta name="twitter:description" content="SignalR是五年前开发的一个库，最初是作为ASP.NET namespace下面的一部分。随着ASP.NET Core的推行，也发布到了ASP.NET Core中。但是一直以来，都是作为SignalR SDK的形式出现，必须运行在 ASP.NET或者ASP.NET CORE上面。 微软今年年初在西雅图举行的年度Build开发者大会上宣布了Azure SignalR服务的公开预览。 Signa">
@@ -385,7 +385,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-07-10 21:27:50" itemprop="dateModified" datetime="2018-07-10T21:27:50+08:00">2018-07-10</time>
+                <time title="Modified: 2018-07-21 17:00:09" itemprop="dateModified" datetime="2018-07-21T17:00:09+08:00">2018-07-21</time>
               
             
           </span>
@@ -478,7 +478,7 @@
 <ol>
 <li>打开到创建好的Signal Serivce上。</li>
 <li>在左侧点击Keys。<br> <img src="signalrservice05.png" alt="img"></li>
-<li>里面会有两个Key, 这两个都可以使用，必要的时候可以refresh这些key，会重新生成新的key. 把EndPoint的connection string COPY下来，在Web Apps上面会使用到。<br> Endpoint=https://<em>youservice</em>.service.signalr.net;AccessKey=<em>KEYVALUESHERE</em>=;</li>
+<li>里面会有两个Key, 这两个都可以使用，必要的时候可以refresh这些key，会重新生成新的key. 把EndPoint的connection string COPY下来，在Web Apps上面会使用到。<br> <code>Endpoint=https://_youservice_.service.signalr.net;AccessKey=_KEYVALUESHERE_=;</code></li>
 </ol>
 <h1 id="本地调试"><a href="#本地调试" class="headerlink" title="本地调试"></a>本地调试</h1><p>在上传到Azure Web Apps之前，可以先做本地调试，以确保程序的正确性。<br>代码可以在<a href="https://github.com/aspnet/AzureSignalR-samples" target="_blank" rel="noopener">AzureSignalR-samples</a>上面下载。</p>
 <p>这里要说的第一个坑，安装最新的<a href="https://www.microsoft.com/net/download/windows" target="_blank" rel="noopener">.NET CORE SDK</a>。<strong>安装最新的.NET CORE SDK！安装最新的.NET CORE SDK！安装最新的.NET CORE SDK！</strong> <strong>重要的事情说3遍</strong> 这么重要的问题，官方github文档上也给出来一段话。基本上，现在处于公开预览的阶段，所以仅仅支持最新的.Net Core版本。将来正式发布之后，据说会兼容到.Net Core 2.0版本。</p>
@@ -490,7 +490,7 @@
 <li>用Visual Studio Code 打开 这个项目</li>
 <li><p>在Terminal 窗口中执行下面的命令</p>
  <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dotnet restore</span><br><span class="line">dotnet user-secrets set Azure:SignalR:ConnectionString <span class="string">"&lt;your connection string&gt;"</span></span><br><span class="line">dotnet run</span><br></pre></td></tr></table></figure>
-<p> Connection String 是从Azure SignalR Service上面COPY下来的EndPoint Connection String <strong>_Endpoint=https://<em>youservice</em>.service.signalr.net;AccessKey=<em>KEYVALUESHERE</em>=;_</strong></p>
+<p> Connection String 是从Azure SignalR Service上面COPY下来的EndPoint Connection String<br> <code>_Endpoint=https://_youservice_.service.signalr.net;AccessKey=_KEYVALUESHERE_=;_</code></p>
 </li>
 <li><p>用浏览器访问<a href="http://localhost:5000">http://localhost:5000</a> 就能打开聊天室的界面。用另外一个浏览器打开，就能进入聊天室进行对话了。<br> <img src="signalrservice06.png" alt="img"></p>
 </li>
@@ -567,8 +567,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/Azure-SignalR-Service-REST-API-Call/" rel="prev" title="Azure-SignalR-Service-REST-API-Call">
-                Azure-SignalR-Service-REST-API-Call <i class="fa fa-chevron-right"></i>
+              <a href="/2018/Azure-SignalR-Service-REST-API-Call/" rel="prev" title="如何使用REST API的方式广播到Azure SignalR Service">
+                如何使用REST API的方式广播到Azure SignalR Service <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
