@@ -4,6 +4,26 @@
 
     
   <url>
+    <loc>http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/</loc>
+    <lastmod>2018-07-28T10:31:17.278Z</lastmod>
+    <data>
+        <display>
+        <title>调用WebAPI时传递UTF8字符遇到DecoderFallbackException</title>
+        <pubTime>2018-07-28T09:31:41.000Z</pubTime>
+        
+        <tag>Web API</tag>
+         
+         
+           
+             
+              <breadCrumb title="Development" url="http://localhost:4000/categories/Development/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/</loc>
     <lastmod>2018-07-21T09:00:09.228Z</lastmod>
     <data>

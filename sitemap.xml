@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/</loc>
+    
+    <lastmod>2018-07-28T10:31:17.278Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/</loc>
     
     <lastmod>2018-07-21T09:00:09.228Z</lastmod>

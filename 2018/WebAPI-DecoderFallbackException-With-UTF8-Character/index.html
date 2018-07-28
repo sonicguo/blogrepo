@@ -108,31 +108,29 @@
 
 
 
-  <meta name="description" content="摘要：Azure Bot Service 半个月前刚刚正式上线，这个产品就遇到了一些问题。其中一个问题就是在Bot Service管理Portal上面创建Bot Application 密码的时候, 会提示错误。而这个密码在第一次生成之后就没法在这个管理Portal再次看到他的全部内容。这样密码一旦忘记或者丢失，就会陷入两难的境地。既拿不回密码，也不能创建新密码。Bot Application整">
-<meta name="keywords" content="AI">
+  <meta name="description" content="在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。进行了问题排查之后，发现是客户端在调用Web API的时候，没有指定字符集，使得服务器端在反序列化的时候使用了Unicode进行反">
+<meta name="keywords" content="Web API">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何重新找回Azure Bot Service的Application Secrets">
-<meta property="og:url" content="http://localhost:4000/2017/retrieve-azure-bot-application-secrets/index.html">
+<meta property="og:title" content="调用WebAPI时传递UTF8字符遇到DecoderFallbackException">
+<meta property="og:url" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/index.html">
 <meta property="og:site_name" content="Sonic Guo Blog">
-<meta property="og:description" content="摘要：Azure Bot Service 半个月前刚刚正式上线，这个产品就遇到了一些问题。其中一个问题就是在Bot Service管理Portal上面创建Bot Application 密码的时候, 会提示错误。而这个密码在第一次生成之后就没法在这个管理Portal再次看到他的全部内容。这样密码一旦忘记或者丢失，就会陷入两难的境地。既拿不回密码，也不能创建新密码。Bot Application整">
+<meta property="og:description" content="在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。进行了问题排查之后，发现是客户端在调用Web API的时候，没有指定字符集，使得服务器端在反序列化的时候使用了Unicode进行反">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://localhost:4000/2017/retrieve-azure-bot-application-secrets/122617_1721_AzureBot1.png">
-<meta property="og:image" content="http://localhost:4000/2017/retrieve-azure-bot-application-secrets/122617_1721_AzureBot2.png">
-<meta property="og:image" content="http://localhost:4000/2017/retrieve-azure-bot-application-secrets/122617_1721_AzureBot3.png">
-<meta property="og:image" content="http://localhost:4000/2017/retrieve-azure-bot-application-secrets/122617_1721_AzureBot4.png">
-<meta property="og:image" content="http://localhost:4000/2017/retrieve-azure-bot-application-secrets/122617_1721_AzureBot5.png">
-<meta property="og:updated_time" content="2018-07-02T15:53:14.655Z">
+<meta property="og:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap01.png">
+<meta property="og:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap02.png">
+<meta property="og:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap03.png">
+<meta property="og:updated_time" content="2018-07-28T10:31:17.278Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="如何重新找回Azure Bot Service的Application Secrets">
-<meta name="twitter:description" content="摘要：Azure Bot Service 半个月前刚刚正式上线，这个产品就遇到了一些问题。其中一个问题就是在Bot Service管理Portal上面创建Bot Application 密码的时候, 会提示错误。而这个密码在第一次生成之后就没法在这个管理Portal再次看到他的全部内容。这样密码一旦忘记或者丢失，就会陷入两难的境地。既拿不回密码，也不能创建新密码。Bot Application整">
-<meta name="twitter:image" content="http://localhost:4000/2017/retrieve-azure-bot-application-secrets/122617_1721_AzureBot1.png">
+<meta name="twitter:title" content="调用WebAPI时传递UTF8字符遇到DecoderFallbackException">
+<meta name="twitter:description" content="在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。进行了问题排查之后，发现是客户端在调用Web API的时候，没有指定字符集，使得服务器端在反序列化的时候使用了Unicode进行反">
+<meta name="twitter:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap01.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://localhost:4000/2017/retrieve-azure-bot-application-secrets/"/>
+  <link rel="canonical" href="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/"/>
 
 
 
@@ -142,7 +140,7 @@
   };
 </script>
 
-  <title>如何重新找回Azure Bot Service的Application Secrets | Sonic Guo Blog</title>
+  <title>调用WebAPI时传递UTF8字符遇到DecoderFallbackException | Sonic Guo Blog</title>
   
 
 
@@ -322,7 +320,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2017/retrieve-azure-bot-application-secrets/">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sonic Guo">
@@ -339,7 +337,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">如何重新找回Azure Bot Service的Application Secrets
+          <h1 class="post-title" itemprop="name headline">调用WebAPI时传递UTF8字符遇到DecoderFallbackException
               
             
           </h1>
@@ -364,24 +362,12 @@
                 
               
 
-              <time title="Created: 2017-12-27 22:43:18" itemprop="dateCreated datePublished" datetime="2017-12-27T22:43:18+08:00">2017-12-27</time>
+              <time title="Created: 2018-07-28 17:31:41 / Modified: 18:31:17" itemprop="dateCreated datePublished" datetime="2018-07-28T17:31:41+08:00">2018-07-28</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-07-02 23:53:14" itemprop="dateModified" datetime="2018-07-02T23:53:14+08:00">2018-07-02</time>
               
             
           </span>
@@ -398,7 +384,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Development/" itemprop="url" rel="index"><span itemprop="name">Development</span></a></span>
 
                 
                 
@@ -433,23 +419,18 @@
 
       
         <blockquote>
-<p>摘要：Azure Bot Service 半个月前刚刚正式上线，这个产品就遇到了一些问题。其中一个问题就是在Bot Service管理Portal上面创建Bot Application 密码的时候, 会提示错误。而这个密码在第一次生成之后就没法在这个管理Portal再次看到他的全部内容。这样密码一旦忘记或者丢失，就会陷入两难的境地。既拿不回密码，也不能创建新密码。Bot Application整个就废在一个密码上。经过一些调查之后，发现其实还有一些门道在Azure Portal上拿回这个密码，这里把步骤分享给大家。</p>
+<p>在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。进行了问题排查之后，发现是客户端在调用Web API的时候，没有指定字符集，使得服务器端在反序列化的时候使用了Unicode进行反序列化，导致服务器端反序列化没有成功。</p>
 </blockquote>
 <a id="more"></a>
-<h1 id="问题描述："><a href="#问题描述：" class="headerlink" title="问题描述："></a>问题描述：</h1><p>Azure Bot Service 于<a href="https://github.com/Microsoft/BotBuilder/issues/3927" target="_blank" rel="noopener">2017年12月13</a>日正式宣布GA。跟Bot Service 一同GA的还有Microsoft Cognitive Service Language Understanding (LUIS) 服务。这本来是一个非常振奋人心的消息。不过，稍微有些让人感觉到不足的地方就是Bot Portal上面出现 一些问题。当一部分用户尝试在 <a href="https://dev.botframework.com/bots" target="_blank" rel="noopener">https://dev.botframework.com/bots</a> 站点上给自己的Bot Application 重现生成一个密码的时候，会碰到下面的这个异常。</p>
-<p>Exception of type ‘Microsoft.AppRegPortal.Providers.Graph.GraphException’</p>
-<p><img src="122617_1721_AzureBot1.png" alt="errorimg"></p>
-<p>由于在这个Portal上创建的密码，只会在第一次出现全文。Portal上也会做出相应的提示，要求保存好这个密码，之后不会再提示错误。一旦密码忘记或者遗失，最好的办法就是重新创建一个新的密码。这个本来是非常方便的一个事情。但是由于Portal上遇到了这个Bug，一旦密码遗失，就无法重新创建新密码，自己的Bot Application 就不能使用。造成了非常不必要的麻烦。这个问题，在全球范围内有很多的用户都遇到了。考虑到这一点，我猜测应该会有一些workaround，即使不能在(<a href="https://dev.botframework.com/bots" target="_blank" rel="noopener">https://dev.botframework.com/bots</a>) 网站上找回密码，也不能在这上面创建密码。也应该有其他的地方可以找回这个密码。</p>
-<p>功夫不负有心人，终于在 <a href="https://portal.azure.com" target="_blank" rel="noopener">Azure Portal</a> 的边边角角上找到了明文显示这个密码的地方。</p>
-<h1 id="WORKAROUN："><a href="#WORKAROUN：" class="headerlink" title="WORKAROUN："></a>WORKAROUN：</h1><p>Bot Application的密码可以通过下面的步骤重新找回来。</p>
-<ol>
-<li>登陆Azure Portal。 (<a href="https://portal.azure.com" target="_blank" rel="noopener">https://portal.azure.com</a>)</li>
-<li>在左侧的导航栏上点击资源组。<br> <img src="122617_1721_AzureBot2.png" alt="img"></li>
-<li>点击Bot Application 所在的资源组。然后点击Bot Application的应用。<br> <img src="122617_1721_AzureBot3.png" alt="img"></li>
-<li>在左侧导航栏上找到应用程序设置。<br> <img src="122617_1721_AzureBot4.png" alt="img"></li>
-<li>在这里能看到所有跟Bot Application相关的设置，其中也包括MicrosoftAppId 和 MicrosoftAppPassword.<br> <img src="122617_1721_AzureBot5.png" alt="img"></li>
-</ol>
-<p>通过这个方法可以暂时先拿回遗忘掉的密码。生成新密码的办法，只好等微软的产品组修复了问题之后再解决了。</p>
+<h1 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h1><p>在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。问题发生的时候，与传入的字符内容有关。如果包含了中文字符，那么问题将会发生。</p>
+<p><img src="webap01.png" alt="img"></p>
+<h1 id="问题排除"><a href="#问题排除" class="headerlink" title="问题排除"></a>问题排除</h1><p>在问题排查的过程中，首先通过发送比较简单的参数，确认了Web API和Client端配置和Coding都没有问题。</p>
+<p>在发送更多的内容，并且包含了中文字符的时候，能够稳定重现问题。在Visual Studio中，把断点设定在了被调用的API上。通过检查this.ModelState里面的内容判断接收的参数是否存在问题。</p>
+<p><img src="webap02.png" alt="img"></p>
+<p>在里面发现其中包含了一个错误 - System.Exception.DecoderFallbackException. 问题排查到此后发现了问题的根源所在。 “Unable to translate bytes [B3] at index 52 from specifed code page to Unicode”.</p>
+<p><img src="webap03.png" alt="img"></p>
+<h1 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h1><p>检查过客户端的代码后发现没有指定Encoding的类型。 在指定 <code>client.Encoding = System.Text.Encoding.UTF8</code> 后问题得到了解决。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> (WebClient client = <span class="keyword">new</span> WebClient())</span><br><span class="line">&#123;</span><br><span class="line">    client.Headers[HttpRequestHeader.ContentType] = <span class="string">"application/json"</span>;</span><br><span class="line">    client.Encoding = System.Text.Encoding.UTF8;</span><br><span class="line"></span><br><span class="line">    Uri uri = <span class="keyword">new</span> Uri(<span class="keyword">new</span> Uri(SvcHOSTNAME), WebAPIName);</span><br><span class="line">    client.UploadString(uri, json);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>Sonic Guo</p>
 
       
@@ -471,7 +452,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/AI/" rel="tag"># AI</a>
+            <a href="/tags/Web-API/" rel="tag"># Web API</a>
           
         </div>
       
@@ -484,8 +465,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/create-ethereum-consortium-blockchain-network-on-azure/" rel="next" title="如何在Azure上快速创建一个Ethereum Consortium Network模板">
-                <i class="fa fa-chevron-left"></i> 如何在Azure上快速创建一个Ethereum Consortium Network模板
+              <a href="/2018/Azure-SignalR-Service-REST-API-Call/" rel="next" title="如何使用REST API的方式广播到Azure SignalR Service">
+                <i class="fa fa-chevron-left"></i> 如何使用REST API的方式广播到Azure SignalR Service
               </a>
             
           </div>
@@ -493,10 +474,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/block-chain-guide-line/" rel="prev" title="区块链是什么？它能做到什么？">
-                区块链是什么？它能做到什么？ <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -654,7 +631,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题描述："><span class="nav-number">1.</span> <span class="nav-text">问题描述：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WORKAROUN："><span class="nav-number">2.</span> <span class="nav-text">WORKAROUN：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题描述"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题排除"><span class="nav-number">2.</span> <span class="nav-text">问题排除</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题解决"><span class="nav-number">3.</span> <span class="nav-text">问题解决</span></a></li></ol></div>
             
 
           </div>
