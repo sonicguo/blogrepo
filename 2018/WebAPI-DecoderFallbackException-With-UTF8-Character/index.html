@@ -116,14 +116,14 @@
 <meta property="og:site_name" content="Sonic Guo Blog">
 <meta property="og:description" content="在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。进行了问题排查之后，发现是客户端在调用Web API的时候，没有指定字符集，使得服务器端在反序列化的时候使用了Unicode进行反">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap01.png">
+<meta property="og:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap04.png">
 <meta property="og:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap02.png">
 <meta property="og:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap03.png">
-<meta property="og:updated_time" content="2018-07-28T10:31:17.278Z">
+<meta property="og:updated_time" content="2018-07-28T11:21:53.850Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="调用WebAPI时传递UTF8字符遇到DecoderFallbackException">
 <meta name="twitter:description" content="在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。进行了问题排查之后，发现是客户端在调用Web API的时候，没有指定字符集，使得服务器端在反序列化的时候使用了Unicode进行反">
-<meta name="twitter:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap01.png">
+<meta name="twitter:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap04.png">
 
 
 
@@ -362,7 +362,7 @@
                 
               
 
-              <time title="Created: 2018-07-28 17:31:41 / Modified: 18:31:17" itemprop="dateCreated datePublished" datetime="2018-07-28T17:31:41+08:00">2018-07-28</time>
+              <time title="Created: 2018-07-28 17:31:41 / Modified: 19:21:53" itemprop="dateCreated datePublished" datetime="2018-07-28T17:31:41+08:00">2018-07-28</time>
             
 
             
@@ -422,12 +422,12 @@
 <p>在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。进行了问题排查之后，发现是客户端在调用Web API的时候，没有指定字符集，使得服务器端在反序列化的时候使用了Unicode进行反序列化，导致服务器端反序列化没有成功。</p>
 </blockquote>
 <a id="more"></a>
-<h1 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h1><p>在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。问题发生的时候，与传入的字符内容有关。如果包含了中文字符，那么问题将会发生。</p>
-<p><img src="webap01.png" alt="img"></p>
+<h1 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h1><p>在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。问题发生的时候，与传入的字符内容有关。如果包含了中文字符，那么问题将会发生.</p>
+<p><img src="webap04.png" alt="img"></p>
 <h1 id="问题排除"><a href="#问题排除" class="headerlink" title="问题排除"></a>问题排除</h1><p>在问题排查的过程中，首先通过发送比较简单的参数，确认了Web API和Client端配置和Coding都没有问题。</p>
 <p>在发送更多的内容，并且包含了中文字符的时候，能够稳定重现问题。在Visual Studio中，把断点设定在了被调用的API上。通过检查this.ModelState里面的内容判断接收的参数是否存在问题。</p>
 <p><img src="webap02.png" alt="img"></p>
-<p>在里面发现其中包含了一个错误 - System.Exception.DecoderFallbackException. 问题排查到此后发现了问题的根源所在。 “Unable to translate bytes [B3] at index 52 from specifed code page to Unicode”.</p>
+<p>在里面发现其中包含了一个错误 - <strong>System.Exception.DecoderFallbackException</strong>. 问题排查到此后发现了问题的根源所在。 “Unable to translate bytes [B3] at index 52 from specifed code page to Unicode”.</p>
 <p><img src="webap03.png" alt="img"></p>
 <h1 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h1><p>检查过客户端的代码后发现没有指定Encoding的类型。 在指定 <code>client.Encoding = System.Text.Encoding.UTF8</code> 后问题得到了解决。</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> (WebClient client = <span class="keyword">new</span> WebClient())</span><br><span class="line">&#123;</span><br><span class="line">    client.Headers[HttpRequestHeader.ContentType] = <span class="string">"application/json"</span>;</span><br><span class="line">    client.Encoding = System.Text.Encoding.UTF8;</span><br><span class="line"></span><br><span class="line">    Uri uri = <span class="keyword">new</span> Uri(<span class="keyword">new</span> Uri(SvcHOSTNAME), WebAPIName);</span><br><span class="line">    client.UploadString(uri, json);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
