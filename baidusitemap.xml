@@ -4,6 +4,26 @@
 
     
   <url>
+    <loc>http://localhost:4000/2018/algorithm-fibonacci/</loc>
+    <lastmod>2018-08-05T16:42:04.562Z</lastmod>
+    <data>
+        <display>
+        <title>学习笔记 - algorithm fibonacci</title>
+        <pubTime>2018-08-05T15:15:12.000Z</pubTime>
+        
+        <tag>algorithm</tag>
+         
+         
+           
+             
+              <breadCrumb title="algorithm" url="http://localhost:4000/categories/algorithm/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/</loc>
     <lastmod>2018-07-28T11:21:53.850Z</lastmod>
     <data>
