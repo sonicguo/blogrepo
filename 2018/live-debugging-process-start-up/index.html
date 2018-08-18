@@ -108,29 +108,32 @@
 
 
 
-  <meta name="description" content="在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。进行了问题排查之后，发现是客户端在调用Web API的时候，没有指定字符集，使得服务器端在反序列化的时候使用了Unicode进行反">
-<meta name="keywords" content="Web API">
+  <meta name="description" content="在软件开发和调试中，存在这无法使用开发IDE直接对代码进行调试的情况。必然在开发过程中看似没有遇到问题的应用程序，发布到UAT环境之后出现的新的异常。而UAT环境又要模拟生产环节，不运行安装开发IDE进行调试。在这种情况下就必须用其他的工具进行在线调试。在Windows环境中，WinDBG是一款非常优秀的调试工具。WinDBG可以适用于在线调试各种性能，异常问题，专治各种应用程序水土不服。有一种情">
+<meta name="keywords" content="WinDBG">
 <meta property="og:type" content="article">
-<meta property="og:title" content="调用WebAPI时传递UTF8字符遇到DecoderFallbackException">
-<meta property="og:url" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/index.html">
+<meta property="og:title" content="如何在进程刚刚开始的时间点就开始live debug">
+<meta property="og:url" content="http://localhost:4000/2018/live-debugging-process-start-up/index.html">
 <meta property="og:site_name" content="Sonic Guo Blog">
-<meta property="og:description" content="在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。进行了问题排查之后，发现是客户端在调用Web API的时候，没有指定字符集，使得服务器端在反序列化的时候使用了Unicode进行反">
+<meta property="og:description" content="在软件开发和调试中，存在这无法使用开发IDE直接对代码进行调试的情况。必然在开发过程中看似没有遇到问题的应用程序，发布到UAT环境之后出现的新的异常。而UAT环境又要模拟生产环节，不运行安装开发IDE进行调试。在这种情况下就必须用其他的工具进行在线调试。在Windows环境中，WinDBG是一款非常优秀的调试工具。WinDBG可以适用于在线调试各种性能，异常问题，专治各种应用程序水土不服。有一种情">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap04.png">
-<meta property="og:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap02.png">
-<meta property="og:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap03.png">
-<meta property="og:updated_time" content="2018-07-28T11:21:53.850Z">
+<meta property="og:image" content="http://localhost:4000/2018/live-debugging-process-start-up/figure1.jpeg">
+<meta property="og:image" content="http://localhost:4000/2018/live-debugging-process-start-up/figure2.png">
+<meta property="og:image" content="http://localhost:4000/2018/live-debugging-process-start-up/figure4.jpeg">
+<meta property="og:image" content="http://localhost:4000/2018/live-debugging-process-start-up/figure5.jpeg">
+<meta property="og:image" content="http://localhost:4000/2018/live-debugging-process-start-up/figure6.jpeg">
+<meta property="og:image" content="http://localhost:4000/2018/live-debugging-process-start-up/figure7.jpeg">
+<meta property="og:updated_time" content="2018-08-18T05:13:44.228Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="调用WebAPI时传递UTF8字符遇到DecoderFallbackException">
-<meta name="twitter:description" content="在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。进行了问题排查之后，发现是客户端在调用Web API的时候，没有指定字符集，使得服务器端在反序列化的时候使用了Unicode进行反">
-<meta name="twitter:image" content="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/webap04.png">
+<meta name="twitter:title" content="如何在进程刚刚开始的时间点就开始live debug">
+<meta name="twitter:description" content="在软件开发和调试中，存在这无法使用开发IDE直接对代码进行调试的情况。必然在开发过程中看似没有遇到问题的应用程序，发布到UAT环境之后出现的新的异常。而UAT环境又要模拟生产环节，不运行安装开发IDE进行调试。在这种情况下就必须用其他的工具进行在线调试。在Windows环境中，WinDBG是一款非常优秀的调试工具。WinDBG可以适用于在线调试各种性能，异常问题，专治各种应用程序水土不服。有一种情">
+<meta name="twitter:image" content="http://localhost:4000/2018/live-debugging-process-start-up/figure1.jpeg">
 
 
 
 
 
 
-  <link rel="canonical" href="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/"/>
+  <link rel="canonical" href="http://localhost:4000/2018/live-debugging-process-start-up/"/>
 
 
 
@@ -140,7 +143,7 @@
   };
 </script>
 
-  <title>调用WebAPI时传递UTF8字符遇到DecoderFallbackException | Sonic Guo Blog</title>
+  <title>如何在进程刚刚开始的时间点就开始live debug | Sonic Guo Blog</title>
   
 
 
@@ -320,7 +323,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/live-debugging-process-start-up/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sonic Guo">
@@ -337,7 +340,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">调用WebAPI时传递UTF8字符遇到DecoderFallbackException
+          <h1 class="post-title" itemprop="name headline">如何在进程刚刚开始的时间点就开始live debug
               
             
           </h1>
@@ -362,7 +365,7 @@
                 
               
 
-              <time title="Created: 2018-07-28 17:31:41 / Modified: 19:21:53" itemprop="dateCreated datePublished" datetime="2018-07-28T17:31:41+08:00">2018-07-28</time>
+              <time title="Created: 2018-08-18 12:01:02 / Modified: 13:13:44" itemprop="dateCreated datePublished" datetime="2018-08-18T12:01:02+08:00">2018-08-18</time>
             
 
             
@@ -384,7 +387,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Development/" itemprop="url" rel="index"><span itemprop="name">Development</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Debugging/" itemprop="url" rel="index"><span itemprop="name">Debugging</span></a></span>
 
                 
                 
@@ -418,19 +421,40 @@
       
 
       
-        <blockquote>
-<p>在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。进行了问题排查之后，发现是客户端在调用Web API的时候，没有指定字符集，使得服务器端在反序列化的时候使用了Unicode进行反序列化，导致服务器端反序列化没有成功。</p>
-</blockquote>
-<a id="more"></a>
-<h1 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h1><p>在调用Web API的时候使用POST，传递的Parameter包含了UTF8字符。有时候发现在Web API Service端的代码中无法对传递过来的值进行反序列化，获得的只是一个null。这个值，在客户端进行反序列化并没有问题，问题只发生在服务器端反序列化的时候。问题发生的时候，与传入的字符内容有关。如果包含了中文字符，那么问题将会发生.</p>
-<p><img src="webap04.png" alt="img"></p>
-<h1 id="问题排除"><a href="#问题排除" class="headerlink" title="问题排除"></a>问题排除</h1><p>在问题排查的过程中，首先通过发送比较简单的参数，确认了Web API和Client端配置和Coding都没有问题。</p>
-<p>在发送更多的内容，并且包含了中文字符的时候，能够稳定重现问题。在Visual Studio中，把断点设定在了被调用的API上。通过检查this.ModelState里面的内容判断接收的参数是否存在问题。</p>
-<p><img src="webap02.png" alt="img"></p>
-<p>在里面发现其中包含了一个错误 - <strong>System.Exception.DecoderFallbackException</strong>. 问题排查到此后发现了问题的根源所在。 “Unable to translate bytes [B3] at index 52 from specifed code page to Unicode”.</p>
-<p><img src="webap03.png" alt="img"></p>
-<h1 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h1><p>检查过客户端的代码后发现没有指定Encoding的类型。 在指定 <code>client.Encoding = System.Text.Encoding.UTF8</code> 后问题得到了解决。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> (WebClient client = <span class="keyword">new</span> WebClient())</span><br><span class="line">&#123;</span><br><span class="line">    client.Headers[HttpRequestHeader.ContentType] = <span class="string">"application/json"</span>;</span><br><span class="line">    client.Encoding = System.Text.Encoding.UTF8;</span><br><span class="line"></span><br><span class="line">    Uri uri = <span class="keyword">new</span> Uri(<span class="keyword">new</span> Uri(SvcHOSTNAME), WebAPIName);</span><br><span class="line">    client.UploadString(uri, json);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <p>在软件开发和调试中，存在这无法使用开发IDE直接对代码进行调试的情况。必然在开发过程中看似没有遇到问题的应用程序，发布到UAT环境之后出现的新的异常。而UAT环境又要模拟生产环节，不运行安装开发IDE进行调试。在这种情况下就必须用其他的工具进行在线调试。在Windows环境中，<a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/" target="_blank" rel="noopener">WinDBG</a>是一款非常优秀的调试工具。WinDBG可以适用于在线调试各种性能，异常问题，专治各种应用程序水土不服。<br>有一种情况是在应用程序刚刚启动的初始化阶段，问题就发生的。这种情况下，问题发生的时间点非常早。如果等进程启动好，再用WinDBG 附加到 问题进程，往往已经查不到问题的原因。这个POST，讨论一下如何在进程启动的最初阶段就开始加载WinDBG.<br><a id="more"></a></p>
+<p><img src="figure1.jpeg" alt="img"></p>
+<h1 id="准备工具"><a href="#准备工具" class="headerlink" title="准备工具"></a>准备工具</h1><p>要完成这个任务，需要在Windows上面安装下面工具：</p>
+<ol>
+<li><a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/" target="_blank" rel="noopener">WinDBG</a></li>
+<li><a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/gflags" target="_blank" rel="noopener">Gflags</a></li>
+<li><a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/" target="_blank" rel="noopener">CDB</a></li>
+</ol>
+<p>WinDBG的安装包同时包含了Gflags和CDB, 安装好WinDBG后，在WinDBG的目录中就能找到。</p>
+<h1 id="用WinDBG来启动进程并在附加在进程上"><a href="#用WinDBG来启动进程并在附加在进程上" class="headerlink" title="用WinDBG来启动进程并在附加在进程上"></a>用WinDBG来启动进程并在附加在进程上</h1><p>说到在应用程序启动阶段step in，有一种方式，就是用WinDBG来直接直接启动应用程序。</p>
+<ol>
+<li>启动WinDBG.</li>
+<li>点 File -&gt; Open Executable.</li>
+<li>在弹出窗口，找到要启动应用程序的可执行文件(.EXE).点击OK.</li>
+<li>操作完之后，WinDBG将会负责把应用程序启动起来，并且在第一个Debugging响应事件(0x80000003)触发的时候将程序暂停下来，可以开始Debugging.</li>
+</ol>
+<p><img src="figure2.png" alt="img2"></p>
+<h1 id="进阶版-使用Gflag"><a href="#进阶版-使用Gflag" class="headerlink" title="进阶版-使用Gflag"></a>进阶版-使用Gflag</h1><p>上述操作可以满足一定程度的使用场景。但，如果是目标进程是一个Windows Service或者Web Service, 或者目标进程是high previlege, 上述方式就可能会失败。这种情况下，需要用gflag来进行曲线救援。</p>
+<p>使用gflag来设定应用程序在启动的时候自动被停止。<br>在应用程序被停止的时候，可以使用gflag来启动一个debugger 进入到应用程序的runtime中。并且开启一个debugging session等待下一步的debugging指令。由于这个debugger只用于开启debugging session，并且等待并且执行指令，这里可以使用<strong>CDB</strong>这种轻量级的debugger.<br>一切就绪之后，就能够使用WinDBG 连到 debugging session中，通过CDB进行远程调试了。</p>
+<ol>
+<li>打开 Gflags.</li>
+<li>点击Image File, 输入应用程序的可执行文件名。这里以w3wp.exe为例。</li>
+<li>按Tab来刷新界面。</li>
+<li>勾选Debugger</li>
+<li>输入命令行，在进程启动的时候加载CDB并且开启debugging session.<br><strong>C:\Debuggers\cdb -server npipe:pipe=dbgw3wp</strong></li>
+<li><p>点 Apply.<br> <img src="figure4.jpeg" alt="img4"></p>
+</li>
+<li><p>启动应用程序。因为这里是w3wp.exe为例，访问网站的页面，Windows Process Activiation Service 就会自动w3wp.exe. CDB会自动介入并且开启debugging session.</p>
+</li>
+<li>打开WinDBG.</li>
+<li>点 File -&gt; Connect to Remote Session<br> <img src="figure5.jpeg" alt="img5"></li>
+<li>输入下面命令行连入CDB开启的通道。<br><img src="figure6.jpeg" alt="img6"></li>
+<li>成功以后，WinDBG就可以进行debugging了。<br><img src="figure7.jpeg" alt="img7"></li>
+</ol>
 <p>Sonic Guo</p>
 
       
@@ -452,7 +476,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Web-API/" rel="tag"># Web API</a>
+            <a href="/tags/WinDBG/" rel="tag"># WinDBG</a>
           
         </div>
       
@@ -465,8 +489,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/Azure-SignalR-Service-REST-API-Call/" rel="next" title="如何使用REST API的方式广播到Azure SignalR Service">
-                <i class="fa fa-chevron-left"></i> 如何使用REST API的方式广播到Azure SignalR Service
+              <a href="/2018/Magic-Quadrant-Public-Cloud/" rel="next" title="Magic Quadrant for Public Cloud Storage Services, Worldwide">
+                <i class="fa fa-chevron-left"></i> Magic Quadrant for Public Cloud Storage Services, Worldwide
               </a>
             
           </div>
@@ -474,10 +498,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/algorithm-fibonacci/" rel="prev" title="学习笔记 - algorithm fibonacci">
-                学习笔记 - algorithm fibonacci <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -655,7 +675,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题描述"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题排除"><span class="nav-number">2.</span> <span class="nav-text">问题排除</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题解决"><span class="nav-number">3.</span> <span class="nav-text">问题解决</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备工具"><span class="nav-number">1.</span> <span class="nav-text">准备工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用WinDBG来启动进程并在附加在进程上"><span class="nav-number">2.</span> <span class="nav-text">用WinDBG来启动进程并在附加在进程上</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进阶版-使用Gflag"><span class="nav-number">3.</span> <span class="nav-text">进阶版-使用Gflag</span></a></li></ol></div>
             
 
           </div>

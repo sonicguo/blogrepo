@@ -312,6 +312,168 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/live-debugging-process-start-up/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/live-debugging-process-start-up/" itemprop="url">
+                  如何在进程刚刚开始的时间点就开始live debug
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-08-18 12:01:02 / Modified: 13:13:44" itemprop="dateCreated datePublished" datetime="2018-08-18T12:01:02+08:00">2018-08-18</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Debugging/" itemprop="url" rel="index"><span itemprop="name">Debugging</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>在软件开发和调试中，存在这无法使用开发IDE直接对代码进行调试的情况。必然在开发过程中看似没有遇到问题的应用程序，发布到UAT环境之后出现的新的异常。而UAT环境又要模拟生产环节，不运行安装开发IDE进行调试。在这种情况下就必须用其他的工具进行在线调试。在Windows环境中，<a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/" target="_blank" rel="noopener">WinDBG</a>是一款非常优秀的调试工具。WinDBG可以适用于在线调试各种性能，异常问题，专治各种应用程序水土不服。<br>有一种情况是在应用程序刚刚启动的初始化阶段，问题就发生的。这种情况下，问题发生的时间点非常早。如果等进程启动好，再用WinDBG 附加到 问题进程，往往已经查不到问题的原因。这个POST，讨论一下如何在进程启动的最初阶段就开始加载WinDBG.<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/live-debugging-process-start-up/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/Magic-Quadrant-Public-Cloud/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -375,7 +537,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-08-11 00:53:20" itemprop="dateModified" datetime="2018-08-11T00:53:20+08:00">2018-08-11</time>
+                <time title="Modified: 2018-08-18 12:01:22" itemprop="dateModified" datetime="2018-08-18T12:01:22+08:00">2018-08-18</time>
               
             
           </span>
@@ -1866,181 +2028,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/crud-of-solidity-part-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Sonic Guo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sonic Guo Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/crud-of-solidity-part-2/" itemprop="url">
-                  Solidity中的CRUD — Part 2
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-02-19 23:27:23" itemprop="dateCreated datePublished" datetime="2018-02-19T23:27:23+08:00">2018-02-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-07-02 23:52:29" itemprop="dateModified" datetime="2018-07-02T23:52:29+08:00">2018-07-02</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/block-chain/" itemprop="url" rel="index"><span itemprop="name">block chain</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>摘要：Ethereum是Block Chain的一种实现，而Block Chain在存储方面跟接近于一种分布式账本。每个加入到Ethereum网络中的节点都会有一份COPY。数据是存储在网络中的所有节点中。在这个方面，与传统的关系数据库有着完全不一样的特点。那么在基于Solidity的编程中，也会有着不一样的思路。这篇文章，主要是分享一下编程思路上与传统关系数据库的CRUD(Create, Read, Update, Delete)处理上的区别。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/crud-of-solidity-part-2/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2092,7 +2079,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2104,6 +2091,12 @@
                 <div class="site-state-item site-state-categories">
                   <a href="/categories/index.html">
                     
+                    
+                      
+                    
+                      
+                    
+                      
                     
                       
                     
@@ -2129,6 +2122,12 @@
                 <div class="site-state-item site-state-tags">
                   <a href="/tags/index.html">
                     
+                    
+                      
+                    
+                      
+                    
+                      
                     
                       
                     

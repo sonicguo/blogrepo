@@ -2,9 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://localhost:4000/2018/live-debugging-process-start-up/</loc>
+    
+    <lastmod>2018-08-18T05:13:44.228Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://localhost:4000/2017/diagnostic-c-sharp-string-using-windbg/</loc>
+    
+    <lastmod>2018-08-18T05:13:34.356Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://localhost:4000/2018/Magic-Quadrant-Public-Cloud/</loc>
     
-    <lastmod>2018-08-10T16:53:20.985Z</lastmod>
+    <lastmod>2018-08-18T04:01:22.917Z</lastmod>
     
   </url>
   
@@ -68,13 +82,6 @@
     <loc>http://localhost:4000/2017/retrieve-azure-bot-application-secrets/</loc>
     
     <lastmod>2018-07-02T15:53:14.655Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://localhost:4000/2017/diagnostic-c-sharp-string-using-windbg/</loc>
-    
-    <lastmod>2018-07-02T15:53:10.291Z</lastmod>
     
   </url>
   
