@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="I have been using Windbg and its extensions like SOS, psscor, mex for several years. They are really professional tools for .Net deep debugging. With the newly released cross platform .NET Core. Wind">
+<meta name="keywords" content="LLDB,.Net Core">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How To Debugging DotNet Core On Ubuntu">
+<meta property="og:url" content="http://localhost:4000/2018/How-To-Debugging-DotNet-Core-On-Linux/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="I have been using Windbg and its extensions like SOS, psscor, mex for several years. They are really professional tools for .Net deep debugging. With the newly released cross platform .NET Core. Wind">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2018/How-To-Debugging-DotNet-Core-On-Linux/img3.png">
+<meta property="og:image" content="http://localhost:4000/2018/How-To-Debugging-DotNet-Core-On-Linux/img1.png">
+<meta property="og:image" content="http://localhost:4000/2018/How-To-Debugging-DotNet-Core-On-Linux/img2.png">
+<meta property="og:updated_time" content="2018-09-16T16:04:06.351Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How To Debugging DotNet Core On Ubuntu">
+<meta name="twitter:description" content="I have been using Windbg and its extensions like SOS, psscor, mex for several years. They are really professional tools for .Net deep debugging. With the newly released cross platform .NET Core. Wind">
+<meta name="twitter:image" content="http://localhost:4000/2018/How-To-Debugging-DotNet-Core-On-Linux/img3.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2018/How-To-Debugging-DotNet-Core-On-Linux/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>How To Debugging DotNet Core On Ubuntu | Sonic Guo Blog</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109686353-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109686353-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/How-To-Debugging-DotNet-Core-On-Linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">How To Debugging DotNet Core On Ubuntu
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-08-29 16:11:59" itemprop="dateCreated datePublished" datetime="2018-08-29T16:11:59+08:00">2018-08-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-09-17 00:04:06" itemprop="dateModified" datetime="2018-09-17T00:04:06+08:00">2018-09-17</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>I have been using Windbg and its extensions like SOS, psscor, mex for several years. They are really professional tools for .Net deep debugging. With the newly released cross platform .NET Core. Windbg and its extensions still works if the .Net Core Application runs on top of Windows. However, they are not longer work for .Net Core Debugging if it out of Windows. Fortunately, the .NET Core team has been porting the SOS functionality to Linux in the form of an extension to the LLDB debugger on Linux and this makes it possible for us to do the same in-depth debugging on .NET Core.</p>
+</blockquote>
+<a id="more"></a>
+<p>The major difference between LLDB and WinDBG is, LLDB is a command line debugger where as WinDBG is a GUI based. And Source Level debugging in LLDB is not fully evolved and this is one of the drawback for WinDBG users. Microsoft opted with LLDB Debugger for many reasons. LLDB is easy to customize as compared to GDB. LLDB debugger exposes the APIs to write plugins (extensions in WinDBG world) especially for managed code and it is easily configurable. Our famous managed debugging extension sos.dll is almost there (85%) for LLDB.</p>
+<h1 id="Install-Net-Core"><a href="#Install-Net-Core" class="headerlink" title="Install .Net Core"></a>Install .Net Core</h1><p>To start building .NET apps you just need to download and install the .NET SDK (Software Development Kit). Here is quite straight forward steps to <a href="https://www.microsoft.com/net/learn/get-started-with-dotnet-tutorial#install" target="_blank" rel="noopener">install .Net Core on Linux</a>.</p>
+<ol>
+<li><p>Register Microsoft key and feed<br> Before installing .NET, you’ll need to register the Microsoft key, register the product repository, and install required dependencies. This only needs to be done once per machine.</p>
+<p> Open a command prompt and run the following commands:</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget -q https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb</span><br><span class="line">sudo dpkg -i packages-microsoft-prod.deb</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Install .NET SDK<br> Update the products available for installation, then install the .NET SDK.<br> In your command prompt, run the following commands:</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install apt-transport-https</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install dotnet-sdk-2.1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Execute the below to create an empty project and run it. The application can be accessed successfully via localhost:5000.</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir coredemo</span><br><span class="line">cd coredemo</span><br><span class="line">dotnet new web</span><br><span class="line">dotnet restore</span><br><span class="line">dotnet run</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Now you can  access the web site from broswer from port 5000 (HTTP) or 5001 (HTPPS). You can also check process by run command <code>ps -A</code>.</p>
+<p><img src="img3.png" alt="img"></p>
+</li>
+</ol>
+<h1 id="Setup-amp-Launch-LLDB"><a href="#Setup-amp-Launch-LLDB" class="headerlink" title="Setup &amp; Launch LLDB"></a>Setup &amp; Launch LLDB</h1><p>Microsoft opted with LLDB Debugger, because</p>
+<ul>
+<li>LLDB is easy to customize as compared to GDB</li>
+<li>LLDB debugger exposes the APIs to write plugins (extensions in WinDBG world) especially for managed code and it is easily configurable.</li>
+<li>whereas with GDB, such provisions are limited and hence the LLDB route.</li>
+</ul>
+<p>Our famous managed debugging extension sos.dll is almost there (85%) for LLDB.Some of SOS extension commands rely on Windows functionality which are not present on Linux. This is where our time is being spent and we will definitely reach to that stage by RTM time frame.</p>
+<p>The current stable version of LLDB is <strong>3.6</strong>. However, this version is not compatible to support managed debugging.<br>Microsoft forked 3.7 version, contributed the changes to fit managed debugging model. The fixed and supported version is 3.8.</p>
+<p>Run <code>apt search lldb</code>. This will display a list of available versions.<br>Run <code>sudo apt install lldb-X.Y</code>, where X.Y is the version you are installing (usually the latest). As this post is for .NET Core Debugging, you can instal lldb-3.8.<br><img src="img1.png" alt="img"></p>
+<p>Now, the debugger is ready and time to have some fun. To open lldb, you can run command <code>lldb</code>. This takes you to lldb command window and it waits for your next action. To check check lldb version, you can run command <code>version</code>.<br><img src="img2.png" alt="img"></p>
+<h1 id="DISASSEMBLY"><a href="#DISASSEMBLY" class="headerlink" title="DISASSEMBLY"></a>DISASSEMBLY</h1><p>As you know, LINUX  defualt disassembly is GAS, it refer as AT&amp;T syntax. Its instruction is quite different from Intel Assemebly. GAS instruction read from left to right. The LLDB debugger privods a way to change GAS to a regualr intel type disassembly. Which it may us deubgging more easier. Use below in LLDB to change the default GNU disassembly settings :<br>    <code>settings set target.x86-disassembly-flavor intel</code><br>Of cause, you can revert it back by run following command in LLDB :<br>    <code>settings set target.x86-disassembly-flavor att</code><br>To make the change permanent, i.e. to have this setting all the time whenever LLDB is launched, add the above command in lldb.init file and place this file where lldb bits exist on the machine.</p>
+<h1 id="SYMBOLS"><a href="#SYMBOLS" class="headerlink" title="SYMBOLS"></a>SYMBOLS</h1><p>When we debugging in Windows, there is a <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/microsoft-public-symbols" target="_blank" rel="noopener">centralized symbol server</a> for .Net Debugging. However, there is not such centralized symbol server for Microsoft Binary for Linux/Mac. To workaround this issue, we have to load symbols manually. To doing so, the 1st thing is to determin CLR’s version. This is different from .Net Core version you installed. In the server, you can installed mutiple .Net Core versions, in the runtime, it may just have a specific one.</p>
+<ul>
+<li>Open the file Microsoft.NETCore.App.deps.json which is under the Framework installation folder.</li>
+<li>Check the value next to “Microsoft.NETCore.Runtime.CoreCLR“ and that is the CoreCLR version the .NET Framework is running on. For eg. If you are on RC2, this is the version (highlighted) “Microsoft.NETCore.Runtime.CoreCLR”: “1.0.2-rc2-<code>24027</code>“<br>  <em>If debugging in a machine locally, while install .Net Core SDK, it contains the symbol files. If debugging from other machine, you need to either install excatly same version of .Net Core SDK, or you need to copy symbol from source machine.</em></li>
+<li>Once the matching symbols are identified, copy the <strong>.DBG</strong> files into the Framework installation folder $DOTNET_HOME/shared/Microsft.NetCore.App/1.0.0-XX.######</li>
+<li>In Linux, the debugger will automatically load the symbols if they exist in the Framework folder.</li>
+</ul>
+<h1 id="Source-Code-Sync"><a href="#Source-Code-Sync" class="headerlink" title="Source Code Sync"></a>Source Code Sync</h1><p>.NET Core CLR and .NET CoreFX source is available at GitHub. Source at GitHub is synced on daily basis and is being maintained through different branches. The Master branch do in sync with major releases such as RC, RTM, Updates.</p>
+<h2 id="Download-Source"><a href="#Download-Source" class="headerlink" title="Download Source"></a>Download Source</h2><p>Follow the Steps to download the source on your Linux machine</p>
+<ol>
+<li>Open a terminal window.</li>
+<li><p>Create a folder ‘git’ under your $HOME directory and change into that folder</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir git</span><br><span class="line"><span class="built_in">cd</span> git</span><br><span class="line">Clone the CoreCLR <span class="built_in">source</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/dotnet/coreclr.git</span><br></pre></td></tr></table></figure>
+<p> If for some reason, the above command fails with communication error, then retry the command again until it succeeds.</p>
+</li>
+<li><p>Clone CoreFX source</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/dotnet/corefx.git</span><br></pre></td></tr></table></figure>
+<p> Once the source is successfully cloned, the source structure look like below<br> <code>$HOME/git/coreclr/src</code><br> <code>$HOME/git/corefx/src</code></p>
+</li>
+</ol>
+<h2 id="Setting-Source-path"><a href="#Setting-Source-path" class="headerlink" title="Setting Source path"></a>Setting Source path</h2><p>On Linux, the debugger automatically loads the symbols when symbol are present in the Framework folder automatically. Once the symbol loaded correctly, sourcecode linke appears on the call stack. The next is to setup source code path, it’s similar like what we do in the Windows.</p>
+<p>To set the source in LLDB debugger, run the command </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">settings <span class="built_in">set</span> target.source-map &lt;orig-source-path&gt;  &lt;<span class="variable">$HOME</span>/git/coreclr/<span class="built_in">source</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>That’s what the “target.source-map” setting is for:</p>
+<pre><code>(lldb) settings list target.source-map
+source-map -- Source path remappings used to track the change of location between a source file when built, and where it exists on the current system. 
+                It consists of an array of duples, the first element of each duple is some part (starting at the root) of the path to the file when it
+                was built, and the second is where the remainder of the original build hierarchy is rooted on the local system.  Each element of the
+                array is checked in order and the first one that results in a match wins
+</code></pre><p>Orig-source-Path is the source information from which the binary is built. Such as in Windows, when you debug managed app, the call stack shows something like f:\ndp.…. For the runtime and other Framework binaries, This is called the original source path.</p>
+<h1 id="SUMMARY"><a href="#SUMMARY" class="headerlink" title="SUMMARY"></a>SUMMARY</h1><p>Until now, you are good to enough the debugging in Linux. The step is strage forward and very similar like we do in Windows.</p>
+<ol>
+<li>Install .Net Core</li>
+<li>Setup LLDB</li>
+<li>Setup Symbol</li>
+<li>Setup Source and Source ppath</li>
+</ol>
+<p>Sonic Guo</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/LLDB/" rel="tag"># LLDB</a>
+          
+            <a href="/tags/Net-Core/" rel="tag"># .Net Core</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/live-debugging-process-start-up/" rel="next" title="如何在进程刚刚开始的时间点就开始live debug">
+                <i class="fa fa-chevron-left"></i> 如何在进程刚刚开始的时间点就开始live debug
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Install-Net-Core"><span class="nav-number">1.</span> <span class="nav-text">Install .Net Core</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Setup-amp-Launch-LLDB"><span class="nav-number">2.</span> <span class="nav-text">Setup &amp; Launch LLDB</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DISASSEMBLY"><span class="nav-number">3.</span> <span class="nav-text">DISASSEMBLY</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SYMBOLS"><span class="nav-number">4.</span> <span class="nav-text">SYMBOLS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Source-Code-Sync"><span class="nav-number">5.</span> <span class="nav-text">Source Code Sync</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Download-Source"><span class="nav-number">5.1.</span> <span class="nav-text">Download Source</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setting-Source-path"><span class="nav-number">5.2.</span> <span class="nav-text">Setting Source path</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SUMMARY"><span class="nav-number">6.</span> <span class="nav-text">SUMMARY</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -4,6 +4,25 @@
 
     
   <url>
+    <loc>http://localhost:4000/2018/How-To-Debugging-DotNet-Core-On-Linux/</loc>
+    <lastmod>2018-09-16T16:04:06.351Z</lastmod>
+    <data>
+        <display>
+        <title>How To Debugging DotNet Core On Ubuntu</title>
+        <pubTime>2018-08-29T08:11:59.000Z</pubTime>
+        
+        <tag>LLDB</tag>
+         
+        <tag>.Net Core</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2018/live-debugging-process-start-up/</loc>
     <lastmod>2018-08-18T05:13:44.228Z</lastmod>
     <data>
