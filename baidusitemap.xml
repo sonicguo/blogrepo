@@ -4,8 +4,28 @@
 
     
   <url>
+    <loc>http://localhost:4000/2018/How-To-Add-ASRS-ConnecitonString/</loc>
+    <lastmod>2018-11-21T05:47:26.001Z</lastmod>
+    <data>
+        <display>
+        <title>如何设置在应用中设置直接的Azure SignalR Service的ConnectionString</title>
+        <pubTime>2018-11-20T10:00:03.000Z</pubTime>
+        
+        <tag>Azure SignalR Serivce</tag>
+         
+         
+           
+             
+              <breadCrumb title="Development" url="http://localhost:4000/categories/Development/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2018/How-To-Debugging-DotNet-Core-On-Linux/</loc>
-    <lastmod>2018-09-16T16:04:06.351Z</lastmod>
+    <lastmod>2018-09-17T13:08:25.000Z</lastmod>
     <data>
         <display>
         <title>How To Debugging DotNet Core On Ubuntu</title>
@@ -24,7 +44,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/live-debugging-process-start-up/</loc>
-    <lastmod>2018-08-18T05:13:44.228Z</lastmod>
+    <lastmod>2018-08-18T05:13:44.000Z</lastmod>
     <data>
         <display>
         <title>如何在进程刚刚开始的时间点就开始live debug</title>
@@ -44,7 +64,7 @@
     
   <url>
     <loc>http://localhost:4000/2017/diagnostic-c-sharp-string-using-windbg/</loc>
-    <lastmod>2018-08-18T05:13:34.356Z</lastmod>
+    <lastmod>2018-08-18T05:13:34.000Z</lastmod>
     <data>
         <display>
         <title>透过WinDBG的视角看String</title>
@@ -64,7 +84,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/Magic-Quadrant-Public-Cloud/</loc>
-    <lastmod>2018-08-18T04:01:22.917Z</lastmod>
+    <lastmod>2018-08-18T04:01:22.000Z</lastmod>
     <data>
         <display>
         <title>Magic Quadrant for Public Cloud Storage Services, Worldwide</title>
@@ -84,7 +104,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/algorithm-fibonacci/</loc>
-    <lastmod>2018-08-05T16:42:04.562Z</lastmod>
+    <lastmod>2018-08-05T16:42:04.000Z</lastmod>
     <data>
         <display>
         <title>学习笔记 - algorithm fibonacci</title>
@@ -104,7 +124,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/</loc>
-    <lastmod>2018-07-28T11:21:53.850Z</lastmod>
+    <lastmod>2018-07-28T11:21:53.000Z</lastmod>
     <data>
         <display>
         <title>调用WebAPI时传递UTF8字符遇到DecoderFallbackException</title>
@@ -124,7 +144,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/</loc>
-    <lastmod>2018-07-21T09:00:09.228Z</lastmod>
+    <lastmod>2018-07-21T09:00:09.000Z</lastmod>
     <data>
         <display>
         <title>在Azure Web Apps上面发布Azure SignalR Service的应用</title>
@@ -144,7 +164,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/ethereum-eos-comparison/</loc>
-    <lastmod>2018-07-21T08:58:18.189Z</lastmod>
+    <lastmod>2018-07-21T08:58:18.000Z</lastmod>
     <data>
         <display>
         <title>Ethereum vs EOS</title>
@@ -164,7 +184,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/</loc>
-    <lastmod>2018-07-21T08:57:24.113Z</lastmod>
+    <lastmod>2018-07-21T08:57:24.000Z</lastmod>
     <data>
         <display>
         <title>如何使用REST API的方式广播到Azure SignalR Service</title>
@@ -184,7 +204,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/blockchain-deploy-smart-contract/</loc>
-    <lastmod>2018-07-10T13:15:29.944Z</lastmod>
+    <lastmod>2018-07-10T13:15:29.000Z</lastmod>
     <data>
         <display>
         <title>BlockChain - 从搭建到发布Smart Contract</title>
@@ -204,7 +224,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/crud-of-solidity-part-3/</loc>
-    <lastmod>2018-07-07T10:15:36.118Z</lastmod>
+    <lastmod>2018-07-07T10:15:36.000Z</lastmod>
     <data>
         <display>
         <title>Solidity中的CRUD — Part 3</title>
@@ -224,7 +244,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/fix-the-method-personal-unlockaccount-does-not-exist-is-not-available/</loc>
-    <lastmod>2018-07-03T16:12:50.506Z</lastmod>
+    <lastmod>2018-07-03T16:12:50.000Z</lastmod>
     <data>
         <display>
         <title>FIX – The method personal_unlockAccount does not exist/is not available</title>
@@ -244,7 +264,7 @@
     
   <url>
     <loc>http://localhost:4000/2017/retrieve-azure-bot-application-secrets/</loc>
-    <lastmod>2018-07-02T15:53:14.655Z</lastmod>
+    <lastmod>2018-07-02T15:53:14.000Z</lastmod>
     <data>
         <display>
         <title>如何重新找回Azure Bot Service的Application Secrets</title>
@@ -264,7 +284,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/block-chain-guide-line/</loc>
-    <lastmod>2018-07-02T15:52:51.868Z</lastmod>
+    <lastmod>2018-07-02T15:52:51.000Z</lastmod>
     <data>
         <display>
         <title>区块链是什么？它能做到什么？</title>
@@ -284,7 +304,7 @@
     
   <url>
     <loc>http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/</loc>
-    <lastmod>2018-07-02T15:52:41.716Z</lastmod>
+    <lastmod>2018-07-02T15:52:41.000Z</lastmod>
     <data>
         <display>
         <title>如何在Azure上快速创建一个Ethereum Consortium Network模板</title>
@@ -304,7 +324,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/crud-of-solidity-part-2/</loc>
-    <lastmod>2018-07-02T15:52:29.572Z</lastmod>
+    <lastmod>2018-07-02T15:52:29.000Z</lastmod>
     <data>
         <display>
         <title>Solidity中的CRUD — Part 2</title>
@@ -324,7 +344,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/crud-of-solidity-part-1/</loc>
-    <lastmod>2018-07-02T15:26:55.772Z</lastmod>
+    <lastmod>2018-07-02T15:26:55.000Z</lastmod>
     <data>
         <display>
         <title>Solidity中的CRUD — Part 1</title>

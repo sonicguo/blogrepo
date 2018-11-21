@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在学习ASRS的过程中几次会遇到一个问题。创建了ASRS的instance之后拿到了connectionstring, 但是却不知道如何放置到自己的应用中。微软的github上的sample使用的是命令行直接进行配置，如果想自己在代码中指定，或者在配置文件中配置connectionstring，却不得其法。其实sample中零零散散的分别提到过如何进行设置，只是找起来特别麻烦，散落在各个文章中。">
+<meta name="keywords" content="Azure SignalR Serivce">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何设置在应用中设置直接的Azure SignalR Service的ConnectionString">
+<meta property="og:url" content="http://localhost:4000/2018/How-To-Add-ASRS-ConnecitonString/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="在学习ASRS的过程中几次会遇到一个问题。创建了ASRS的instance之后拿到了connectionstring, 但是却不知道如何放置到自己的应用中。微软的github上的sample使用的是命令行直接进行配置，如果想自己在代码中指定，或者在配置文件中配置connectionstring，却不得其法。其实sample中零零散散的分别提到过如何进行设置，只是找起来特别麻烦，散落在各个文章中。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2018/How-To-Add-ASRS-ConnecitonString/sample1.png">
+<meta property="og:image" content="http://localhost:4000/2018/How-To-Add-ASRS-ConnecitonString/sample2.png">
+<meta property="og:image" content="http://localhost:4000/2018/How-To-Add-ASRS-ConnecitonString/sample3.png">
+<meta property="og:image" content="http://localhost:4000/2018/How-To-Add-ASRS-ConnecitonString/sample4.png">
+<meta property="og:image" content="http://localhost:4000/2018/How-To-Add-ASRS-ConnecitonString/sample5.png">
+<meta property="og:updated_time" content="2018-11-21T05:47:26.001Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何设置在应用中设置直接的Azure SignalR Service的ConnectionString">
+<meta name="twitter:description" content="在学习ASRS的过程中几次会遇到一个问题。创建了ASRS的instance之后拿到了connectionstring, 但是却不知道如何放置到自己的应用中。微软的github上的sample使用的是命令行直接进行配置，如果想自己在代码中指定，或者在配置文件中配置connectionstring，却不得其法。其实sample中零零散散的分别提到过如何进行设置，只是找起来特别麻烦，散落在各个文章中。">
+<meta name="twitter:image" content="http://localhost:4000/2018/How-To-Add-ASRS-ConnecitonString/sample1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2018/How-To-Add-ASRS-ConnecitonString/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>如何设置在应用中设置直接的Azure SignalR Service的ConnectionString | Sonic Guo Blog</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109686353-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109686353-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2018/How-To-Add-ASRS-ConnecitonString/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何设置在应用中设置直接的Azure SignalR Service的ConnectionString
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-11-20 18:00:03" itemprop="dateCreated datePublished" datetime="2018-11-20T18:00:03+08:00">2018-11-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-11-21 13:47:26" itemprop="dateModified" datetime="2018-11-21T13:47:26+08:00">2018-11-21</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Development/" itemprop="url" rel="index"><span itemprop="name">Development</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>在学习ASRS的过程中几次会遇到一个问题。创建了ASRS的instance之后拿到了connectionstring, 但是却不知道如何放置到自己的应用中。微软的github上的sample使用的是命令行直接进行配置，如果想自己在代码中指定，或者在配置文件中配置connectionstring，却不得其法。其实sample中零零散散的分别提到过如何进行设置，只是找起来特别麻烦，散落在各个文章中。这里统一汇总一下。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="如何找到ASRS的ConnectionString"><a href="#如何找到ASRS的ConnectionString" class="headerlink" title="如何找到ASRS的ConnectionString"></a>如何找到ASRS的ConnectionString</h1><ol>
+<li>首先要有一个自己的ASRS instance, 如何创建可以参考这里的步骤，已经很详细了。 <a href="https://github.com/aspnet/AzureSignalR-samples/tree/master/samples/ChatRoom#provision-a-signalr-service" target="_blank" rel="noopener">Provision a SignalR Service</a></li>
+<li>登录到Azure Portal，找到创建好的ASRS instance。点击 Keys.<br><img src="sample1.png" alt="sample1"></li>
+<li>在这里能看到两个Keys, Primary 和Secondary. 使用Primary 或 Secondary都可以，这两Key在效果上是一致的，没有什么区别。唯一的区别就是名字不一样。<br><img src="sample2.png" alt="sample2"></li>
+</ol>
+<h1 id="配置的方式设定ConnectionString"><a href="#配置的方式设定ConnectionString" class="headerlink" title="配置的方式设定ConnectionString"></a>配置的方式设定ConnectionString</h1><p>比较推荐的方式是将ConnectionString配置在config文件中。Key 一般是不会改变的，不过处于自己的需要可以在portal进行key的Regenerate. 在regenerate key之后，修改配置文件中对应的键值对即可，不需要重新编译。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">connectionStrings</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">add</span> <span class="attr">name</span>=<span class="string">"Azure:SignalR:ConnectionString"</span> <span class="attr">connectionString</span>=<span class="string">"Endpoint=https://srchatroom.service.signalr.net;AccessKey=&lt;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&gt;=;Version=1.0;"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">connectionStrings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="编程的方式指定ConnectionString"><a href="#编程的方式指定ConnectionString" class="headerlink" title="编程的方式指定ConnectionString"></a>编程的方式指定ConnectionString</h1><p>另外一种方式是在Code里面直接指定ConnectionString. 这种方式适用于当配置文件不知道在什么地方的情况下使用。我遇到一个例子是运行在Azure Fabric Service上的App Service，一开始是找不到配置文件的配置方式，快速的workaround就是在代码里面直接hardcode.</p>
+<p><strong>App Server Sample</strong></p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Startup</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Startup</span>(<span class="params">IConfiguration configuration</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Configuration = configuration;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> IConfiguration Configuration &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        services.AddMvc();</span><br><span class="line">        services.AddSignalR()</span><br><span class="line">                .AddAzureSignalR(<span class="string">"Endpoint=https://srchatroom.service.signalr.net;AccessKey=&lt;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&gt;=;"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>或者也可以这么写</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">services.AddSignalR()</span><br><span class="line">        .AddAzureSignalR(options =&gt; options.ConnectionString</span><br><span class="line">            = <span class="string">"Endpoint=https://srchatroom.service.signalr.net;AccessKey=&lt;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&gt;=;"</span>);</span><br></pre></td></tr></table></figure>
+<p>可以参考这里的链接 <a href="https://github.com/Azure/azure-signalr/blob/dev/docs/use-signalr-service.md#2-configure-connection-string" target="_blank" rel="noopener">Configure Connection String</a></p>
+<p><strong><a href="https://github.com/aspnet/AzureSignalR-samples/blob/29d8c4cd10a8fbfb116834dda826dbea72395231/samples/Serverless/Program.cs#L70" target="_blank" rel="noopener">Serverless</a></strong></p>
+<p>Serverless的方式可以参考<a href="https://github.com/aspnet/AzureSignalR-samples/blob/29d8c4cd10a8fbfb116834dda826dbea72395231/samples/Serverless/Program.cs#L70" target="_blank" rel="noopener">这里</a></p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">app.Command(<span class="string">"server"</span>, cmd =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    cmd.Description = <span class="string">"Start a server to send message through RestAPI"</span>;</span><br><span class="line">    cmd.HelpOption(<span class="string">"--help"</span>);</span><br><span class="line"></span><br><span class="line">    cmd.OnExecute(<span class="keyword">async</span> () =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> connectionString = connectionStringOption.Value() ?? configuration[<span class="string">"Azure:SignalR:ConnectionString"</span>];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrEmpty(connectionString) || !hubOption.HasValue())</span><br><span class="line">        &#123;</span><br><span class="line">            MissOptions();</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> server = <span class="keyword">new</span> ServerHandler(connectionString, hubOption.Value());</span><br><span class="line">        <span class="keyword">await</span> server.Start();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.Execute(args);</span><br></pre></td></tr></table></figure>
+<h1 id="在web-APP中配置"><a href="#在web-APP中配置" class="headerlink" title="在web APP中配置"></a>在web APP中配置</h1><p>在Web App中的配置与在configuration中配置的方式很类似，关键是在Web App中找到配置项。</p>
+<ol>
+<li>登录到Azure Portal, 并且找到相应的Web App。</li>
+<li>点击 <strong>Application settings</strong>. 修改App Setting Name 中的键 “Azure__SignalR__ConnectionString” 所对应的值。<br><img src="sample3.png" alt="sample3"></li>
+</ol>
+<h1 id="在Function-App中配置。"><a href="#在Function-App中配置。" class="headerlink" title="在Function App中配置。"></a>在Function App中配置。</h1><p>在Function App中的配置与在Web App中配置的方式很类似.</p>
+<ol>
+<li>登录到Azure Portal, 并且找到相应的Fuction App。</li>
+<li>点击 <strong>Application settings</strong>.<br><img src="sample4.png" alt="sample4"></li>
+<li>修改App Setting Name 中的键 “Azure__SignalR__ConnectionString” 所对应的值。<br><img src="sample5.png" alt="sample5"></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Azure-SignalR-Serivce/" rel="tag"># Azure SignalR Serivce</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/How-To-Debugging-DotNet-Core-On-Linux/" rel="next" title="How To Debugging DotNet Core On Ubuntu">
+                <i class="fa fa-chevron-left"></i> How To Debugging DotNet Core On Ubuntu
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何找到ASRS的ConnectionString"><span class="nav-number">1.</span> <span class="nav-text">如何找到ASRS的ConnectionString</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置的方式设定ConnectionString"><span class="nav-number">2.</span> <span class="nav-text">配置的方式设定ConnectionString</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编程的方式指定ConnectionString"><span class="nav-number">3.</span> <span class="nav-text">编程的方式指定ConnectionString</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#在web-APP中配置"><span class="nav-number">4.</span> <span class="nav-text">在web APP中配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#在Function-App中配置。"><span class="nav-number">5.</span> <span class="nav-text">在Function App中配置。</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
