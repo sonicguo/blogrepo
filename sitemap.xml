@@ -2,16 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://localhost:4000/2019/cosmosdb-real-time-azure-functions-signalr-service/</loc>
+    <loc>http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/</loc>
     
-    <lastmod>2019-03-22T08:58:39.385Z</lastmod>
+    <lastmod>2019-03-22T09:04:10.346Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/</loc>
+    
+    <lastmod>2019-03-22T09:03:49.529Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://localhost:4000/2019/Azure-SignalR-Sharding/</loc>
     
-    <lastmod>2019-03-20T07:28:21.772Z</lastmod>
+    <lastmod>2019-03-22T09:03:34.177Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://localhost:4000/2019/cosmosdb-real-time-azure-functions-signalr-service/</loc>
+    
+    <lastmod>2019-03-22T09:02:58.798Z</lastmod>
     
   </url>
   
@@ -72,23 +86,9 @@
   </url>
   
   <url>
-    <loc>http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/</loc>
-    
-    <lastmod>2018-07-21T09:00:09.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://localhost:4000/2018/ethereum-eos-comparison/</loc>
     
     <lastmod>2018-07-21T08:58:18.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/</loc>
-    
-    <lastmod>2018-07-21T08:57:24.000Z</lastmod>
     
   </url>
   

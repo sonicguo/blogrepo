@@ -4,14 +4,34 @@
 
     
   <url>
-    <loc>http://localhost:4000/2019/cosmosdb-real-time-azure-functions-signalr-service/</loc>
-    <lastmod>2019-03-22T08:58:39.385Z</lastmod>
+    <loc>http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/</loc>
+    <lastmod>2019-03-22T09:04:10.346Z</lastmod>
     <data>
         <display>
-        <title>通过ASRS和Azure Function实时发布Cosmos DB的更新情况</title>
-        <pubTime>2019-03-20T09:32:35.000Z</pubTime>
+        <title>在Azure Web Apps上面发布Azure SignalR Service的应用</title>
+        <pubTime>2018-07-09T15:44:29.000Z</pubTime>
         
-        <tag>SignalR Serivce</tag>
+        <tag>Azure SignalR Serivce</tag>
+         
+         
+           
+             
+              <breadCrumb title="Development" url="http://localhost:4000/categories/Development/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/</loc>
+    <lastmod>2019-03-22T09:03:49.529Z</lastmod>
+    <data>
+        <display>
+        <title>如何使用REST API的方式广播到Azure SignalR Service</title>
+        <pubTime>2018-07-19T16:07:18.000Z</pubTime>
+        
+        <tag>Azure SignalR Serivce</tag>
          
          
            
@@ -25,13 +45,33 @@
     
   <url>
     <loc>http://localhost:4000/2019/Azure-SignalR-Sharding/</loc>
-    <lastmod>2019-03-20T07:28:21.772Z</lastmod>
+    <lastmod>2019-03-22T09:03:34.177Z</lastmod>
     <data>
         <display>
         <title>Azure SignalR Sharding</title>
         <pubTime>2019-03-13T14:09:46.000Z</pubTime>
         
-        <tag>SignalR Serivce</tag>
+        <tag>Azure SignalR Serivce</tag>
+         
+         
+           
+             
+              <breadCrumb title="Development" url="http://localhost:4000/categories/Development/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://localhost:4000/2019/cosmosdb-real-time-azure-functions-signalr-service/</loc>
+    <lastmod>2019-03-22T09:02:58.798Z</lastmod>
+    <data>
+        <display>
+        <title>通过ASRS和Azure Function实时发布Cosmos DB的更新情况</title>
+        <pubTime>2019-03-20T09:32:35.000Z</pubTime>
+        
+        <tag>Azure SignalR Serivce</tag>
          
          
            
@@ -203,26 +243,6 @@
 
     
   <url>
-    <loc>http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/</loc>
-    <lastmod>2018-07-21T09:00:09.000Z</lastmod>
-    <data>
-        <display>
-        <title>在Azure Web Apps上面发布Azure SignalR Service的应用</title>
-        <pubTime>2018-07-09T15:44:29.000Z</pubTime>
-        
-        <tag>SignalR Serivce</tag>
-         
-         
-           
-             
-              <breadCrumb title="Development" url="http://localhost:4000/categories/Development/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>http://localhost:4000/2018/ethereum-eos-comparison/</loc>
     <lastmod>2018-07-21T08:58:18.000Z</lastmod>
     <data>
@@ -236,26 +256,6 @@
            
              
               <breadCrumb title="block chain" url="http://localhost:4000/categories/block-chain/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/</loc>
-    <lastmod>2018-07-21T08:57:24.000Z</lastmod>
-    <data>
-        <display>
-        <title>如何使用REST API的方式广播到Azure SignalR Service</title>
-        <pubTime>2018-07-19T16:07:18.000Z</pubTime>
-        
-        <tag>SignalR Serivce</tag>
-         
-         
-           
-             
-              <breadCrumb title="Development" url="http://localhost:4000/categories/Development/"/>
           
         </display>
     </data>
