@@ -4,6 +4,26 @@
 
     
   <url>
+    <loc>http://localhost:4000/2019/cosmosdb-real-time-azure-functions-signalr-service/</loc>
+    <lastmod>2019-03-22T08:58:39.385Z</lastmod>
+    <data>
+        <display>
+        <title>通过ASRS和Azure Function实时发布Cosmos DB的更新情况</title>
+        <pubTime>2019-03-20T09:32:35.000Z</pubTime>
+        
+        <tag>SignalR Serivce</tag>
+         
+         
+           
+             
+              <breadCrumb title="Development" url="http://localhost:4000/categories/Development/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2019/Azure-SignalR-Sharding/</loc>
     <lastmod>2019-03-20T07:28:21.772Z</lastmod>
     <data>

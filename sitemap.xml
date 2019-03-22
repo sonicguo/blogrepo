@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://localhost:4000/2019/cosmosdb-real-time-azure-functions-signalr-service/</loc>
+    
+    <lastmod>2019-03-22T08:58:39.385Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://localhost:4000/2019/Azure-SignalR-Sharding/</loc>
     
     <lastmod>2019-03-20T07:28:21.772Z</lastmod>
