@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/</loc>
+    
+    <lastmod>2019-05-09T16:31:00.141Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/</loc>
     
     <lastmod>2019-03-22T09:04:10.346Z</lastmod>

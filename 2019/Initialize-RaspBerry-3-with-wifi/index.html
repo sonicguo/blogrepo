@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="第一次安装树莓派，手边只有笔记本和一台无线路由器。没有额外的显示器，键盘和网线。进行了一番调查和尝试之下，终于在这些条件下配置并安装树莓派，然后在笔记本上通过SSH连到树莓派上。">
+<meta name="keywords" content="Raspberry">
+<meta property="og:type" content="article">
+<meta property="og:title" content="首次连接树莓派，通过配置SD卡的配置启用WIFI连接">
+<meta property="og:url" content="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="第一次安装树莓派，手边只有笔记本和一台无线路由器。没有额外的显示器，键盘和网线。进行了一番调查和尝试之下，终于在这些条件下配置并安装树莓派，然后在笔记本上通过SSH连到树莓派上。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/mainboard.png">
+<meta property="og:image" content="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/raspbian.png">
+<meta property="og:image" content="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/win32diskimager.png">
+<meta property="og:image" content="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/ssh.png">
+<meta property="og:image" content="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/PuTTY.png">
+<meta property="og:image" content="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/login.png">
+<meta property="og:image" content="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/vncserver.png">
+<meta property="og:image" content="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/vncviwer.png">
+<meta property="og:updated_time" content="2019-05-09T16:31:00.141Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="首次连接树莓派，通过配置SD卡的配置启用WIFI连接">
+<meta name="twitter:description" content="第一次安装树莓派，手边只有笔记本和一台无线路由器。没有额外的显示器，键盘和网线。进行了一番调查和尝试之下，终于在这些条件下配置并安装树莓派，然后在笔记本上通过SSH连到树莓派上。">
+<meta name="twitter:image" content="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/mainboard.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>首次连接树莓派，通过配置SD卡的配置启用WIFI连接 | Sonic Guo Blog</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109686353-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109686353-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">首次连接树莓派，通过配置SD卡的配置启用WIFI连接
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-05-09 22:59:40" itemprop="dateCreated datePublished" datetime="2019-05-09T22:59:40+08:00">2019-05-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-05-10 00:31:00" itemprop="dateModified" datetime="2019-05-10T00:31:00+08:00">2019-05-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/IoT/" itemprop="url" rel="index"><span itemprop="name">IoT</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>第一次安装树莓派，手边只有笔记本和一台无线路由器。没有额外的显示器，键盘和网线。进行了一番调查和尝试之下，终于在这些条件下配置并安装树莓派，然后在笔记本上通过SSH连到树莓派上。</p>
+<a id="more"></a>
+<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><p>刚刚打开树莓派的时候，我是懵逼的。连电源线该插在哪里，SD卡的插入的方向等问题都比较疑惑。赶紧找来主板的结构体看了一眼，压压惊。<br><img src="mainboard.png" alt="mainboard"></p>
+<p>主要硬件：</p>
+<ol>
+<li>树莓派3B+主板（其他型号过程类似）。</li>
+<li>一块SD卡，用来安装Raspbian。</li>
+<li>供电电源及Micro USB线（注意电源的质量和功率也很重要，最好用那种带开关的线）。说明书上的安全指南指出，<code>本产品仅可连接到额定功率为5V、最小电流为2.5Amp的直流电外接电源。</code>所以在接入电源前，要先检查一下电源的输出功率。</li>
+</ol>
+<h1 id="制作Raspbian的SD卡"><a href="#制作Raspbian的SD卡" class="headerlink" title="制作Raspbian的SD卡"></a>制作Raspbian的SD卡</h1><p>SD卡将包含Raspberry Pi的操作系统（操作系统是一种使Raspberry Pi工作的软件，就像PC里的Windows和Mac里的OSX）。这个操作系统与大部分电脑的系统有很大的不同。由于我使用的是Windows操作系统，所以这里的步骤是记录Windows下的操作步骤。</p>
+<ol>
+<li><strong>下载 Raspberry Pi 操作系统</strong> ：<a href="https://www.raspberrypi.org/downloads/raspbian/" target="_blank" rel="noopener">https://www.raspberrypi.org/downloads/</a><br>这里一共有三个版本，为了图省事，我安装的是<a href="https://downloads.raspberrypi.org/raspbian_full_latest" target="_blank" rel="noopener">Raspbian Stretch with desktop and recommended software</a><br><img src="raspbian.png" alt="raspbian"><br>下载完成后，解压镜像，以备后用。这个 .img文件只能用专用的软件写入SD卡中。接下来需要使用另外一个工具烧录镜像到SD卡中。</li>
+<li><strong>Win32DiskImager下载</strong> : <a href="https://sourceforge.net/projects/win32diskimager/" target="_blank" rel="noopener">https://sourceforge.net/projects/win32diskimager/</a><br> 下载并且安装好以后就可以开始烧录SD卡了。</li>
+<li><strong>将Raspbian 镜像写入 SD卡</strong> : 打开Win32DiskImager。在Image File上选中解压出来的Raspbian Image. Device指向SD所在的盘符。点击Write就开始烧录了。整个过程可能需要几分钟就可以完成。<br><img src="win32diskimager.png" alt="win32diskimager"></li>
+</ol>
+<h1 id="配置WIFI"><a href="#配置WIFI" class="headerlink" title="配置WIFI"></a>配置WIFI</h1><p>由于我的环境是没有额外的显示器，鼠标键盘，甚至没有额外的网线。所以需要第一次启动之后就使用WIFI的方式连接到树莓派上。因此需要现在SD卡上配置好WIFI。首先在SD卡的根目录下添加一个名为 wpa_supplicant.conf的文件，然后在该文件内添加以下的内容 ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev</span><br><span class="line">network=&#123;</span><br><span class="line">  ssid=&quot;WIFI名&quot;</span><br><span class="line">  psk=&quot;WIFI密码&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>插入SD卡启动树莓派就能直接连接到你的WIFI网络了（切记树莓派现时只支持802.11.n的WIFI标准所以只能连接2.4G网络，所以你需要确保你所连接的是2.4G的通道而不是5G的。</p>
+<h1 id="启用SSH"><a href="#启用SSH" class="headerlink" title="启用SSH"></a>启用SSH</h1><p>Raspbian 默认情况下是将SSH服务关闭的。开启SSH的方法很简单在树莓的官网上也有介绍，只要在新建一个名为ssh文件到SD的根目录就能完成。这里要注意的是，新建的是文件，并且确保去掉后缀名。而不是新建SSH的文件夹。<br><img src="ssh.png" alt="ssh"></p>
+<h1 id="查找IP"><a href="#查找IP" class="headerlink" title="查找IP"></a>查找IP</h1><p>配置好SD卡之后，将SD插入树莓派，接入电源就能正常启动了。要想连接到树莓派首先要找它的IP地址。我使用的TP-LINK路由器，可以登陆到路由器上直接看到对应的IP。也可以通过其他一些IP扫描工具找到对应的IP。</p>
+<h1 id="使用PuTTY-连接到树莓派上"><a href="#使用PuTTY-连接到树莓派上" class="headerlink" title="使用PuTTY 连接到树莓派上"></a>使用PuTTY 连接到树莓派上</h1><p>在这里可以<a href="https://www.chiark.greenend.org.uk/~sgtatham/putty/latespit.html" target="_blank" rel="noopener">Download PuTTY</a>。<br>安装好之后打开PuTTY，输入上一步找到的IP地址就可以连进去。默认的用户名是<code>pi</code>，默认密码是<code>raspberry</code><br><img src="PuTTY.png" alt="PuTTY"><br><img src="login.png" alt="login"></p>
+<h1 id="使用VNC-Viewer连接到树莓派"><a href="#使用VNC-Viewer连接到树莓派" class="headerlink" title="使用VNC Viewer连接到树莓派"></a>使用VNC Viewer连接到树莓派</h1><p>使用PuTTY连接到树莓派上，就可以开始安装VNCServer, 从而使用界面了。可以直接使用命令来安装你的VNCServer。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install tightvncserver</span><br></pre></td></tr></table></figure>
+<p>成功安装以后，就可以在终端中输入”vncserver”来启动你的远程界面服务器。登陆时会提输入vncserver的密码，输入确认以后会看见类似下面的内容。这样vncserver就成功启动了。</p>
+<p><img src="vncserver.png" alt="vncserver"></p>
+<p>可以从这里<a href="https://www.realvnc.com/en/connect/download/viewer/" target="_blank" rel="noopener"> 下载VNC Viewer </a><br>下载好以后，在VNC Viewer中输入树莓派的IP，以及刚才设置好的密码，登陆到树莓派上。</p>
+<p><img src="vncviwer.png" alt="vncviwer"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://blog.csdn.net/github_38111866/article/details/76038665" target="_blank" rel="noopener">没有显示器情况下，安装和使用树莓派</a></li>
+<li><a href="http://shumeipai.nxez.com/2017/09/13/raspberry-pi-network-configuration-before-boot.html" target="_blank" rel="noopener">无屏幕和键盘配置树莓派WiFi和SSH</a></li>
+<li><a href="https://www.jianshu.com/p/3f4f97a86b1c" target="_blank" rel="noopener">通过SD卡为树莓派配置WIFI</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Raspberry/" rel="tag"># Raspberry</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/cosmosdb-real-time-azure-functions-signalr-service/" rel="next" title="通过ASRS和Azure Function实时发布Cosmos DB的更新情况">
+                <i class="fa fa-chevron-left"></i> 通过ASRS和Azure Function实时发布Cosmos DB的更新情况
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前期准备"><span class="nav-number">1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#制作Raspbian的SD卡"><span class="nav-number">2.</span> <span class="nav-text">制作Raspbian的SD卡</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置WIFI"><span class="nav-number">3.</span> <span class="nav-text">配置WIFI</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#启用SSH"><span class="nav-number">4.</span> <span class="nav-text">启用SSH</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查找IP"><span class="nav-number">5.</span> <span class="nav-text">查找IP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用PuTTY-连接到树莓派上"><span class="nav-number">6.</span> <span class="nav-text">使用PuTTY 连接到树莓派上</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用VNC-Viewer连接到树莓派"><span class="nav-number">7.</span> <span class="nav-text">使用VNC Viewer连接到树莓派</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
