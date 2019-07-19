@@ -4,8 +4,30 @@
 
     
   <url>
+    <loc>http://localhost:4000/2019/How-To-Auto-Scaleout-ASRS/</loc>
+    <lastmod>2019-07-19T15:38:11.682Z</lastmod>
+    <data>
+        <display>
+        <title>使用Az PowerShell实现Azure SignalR Service自动缩放</title>
+        <pubTime>2019-07-17T14:29:42.000Z</pubTime>
+        
+        <tag>Azure SignalR Serivce</tag>
+         
+        <tag>Az PowerShell</tag>
+         
+         
+           
+             
+              <breadCrumb title="Development" url="http://localhost:4000/categories/Development/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/</loc>
-    <lastmod>2019-07-02T15:08:56.280Z</lastmod>
+    <lastmod>2019-07-02T15:08:58.000Z</lastmod>
     <data>
         <display>
         <title>如何启用WIFI进行树莓派的首次连接</title>
@@ -25,7 +47,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/How-To-Add-ASRS-ConnecitonString/</loc>
-    <lastmod>2019-07-02T15:04:57.034Z</lastmod>
+    <lastmod>2019-07-02T15:04:58.000Z</lastmod>
     <data>
         <display>
         <title>在应用中设置Azure SignalR Service的ConnectionString</title>
@@ -45,7 +67,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/publish-first-azure-signalr-service-web-app/</loc>
-    <lastmod>2019-03-22T09:04:10.346Z</lastmod>
+    <lastmod>2019-03-22T09:04:12.000Z</lastmod>
     <data>
         <display>
         <title>在Azure Web Apps上面发布Azure SignalR Service的应用</title>
@@ -65,7 +87,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/Azure-SignalR-Service-REST-API-Call/</loc>
-    <lastmod>2019-03-22T09:03:49.529Z</lastmod>
+    <lastmod>2019-03-22T09:03:50.000Z</lastmod>
     <data>
         <display>
         <title>如何使用REST API的方式广播到Azure SignalR Service</title>
@@ -85,7 +107,7 @@
     
   <url>
     <loc>http://localhost:4000/2019/Azure-SignalR-Sharding/</loc>
-    <lastmod>2019-03-22T09:03:34.177Z</lastmod>
+    <lastmod>2019-03-22T09:03:36.000Z</lastmod>
     <data>
         <display>
         <title>Azure SignalR Sharding</title>
@@ -105,7 +127,7 @@
     
   <url>
     <loc>http://localhost:4000/2019/cosmosdb-real-time-azure-functions-signalr-service/</loc>
-    <lastmod>2019-03-22T09:02:58.798Z</lastmod>
+    <lastmod>2019-03-22T09:03:00.000Z</lastmod>
     <data>
         <display>
         <title>通过ASRS和Azure Function实时发布Cosmos DB的更新情况</title>
@@ -125,7 +147,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/azure-signalr-connection-insight/</loc>
-    <lastmod>2018-11-27T08:33:29.000Z</lastmod>
+    <lastmod>2018-11-27T08:33:30.000Z</lastmod>
     <data>
         <display>
         <title>Azure Signalr Service Connection详解</title>
@@ -145,7 +167,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/How-To-Debugging-DotNet-Core-On-Linux/</loc>
-    <lastmod>2018-09-17T13:08:25.000Z</lastmod>
+    <lastmod>2018-09-17T13:08:26.000Z</lastmod>
     <data>
         <display>
         <title>How To Debugging DotNet Core On Ubuntu</title>
@@ -244,7 +266,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/</loc>
-    <lastmod>2018-07-28T11:21:53.000Z</lastmod>
+    <lastmod>2018-07-28T11:21:54.000Z</lastmod>
     <data>
         <display>
         <title>调用WebAPI时传递UTF8字符遇到DecoderFallbackException</title>
@@ -284,7 +306,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/blockchain-deploy-smart-contract/</loc>
-    <lastmod>2018-07-10T13:15:29.000Z</lastmod>
+    <lastmod>2018-07-10T13:15:30.000Z</lastmod>
     <data>
         <display>
         <title>BlockChain - 从搭建到发布Smart Contract</title>
@@ -364,7 +386,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/block-chain-guide-line/</loc>
-    <lastmod>2018-07-02T15:52:51.000Z</lastmod>
+    <lastmod>2018-07-02T15:52:52.000Z</lastmod>
     <data>
         <display>
         <title>区块链是什么？它能做到什么？</title>
@@ -384,7 +406,7 @@
     
   <url>
     <loc>http://localhost:4000/2017/create-ethereum-consortium-blockchain-network-on-azure/</loc>
-    <lastmod>2018-07-02T15:52:41.000Z</lastmod>
+    <lastmod>2018-07-02T15:52:42.000Z</lastmod>
     <data>
         <display>
         <title>如何在Azure上快速创建一个Ethereum Consortium Network模板</title>
@@ -404,7 +426,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/crud-of-solidity-part-2/</loc>
-    <lastmod>2018-07-02T15:52:29.000Z</lastmod>
+    <lastmod>2018-07-02T15:52:30.000Z</lastmod>
     <data>
         <display>
         <title>Solidity中的CRUD — Part 2</title>
@@ -424,7 +446,7 @@
     
   <url>
     <loc>http://localhost:4000/2018/crud-of-solidity-part-1/</loc>
-    <lastmod>2018-07-02T15:26:55.000Z</lastmod>
+    <lastmod>2018-07-02T15:26:56.000Z</lastmod>
     <data>
         <display>
         <title>Solidity中的CRUD — Part 1</title>

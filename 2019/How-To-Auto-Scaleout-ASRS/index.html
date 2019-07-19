@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Azure很多云服务都带有自动缩放（Auto-Scaling）的功能。自动缩放可以在有大量请求进入的时候自动缩放，在需求降低的时候自动收缩。在满足业务量需求的同时，也节约了订阅的开销。目前Azure SignalR Service还没有实现这一功能，如果需要的话只能自己动手来实现。">
+<meta name="keywords" content="Azure SignalR Serivce,Az PowerShell">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Az PowerShell实现Azure SignalR Service自动缩放">
+<meta property="og:url" content="http://localhost:4000/2019/How-To-Auto-Scaleout-ASRS/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="Azure很多云服务都带有自动缩放（Auto-Scaling）的功能。自动缩放可以在有大量请求进入的时候自动缩放，在需求降低的时候自动收缩。在满足业务量需求的同时，也节约了订阅的开销。目前Azure SignalR Service还没有实现这一功能，如果需要的话只能自己动手来实现。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2019/How-To-Auto-Scaleout-ASRS/figure1.png">
+<meta property="og:image" content="http://localhost:4000/2019/How-To-Auto-Scaleout-ASRS/figure2.png">
+<meta property="og:image" content="http://localhost:4000/2019/How-To-Auto-Scaleout-ASRS/figure3.png">
+<meta property="og:updated_time" content="2019-07-19T15:38:11.682Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Az PowerShell实现Azure SignalR Service自动缩放">
+<meta name="twitter:description" content="Azure很多云服务都带有自动缩放（Auto-Scaling）的功能。自动缩放可以在有大量请求进入的时候自动缩放，在需求降低的时候自动收缩。在满足业务量需求的同时，也节约了订阅的开销。目前Azure SignalR Service还没有实现这一功能，如果需要的话只能自己动手来实现。">
+<meta name="twitter:image" content="http://localhost:4000/2019/How-To-Auto-Scaleout-ASRS/figure1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2019/How-To-Auto-Scaleout-ASRS/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>使用Az PowerShell实现Azure SignalR Service自动缩放 | Sonic Guo Blog</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109686353-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109686353-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2019/How-To-Auto-Scaleout-ASRS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用Az PowerShell实现Azure SignalR Service自动缩放
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-07-17 22:29:42" itemprop="dateCreated datePublished" datetime="2019-07-17T22:29:42+08:00">2019-07-17</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-07-19 23:38:11" itemprop="dateModified" datetime="2019-07-19T23:38:11+08:00">2019-07-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Development/" itemprop="url" rel="index"><span itemprop="name">Development</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>Azure很多云服务都带有自动缩放<a href="https://docs.microsoft.com/en-us/azure/architecture/best-practices/auto-scaling" target="_blank" rel="noopener">（Auto-Scaling）</a>的功能。自动缩放可以在有大量请求进入的时候自动缩放，在需求降低的时候自动收缩。在满足业务量需求的同时，也节约了订阅的开销。目前Azure SignalR Service还没有实现这一功能，如果需要的话只能自己动手来实现。</p>
+</blockquote>
+<a id="more"></a>
+<p>写在最前面：虽然可以通过Az PowerShell实现ASRS的auto-scaling, 但是无法避免在scale-out的时候ASRS实例的重启。这一点是由于目前ASRS的设计决定的。在修改Unit Count的时候，ASRS会重启。</p>
+<h2 id="监测Max-Connection"><a href="#监测Max-Connection" class="headerlink" title="监测Max Connection"></a>监测Max Connection</h2><p>ASRS的缩放(Scale Out)是通过提高Unit的数量。从而提高实例承载的最大连接数目以及最大的消息数，以及实例的性能。监测ASRS负载时，最常用的指标是Max Connection, 通过检测当前的connection的数目，判断是否已经到达最高的阈值来决定是否需要缩放.</p>
+<p>下面是最大connection数量和最大Message数量的<a href="https://azure.microsoft.com/en-us/pricing/details/signalr-service/" target="_blank" rel="noopener">列表</a>。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:left">FREE</th>
+<th style="text-align:left">STANDARD</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Concurrent Connections per Unit</td>
+<td style="text-align:left">20</td>
+<td style="text-align:left">1,000</td>
+</tr>
+<tr>
+<td style="text-align:left">Messages / Unit / Day</td>
+<td style="text-align:left">20,000</td>
+<td style="text-align:left">1,000,000</td>
+</tr>
+</tbody>
+</table>
+<p>值得注意的是，Free tier不支持缩放，能够缩放的只有Standard tier。 在缩放的时候Unit的数目并不是任意可调，而是只有7档可以选择。分别是1 unit, 2 units, 5 units, 10 units, 20 units, 50 units, 100 units。 允许到达的connection的上限分别为：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Unit</th>
+<th style="text-align:left">1</th>
+<th style="text-align:left">2</th>
+<th style="text-align:left">5</th>
+<th style="text-align:left">10</th>
+<th style="text-align:left">20</th>
+<th style="text-align:left">50</th>
+<th style="text-align:left">100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Max Connection</td>
+<td style="text-align:left">1,000</td>
+<td style="text-align:left">2,000</td>
+<td style="text-align:left">5,000</td>
+<td style="text-align:left">10,000</td>
+<td style="text-align:left">20,000</td>
+<td style="text-align:left">50,000</td>
+<td style="text-align:left">100,000</td>
+</tr>
+</tbody>
+</table>
+<p>那么我们只要监控当前的Connection数量是否接近当前最大值，以此来判断是否需要提高Unit。</p>
+<h2 id="Azure-PowerShell"><a href="#Azure-PowerShell" class="headerlink" title="Azure PowerShell"></a>Azure PowerShell</h2><p>可以通过<a href="https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-2.4.0" target="_blank" rel="noopener">Azure PowerShell</a>提供的API来自动监测connection的方式。当connection大于某个值的时候，提高unit的数量。</p>
+<h3 id="登录账号"><a href="#登录账号" class="headerlink" title="登录账号"></a>登录账号</h3><p>第一步需要通过Azure PowerShell的<a href="https://docs.microsoft.com/en-us/powershell/azure/authenticate-azureps?view=azps-2.4.0" target="_blank" rel="noopener">Connect-AzAccount</a>来进行登录。因为要设计的是自动监测的工具，所以场景是没有UI界面互动的情况。</p>
+<h4 id="使用用户名密码进行登录"><a href="#使用用户名密码进行登录" class="headerlink" title="使用用户名密码进行登录"></a>使用用户名密码进行登录</h4><p>最简单直白的方法就是提供用户名和密码进行登录。可以用下面的命令来进行登录操作：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$User</span> = <span class="string">"YOURUSERNAME@XXXX.com"</span></span><br><span class="line"><span class="variable">$PWord</span> = <span class="built_in">ConvertTo-SecureString</span> -String <span class="string">"YOURPASSWORD"</span> -AsPlainText -Force</span><br><span class="line"><span class="variable">$tenant</span> = <span class="string">"YOUR-TENANT-ID"</span> <span class="comment"># tanent id is "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx" like</span></span><br><span class="line"><span class="variable">$subscription</span> = <span class="string">"YOUR-SUBSCRIPTION-ID"</span> <span class="comment"># subscription id is "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx" like</span></span><br><span class="line">Connect-AzAccount -Credential <span class="variable">$Credential</span> -Tenant <span class="variable">$tenant</span> -Subscription <span class="variable">$subscription</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>User : 登录Portal的账号</li>
+<li>Password : 不用多说了</li>
+<li>Tenant : 我在找tenant id的时候花了不少时间，最后参考<a href="https://stackoverflow.com/questions/26384034/how-to-get-the-azure-account-tenant-id" target="_blank" rel="noopener">这里</a>的步骤找到了自己的tenant id.</li>
+<li>Subscription ID: 看<a href="https://blogs.msdn.microsoft.com/mschray/2016/03/18/getting-your-azure-subscription-guid-new-portal/" target="_blank" rel="noopener">这里</a>。</li>
+</ul>
+<h4 id="使用Service-Principal进行登录"><a href="#使用Service-Principal进行登录" class="headerlink" title="使用Service Principal进行登录"></a>使用Service Principal进行登录</h4><p>直接用用户名密码进行登录，可能会觉得不太安全。那么可以使用另外一种方式，通过service principal和对应的credential进行登录。代码如下：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$azureAplicationId</span> =<span class="string">"Azure AD Application Id"</span></span><br><span class="line"><span class="variable">$azureTenantId</span>= <span class="string">"Your Tenant Id"</span></span><br><span class="line"><span class="variable">$azurePassword</span> = <span class="built_in">ConvertTo-SecureString</span> <span class="string">"strong password"</span> -AsPlainText -Force</span><br><span class="line"><span class="variable">$psCred</span> = <span class="built_in">New-Object</span> System.Management.Automation.PSCredential(<span class="variable">$azureAplicationId</span> , <span class="variable">$azurePassword</span>)</span><br><span class="line">Connect-AzAccount -Credential <span class="variable">$psCred</span> -TenantId <span class="variable">$azureTenantId</span>  -ServicePrincipal</span><br></pre></td></tr></table></figure>
+<p>首先要创建一个Azure AD Application 和 service principal，用来访问资源。可以看<a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal" target="_blank" rel="noopener">这里</a>.</p>
+<p>创建好以后可以在这个Application里面找到需要的输入参数Application ID和Application Password (secret),代替了原先的account和password.</p>
+<ol>
+<li><p>Azure Application ID. 看图说话。<br><img src="figure1.png" alt="figure1"></p>
+</li>
+<li><p>Application Password. 看图说话。需要注意的是这里的secret 只有生成的第一次是明文的，需要立刻保存下来。之后再进来就被打上码了。<br><img src="figure2.png" alt="figure2"></p>
+</li>
+</ol>
+<h3 id="获取ASRS资源的状态"><a href="#获取ASRS资源的状态" class="headerlink" title="获取ASRS资源的状态"></a>获取ASRS资源的状态</h3><p>通过调用<a href="https://docs.microsoft.com/en-us/powershell/module/az.resources/get-azresource?view=azps-2.4.0" target="_blank" rel="noopener">Get-AzResource</a>的API可以获取signalr serivcie的状态的对象。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Get information about the current resource state</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$resourceId</span> = <span class="string">"YOUR SIGNALR RESOURCE ID"</span></span><br><span class="line"><span class="variable">$signalRResource</span> = Get-AzResource -ResourceId <span class="variable">$resourceId</span> -Verbose</span><br><span class="line"><span class="variable">$currentUnitCount</span> = [int]<span class="variable">$signalRResource</span>.Sku.Capacity</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Resource Id : 获取方式如图</li>
+</ul>
+<p><img src="figure3.png" alt="figure3"></p>
+<h3 id="获取Connection的当前值"><a href="#获取Connection的当前值" class="headerlink" title="获取Connection的当前值"></a>获取Connection的当前值</h3><p>思路是通过<a href="https://docs.microsoft.com/en-us/powershell/module/az.monitor/get-azmetric?view=azps-2.4.0" target="_blank" rel="noopener">Azure Metric</a>来获取当前的connection的数值。可以通过调用<a href="https://docs.microsoft.com/en-us/powershell/module/az.monitor/get-azmetric?view=azps-2.4.0" target="_blank" rel="noopener">Get-AzMetric</a>来完成。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Get metrics for the last 5 minutes</span></span><br><span class="line"><span class="variable">$connectionCountMetric</span> = Get-AzMetric -ResourceId <span class="variable">$resourceId</span> -MetricName <span class="string">"ConnectionCount"</span> -TimeGrain <span class="number">00</span>:<span class="number">05</span>:<span class="number">00</span> -StartTime (<span class="built_in">Get-Date</span>).AddMinutes(-<span class="number">5</span>) -AggregationType Maximum</span><br><span class="line"><span class="variable">$maxConnectionCount</span> = <span class="variable">$connectionCountMetric</span>.Timeseries.Data[<span class="number">0</span>].Maximum</span><br></pre></td></tr></table></figure>
+<h3 id="提高Unit"><a href="#提高Unit" class="headerlink" title="提高Unit"></a>提高Unit</h3><p>可以通过<a href="https://docs.microsoft.com/en-us/powershell/module/az.resources/set-azresource?view=azps-2.4.0" target="_blank" rel="noopener">Set-AzResource</a> 来修改 ASRS的Unit count。不过需要注意的是，ASRS在修改Unit Count的时候instance也会同时重启。所以在修改的时候，Server Connection和Client Connection都会掉线。Server Connection会自动重连。这一点是SignalR SDK实现的。Client端的连接需要客户代码实现重连机制。好消息是，传闻在最新版的Client SDK中，加入了client自动重连的逻辑。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Change the resource unit count</span></span><br><span class="line"><span class="variable">$signalRResource</span>.Sku.Capacity = <span class="variable">$targetUnitCount</span></span><br><span class="line"><span class="variable">$signalRResource</span> | Set-AzResource -Force</span><br></pre></td></tr></table></figure>
+<h3 id="如何运行"><a href="#如何运行" class="headerlink" title="如何运行"></a>如何运行</h3><p>powershell脚本完成的功能包括 :</p>
+<ol>
+<li>登录</li>
+<li>获取ASRS资源状态</li>
+<li>获取ASRS当前的Connection</li>
+<li>必要时，调用Set-AzResource调整Unit Count.</li>
+</ol>
+<p>所以需要周期性的运行这段脚本。可以选择将脚本运行在本地，或者Azure Function App上面。</p>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$User</span> = <span class="string">"YOURUSERNAME@XXXX.com"</span></span><br><span class="line"><span class="variable">$PWord</span> = <span class="built_in">ConvertTo-SecureString</span> -String <span class="string">"YOURPASSWORD"</span> -AsPlainText -Force</span><br><span class="line"><span class="variable">$tenant</span> = <span class="string">"YOUR-TENANT-ID"</span> <span class="comment"># tanent id is "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx" like</span></span><br><span class="line"><span class="variable">$subscription</span> = <span class="string">"YOUR-SUBSCRIPTION-ID"</span> <span class="comment"># subscription id is "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx" like</span></span><br><span class="line"><span class="variable">$resourceId</span> = <span class="string">"/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx71c/resourceGroups/XXXXX/providers/Microsoft.SignalRService/SignalR/XXXXXX"</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$Credential</span> = <span class="built_in">New-Object</span> -TypeName <span class="string">"System.Management.Automation.PSCredential"</span> -ArgumentList <span class="variable">$User</span>,<span class="variable">$PWord</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$connectionsPerUnit</span> = <span class="number">1000</span>          <span class="comment"># Number of concurent connections you can have per unit</span></span><br><span class="line"><span class="variable">$unitCounts</span> = <span class="number">1</span>,<span class="number">2</span>,<span class="number">5</span>,<span class="number">10</span>,<span class="number">20</span>,<span class="number">50</span>,<span class="number">100</span>    <span class="comment"># Supported SignalR Unit Counts</span></span><br><span class="line"><span class="variable">$scaleThreshold</span> = .<span class="number">95</span>               <span class="comment"># Percentage threshold at which to scale</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># $credential = New-Object System.Management.Automation.PSCredential($clientId, $securePassword)</span></span><br><span class="line">Connect-AzAccount -Credential <span class="variable">$Credential</span> -Tenant <span class="variable">$tenant</span> -Subscription <span class="variable">$subscription</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Get information about the current resource state</span></span><br><span class="line"><span class="variable">$signalRResource</span> = Get-AzResource -ResourceId <span class="variable">$resourceId</span> -Verbose</span><br><span class="line"><span class="variable">$currentUnitCount</span> = [int]<span class="variable">$signalRResource</span>.Sku.Capacity</span><br><span class="line"></span><br><span class="line"><span class="comment"># Only scale if we are on the Standard_S1 plan</span></span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$signalRResource</span>.Sku.Name <span class="nomarkup">-eq</span> <span class="string">"Standard_S1"</span>)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Get metrics for the last 5 minutes</span></span><br><span class="line">    <span class="variable">$connectionCountMetric</span> = Get-AzMetric -ResourceId <span class="variable">$resourceId</span> -MetricName <span class="string">"ConnectionCount"</span> -TimeGrain <span class="number">00</span>:<span class="number">05</span>:<span class="number">00</span> -StartTime (<span class="built_in">Get-Date</span>).AddMinutes(-<span class="number">5</span>) -AggregationType Maximum</span><br><span class="line">    <span class="variable">$maxConnectionCount</span> = <span class="variable">$connectionCountMetric</span>.Timeseries.Data[<span class="number">0</span>].Maximum</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Calculate the target unit count</span></span><br><span class="line">    <span class="variable">$targetUnitCount</span> = <span class="number">1</span></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$unitCount</span> <span class="keyword">in</span> <span class="variable">$unitCounts</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="variable">$unitCountConnections</span> = <span class="variable">$unitCount</span> * <span class="variable">$connectionsPerUnit</span></span><br><span class="line">        <span class="variable">$unitCountConnectionsThreshold</span> = <span class="variable">$unitCountConnections</span> * <span class="variable">$scaleThreshold</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$unitCountConnectionsThreshold</span> <span class="nomarkup">-gt</span> <span class="variable">$maxConnectionCount</span> -or <span class="variable">$unitCount</span> <span class="nomarkup">-eq</span> <span class="variable">$unitCounts</span>[<span class="variable">$unitCounts</span>.Count - <span class="number">1</span>])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="variable">$targetUnitCount</span> = <span class="variable">$unitCount</span></span><br><span class="line">            <span class="keyword">Break</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># See if we need to change the unit count</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$targetUnitCount</span> <span class="nomarkup">-ne</span> <span class="variable">$currentUnitCount</span>)</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">Write-Host</span> <span class="string">"Scaling resource to unit count: "</span> <span class="variable">$targetUnitCount</span></span><br><span class="line">        <span class="comment"># Change the resource unit count</span></span><br><span class="line">        <span class="variable">$signalRResource</span>.Sku.Capacity = <span class="variable">$targetUnitCount</span></span><br><span class="line">        <span class="variable">$signalRResource</span> | Set-AzResource -Force</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">Write-Host</span> <span class="string">"Not scaling as resource is already at the optimum unit count: "</span> <span class="variable">$currentUnitCount</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">Write-Host</span> <span class="string">"Can't scale as resource is not on a scalable plan: "</span> <span class="variable">$signalRResource</span>.Sku.Name</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Azure-SignalR-Serivce/" rel="tag"># Azure SignalR Serivce</a>
+          
+            <a href="/tags/Az-PowerShell/" rel="tag"># Az PowerShell</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/Initialize-RaspBerry-3-with-wifi/" rel="next" title="如何启用WIFI进行树莓派的首次连接">
+                <i class="fa fa-chevron-left"></i> 如何启用WIFI进行树莓派的首次连接
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">23</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#监测Max-Connection"><span class="nav-number">1.</span> <span class="nav-text">监测Max Connection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Azure-PowerShell"><span class="nav-number">2.</span> <span class="nav-text">Azure PowerShell</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#登录账号"><span class="nav-number">2.1.</span> <span class="nav-text">登录账号</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用用户名密码进行登录"><span class="nav-number">2.1.1.</span> <span class="nav-text">使用用户名密码进行登录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用Service-Principal进行登录"><span class="nav-number">2.1.2.</span> <span class="nav-text">使用Service Principal进行登录</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取ASRS资源的状态"><span class="nav-number">2.2.</span> <span class="nav-text">获取ASRS资源的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取Connection的当前值"><span class="nav-number">2.3.</span> <span class="nav-text">获取Connection的当前值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#提高Unit"><span class="nav-number">2.4.</span> <span class="nav-text">提高Unit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何运行"><span class="nav-number">2.5.</span> <span class="nav-text">如何运行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整代码"><span class="nav-number">3.</span> <span class="nav-text">完整代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
