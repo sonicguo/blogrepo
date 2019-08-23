@@ -2,9 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://localhost:4000/2019/k8s-kubectl-pod-design/</loc>
+    
+    <lastmod>2019-08-23T18:12:51.625Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/</loc>
+    
+    <lastmod>2019-08-23T17:08:47.172Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://localhost:4000/2019/How-To-Auto-Scaleout-ASRS/</loc>
     
-    <lastmod>2019-07-19T15:38:11.682Z</lastmod>
+    <lastmod>2019-07-24T16:05:22.093Z</lastmod>
     
   </url>
   
@@ -89,13 +103,6 @@
     <loc>http://localhost:4000/2018/algorithm-fibonacci/</loc>
     
     <lastmod>2018-08-05T16:42:04.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://localhost:4000/2018/WebAPI-DecoderFallbackException-With-UTF8-Character/</loc>
-    
-    <lastmod>2018-07-28T11:21:54.000Z</lastmod>
     
   </url>
   

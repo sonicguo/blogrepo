@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="kubectl是操作k8s最常用的命令集。记录一下在学习k8s的过程中用到过的一些与pod相关的命令。">
+<meta name="keywords" content="Kubernetes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习笔记 kubectl 与 pod 的相关命令">
+<meta property="og:url" content="http://localhost:4000/2019/k8s-kubectl-pod-design/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="kubectl是操作k8s最常用的命令集。记录一下在学习k8s的过程中用到过的一些与pod相关的命令。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2019/k8s-kubectl-pod-design/img1.png">
+<meta property="og:image" content="http://localhost:4000/2019/k8s-kubectl-pod-design/img2.png">
+<meta property="og:image" content="http://localhost:4000/2019/k8s-kubectl-pod-design/img3.png">
+<meta property="og:image" content="http://localhost:4000/2019/k8s-kubectl-pod-design/img4.png">
+<meta property="og:updated_time" content="2019-08-23T18:12:51.625Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="学习笔记 kubectl 与 pod 的相关命令">
+<meta name="twitter:description" content="kubectl是操作k8s最常用的命令集。记录一下在学习k8s的过程中用到过的一些与pod相关的命令。">
+<meta name="twitter:image" content="http://localhost:4000/2019/k8s-kubectl-pod-design/img1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2019/k8s-kubectl-pod-design/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>学习笔记 kubectl 与 pod 的相关命令 | Sonic Guo Blog</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109686353-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109686353-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2019/k8s-kubectl-pod-design/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">学习笔记 kubectl 与 pod 的相关命令
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-24 01:13:55 / Modified: 02:12:51" itemprop="dateCreated datePublished" datetime="2019-08-24T01:13:55+08:00">2019-08-24</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Development/" itemprop="url" rel="index"><span itemprop="name">Development</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>kubectl是操作k8s最常用的命令集。记录一下在学习k8s的过程中用到过的一些与pod相关的命令。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="Pod-Definition-Basics"><a href="#Pod-Definition-Basics" class="headerlink" title="Pod Definition Basics"></a>Pod Definition Basics</h2><p>首先创建一个<strong>first-pod.yaml</strong>来定义一个pod的内容。这个pod非常简单，只有包含了一个container : httpd:2.4.38.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span>            <span class="comment"># The API path for the Pod resource</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span>                 <span class="comment"># The kind of resource (Pod)</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">first-pod</span>         <span class="comment"># Name of the Pod</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span>             <span class="comment"># List of containers in the Pod</span></span><br><span class="line"><span class="attr">  - image:</span> <span class="attr">httpd:2.4.38</span>   <span class="comment"># Container image (using a tag to specify version 2.4.38)</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">first-container</span> <span class="comment"># Name of the container</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>通常可能需要了解yaml里面各个节点的定义和用途，可以用下面的这个命令调出来。例如检测spec的定义。<blockquote>
+<p>kubectl explain Pod.spec | more</p>
+</blockquote>
+</li>
+</ul>
+<p><img src="img1.png" alt="img1"></p>
+<ul>
+<li>如果要具体查某个节点的定义可以用kubectl explain &lt;Resource_Kind&gt;.&lt;Path_To_Field&gt;进一步指定。例如：<blockquote>
+<p>kubectl explain Pod.spec.containers.image</p>
+</blockquote>
+</li>
+</ul>
+<p><img src="img2.png" alt="img"></p>
+<h3 id="Pod的创建，检测与删除"><a href="#Pod的创建，检测与删除" class="headerlink" title="Pod的创建，检测与删除"></a>Pod的创建，检测与删除</h3><ul>
+<li><p>定义好first-pod.yaml之后，可以用kubectl来创建pod。利用下面命令可以创建一个Pod.</p>
+<blockquote>
+<p>kubectl create -f first-pod.yaml<br><img src="img3.png" alt="img"></p>
+</blockquote>
+</li>
+<li><p>通过下面的命令可以快速检视pod的状态</p>
+<blockquote>
+<p>kubectl get pod<br><img src="img4.png" alt="img"></p>
+</blockquote>
+</li>
+</ul>
+<p>READY : 代表着目前就绪的pod的实例数。<br>Status : Running代表被创建出来的pod实例至少有一个以上是运行状态。更多的Status状态参考这里 <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-phase" target="_blank" rel="noopener">Pod phase</a></p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pending</td>
+<td>The Pod has been accepted by the Kubernetes system, but one or more of the Container images has not been created. This includes time before being scheduled as well as time spent downloading images over the network, which could take a while.</td>
+</tr>
+<tr>
+<td>Running</td>
+<td>The Pod has been bound to a node, and all of the Containers have been created. At least one Container is still running, or is in the process of starting or restarting.</td>
+</tr>
+<tr>
+<td>Succeeded</td>
+<td>All Containers in the Pod have terminated in success, and will not be restarted.</td>
+</tr>
+<tr>
+<td>Failed</td>
+<td>All Containers in the Pod have terminated, and at least one Container has terminated in failure. That is, the Container either exited with non-zero status or was terminated by the system.</td>
+</tr>
+<tr>
+<td>Unknown</td>
+<td>For some reason the state of the Pod could not be obtained, typically due to an error in communicating with the host of the Pod.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>也可以通过 -o 将详细结果输出到yaml格式中<blockquote>
+<p>kubectl get pod first-pod -o yaml | more</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  creationTimestamp:</span> <span class="string">"2019-08-23T17:54:51Z"</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">first-pod</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">  resourceVersion:</span> <span class="string">"3817"</span></span><br><span class="line"><span class="attr">  selfLink:</span> <span class="string">/api/v1/namespaces/default/pods/first-pod</span></span><br><span class="line"><span class="attr">  uid:</span> <span class="number">1</span><span class="string">b01b0d4-c5cf-11e9-b363-02835f35260e</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">  - image:</span> <span class="attr">httpd:2.4.38</span></span><br><span class="line"><span class="attr">    imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">first-container</span></span><br><span class="line"><span class="attr">    resources:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"><span class="attr">    terminationMessagePath:</span> <span class="string">/dev/termination-log</span></span><br><span class="line"><span class="attr">    terminationMessagePolicy:</span> <span class="string">File</span></span><br><span class="line"><span class="attr">    volumeMounts:</span></span><br><span class="line"><span class="attr">    - mountPath:</span> <span class="string">/var/run/secrets/kubernetes.io/serviceaccount</span></span><br><span class="line"><span class="attr">      name:</span> <span class="string">default-token-5md26</span></span><br><span class="line"><span class="attr">      readOnly:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  dnsPolicy:</span> <span class="string">ClusterFirst</span></span><br><span class="line"><span class="attr">  enableServiceLinks:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  nodeName:</span> <span class="string">ip-10-0-7-70.us-west-2.compute.internal</span></span><br><span class="line"><span class="attr">  priority:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">  restartPolicy:</span> <span class="string">Always</span></span><br><span class="line"><span class="attr">  schedulerName:</span> <span class="string">default-scheduler</span></span><br><span class="line"><span class="attr">  securityContext:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"><span class="attr">  serviceAccount:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">  serviceAccountName:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">  terminationGracePeriodSeconds:</span> <span class="number">30</span></span><br><span class="line"><span class="attr">  tolerations:</span></span><br><span class="line"><span class="attr">  - effect:</span> <span class="string">NoExecute</span></span><br><span class="line"><span class="attr">    key:</span> <span class="string">node.kubernetes.io/not-ready</span></span><br><span class="line"><span class="attr">    operator:</span> <span class="string">Exists</span></span><br><span class="line"><span class="attr">    tolerationSeconds:</span> <span class="number">300</span></span><br><span class="line"><span class="attr">  - effect:</span> <span class="string">NoExecute</span></span><br><span class="line"><span class="attr">    key:</span> <span class="string">node.kubernetes.io/unreachable</span></span><br><span class="line"><span class="attr">    operator:</span> <span class="string">Exists</span></span><br><span class="line"><span class="attr">    tolerationSeconds:</span> <span class="number">300</span></span><br><span class="line"><span class="attr">  volumes:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">default-token-5md26</span></span><br><span class="line"><span class="attr">    secret:</span></span><br><span class="line"><span class="attr">      defaultMode:</span> <span class="number">420</span></span><br><span class="line"><span class="attr">      secretName:</span> <span class="string">default-token-5md26</span></span><br><span class="line"><span class="attr">status:</span></span><br><span class="line"><span class="attr">  conditions:</span></span><br><span class="line"><span class="attr">  - lastProbeTime:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">    lastTransitionTime:</span> <span class="string">"2019-08-23T17:54:51Z"</span></span><br><span class="line"><span class="attr">    status:</span> <span class="string">"True"</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">Initialized</span></span><br><span class="line"><span class="attr">  - lastProbeTime:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">    lastTransitionTime:</span> <span class="string">"2019-08-23T17:54:58Z"</span></span><br><span class="line"><span class="attr">    status:</span> <span class="string">"True"</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">Ready</span></span><br><span class="line"><span class="attr">  - lastProbeTime:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">    lastTransitionTime:</span> <span class="string">"2019-08-23T17:54:58Z"</span></span><br><span class="line"><span class="attr">    status:</span> <span class="string">"True"</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">ContainersReady</span></span><br><span class="line"><span class="attr">  - lastProbeTime:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">    lastTransitionTime:</span> <span class="string">"2019-08-23T17:54:51Z"</span></span><br><span class="line"><span class="attr">    status:</span> <span class="string">"True"</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">PodScheduled</span></span><br><span class="line"><span class="attr">  containerStatuses:</span></span><br><span class="line"><span class="attr">  - containerID:</span> <span class="attr">docker://e0c01462377e185fbff5c9ae2eae43ed440feb2c30411ec85640bf</span></span><br><span class="line"><span class="number">24</span><span class="string">a9395377</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">httpd:2.4.38</span></span><br><span class="line"><span class="attr">    imageID:</span> <span class="attr">docker-pullable://httpd@sha256:b51ab6354f4efc22015222183e75ac8447c6</span></span><br><span class="line"><span class="number">941</span><span class="string">c40c030fc7f27cf21c9a9a7f4</span></span><br><span class="line"><span class="attr">    lastState:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">first-container</span></span><br><span class="line"><span class="attr">    ready:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">    restartCount:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">    state:</span></span><br><span class="line"><span class="attr">      running:</span></span><br><span class="line"><span class="attr">        startedAt:</span> <span class="string">"2019-08-23T17:54:58Z"</span></span><br><span class="line"><span class="attr">  hostIP:</span> <span class="number">10.0</span><span class="number">.7</span><span class="number">.70</span></span><br><span class="line"><span class="attr">  phase:</span> <span class="string">Running</span></span><br><span class="line"><span class="attr">  podIP:</span> <span class="number">192.168</span><span class="number">.169</span><span class="number">.65</span></span><br><span class="line"><span class="attr">  qosClass:</span> <span class="string">BestEffort</span></span><br><span class="line"><span class="attr">  startTime:</span> <span class="string">"2019-08-23T17:54:51Z"</span></span><br></pre></td></tr></table></figure>
+<h3 id="删除pod"><a href="#删除pod" class="headerlink" title="删除pod"></a>删除pod</h3><ul>
+<li><p>删除pod可以用下面的命令指定要删除的pod的名字。</p>
+<blockquote>
+<p>kubectl delete pod first-pod</p>
+</blockquote>
+</li>
+<li><p>也可以用下面的命令指定yaml的文件名来删除pod。</p>
+<blockquote>
+<p>kubectl delete -f first-pod.yaml</p>
+</blockquote>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Kubernetes/" rel="tag"># Kubernetes</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/How-To-Auto-Scaleout-ASRS/" rel="next" title="使用Az PowerShell实现Azure SignalR Service自动缩放">
+                <i class="fa fa-chevron-left"></i> 使用Az PowerShell实现Azure SignalR Service自动缩放
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">24</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pod-Definition-Basics"><span class="nav-number">1.</span> <span class="nav-text">Pod Definition Basics</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Pod的创建，检测与删除"><span class="nav-number">1.1.</span> <span class="nav-text">Pod的创建，检测与删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除pod"><span class="nav-number">1.2.</span> <span class="nav-text">删除pod</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
