@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/</loc>
+    
+    <lastmod>2020-01-08T10:23:59.859Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://localhost:4000/2020/how-to-installing-k8s-in-a-hyperv-vm/</loc>
+    
+    <lastmod>2020-01-08T10:21:34.566Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://localhost:4000/2019/k8s-observability-logging-monitoring-and-debugging/</loc>
+    
+    <lastmod>2019-09-12T09:22:19.397Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://localhost:4000/2019/k8s-kubectl-pod-design/</loc>
     
     <lastmod>2019-08-24T16:37:32.216Z</lastmod>
@@ -19,13 +40,6 @@
     <loc>http://localhost:4000/2019/How-To-Auto-Scaleout-ASRS/</loc>
     
     <lastmod>2019-07-24T16:05:22.093Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/</loc>
-    
-    <lastmod>2019-07-02T15:08:58.000Z</lastmod>
     
   </url>
   
@@ -96,13 +110,6 @@
     <loc>http://localhost:4000/2018/Magic-Quadrant-Public-Cloud/</loc>
     
     <lastmod>2018-08-18T04:01:22.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://localhost:4000/2018/algorithm-fibonacci/</loc>
-    
-    <lastmod>2018-08-05T16:42:04.000Z</lastmod>
     
   </url>
   
