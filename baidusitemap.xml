@@ -4,6 +4,26 @@
 
     
   <url>
+    <loc>http://localhost:4000/2020/how-to-installing-k8s-in-a-hyperv-vm/</loc>
+    <lastmod>2020-01-11T15:38:32.993Z</lastmod>
+    <data>
+        <display>
+        <title>如何在Hyper-V上的Ubuntu VM上安装kubernetes</title>
+        <pubTime>2020-01-08T09:24:25.492Z</pubTime>
+        
+        <tag>kubernetes</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kubernetes" url="http://localhost:4000/categories/Kubernetes/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2019/Initialize-RaspBerry-3-with-wifi/</loc>
     <lastmod>2020-01-08T10:23:59.859Z</lastmod>
     <data>
@@ -17,26 +37,6 @@
            
              
               <breadCrumb title="IoT" url="http://localhost:4000/categories/IoT/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>http://localhost:4000/2020/how-to-installing-k8s-in-a-hyperv-vm/</loc>
-    <lastmod>2020-01-08T10:21:34.566Z</lastmod>
-    <data>
-        <display>
-        <title>如何在Hyper-V上的Ubuntu VM上安装kubernetes</title>
-        <pubTime>2020-01-08T09:24:25.492Z</pubTime>
-        
-        <tag>kubernetes</tag>
-         
-         
-           
-             
-              <breadCrumb title="Kubernetes" url="http://localhost:4000/categories/Kubernetes/"/>
           
         </display>
     </data>

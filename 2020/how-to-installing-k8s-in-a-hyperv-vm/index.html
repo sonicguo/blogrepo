@@ -125,7 +125,7 @@
 <meta property="og:image" content="http://localhost:4000/2020/how-to-installing-k8s-in-a-hyperv-vm/figure7.png">
 <meta property="og:image" content="http://localhost:4000/2020/how-to-installing-k8s-in-a-hyperv-vm/figure8.png">
 <meta property="og:image" content="http://localhost:4000/2020/how-to-installing-k8s-in-a-hyperv-vm/figure9.png">
-<meta property="og:updated_time" content="2020-01-08T10:21:34.566Z">
+<meta property="og:updated_time" content="2020-01-11T15:38:32.993Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何在Hyper-V上的Ubuntu VM上安装kubernetes">
 <meta name="twitter:description" content="借着微服务这阵风，K8S突然之间就火起来。阿里，微软，AWS，Google等等大厂都在大力支持k8s。学习k8s的最好方法就是自己动手练习。由于手头上没有那么多physical machine, 所以在Windows 10上的hyper-v搭建了3台ubuntu，用来组建k8s的cluster. 这篇文章记录整个搭建的过程，方便查阅。">
@@ -368,12 +368,24 @@
                 
               
 
-              <time title="Created: 2020-01-08 17:24:25 / Modified: 18:21:34" itemprop="dateCreated datePublished" datetime="2020-01-08T17:24:25+08:00">2020-01-08</time>
+              <time title="Created: 2020-01-08 17:24:25" itemprop="dateCreated datePublished" datetime="2020-01-08T17:24:25+08:00">2020-01-08</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-01-11 23:38:32" itemprop="dateModified" datetime="2020-01-11T23:38:32+08:00">2020-01-11</time>
               
             
           </span>
@@ -440,6 +452,7 @@
 <li>3台Ubuntu的VM，分配内存为2GB，50GB硬盘空间，足足的。</li>
 <li><a href="https://ubuntu.com/download/server" target="_blank" rel="noopener">Ubuntu Server 18.04.3 LTS</a></li>
 </ol>
+<p>Ubuntu的VM必须要符合kubeadm的<a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin" target="_blank" rel="noopener">最小配置要求</a>。</p>
 <h2 id="启用Hyper-V-并且安装ubuntu"><a href="#启用Hyper-V-并且安装ubuntu" class="headerlink" title="启用Hyper-V 并且安装ubuntu"></a>启用Hyper-V 并且安装ubuntu</h2><p>Windows 10上的Hyper-V默认是不安装的。Ubuntu的版本方面，我选用了<a href="https://ubuntu.com/download/server" target="_blank" rel="noopener">Ubuntu Server 18.04.3 LTS</a>。可以跟着这篇文章<a href="https://geekflare.com/ubuntu-on-windows/" target="_blank" rel="noopener">启用hyper-V并且安装ubuntu</a>完成ubuntu的安装。我的cluster环境是想配置3台ubuntu。</p>
 <h2 id="安装-Docker"><a href="#安装-Docker" class="headerlink" title="安装 Docker"></a>安装 Docker</h2><p>完成Ubuntu的安装之后需要安装docker. K8S在运行Pods的时候需要一个container runtime. K8S可以选用多个<a href="https://kubernetes.io/docs/setup/production-environment/container-runtimes/" target="_blank" rel="noopener">container runtime</a>:</p>
 <ul>
