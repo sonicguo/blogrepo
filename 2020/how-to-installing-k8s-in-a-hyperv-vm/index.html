@@ -125,7 +125,7 @@
 <meta property="og:image" content="http://localhost:4000/2020/how-to-installing-k8s-in-a-hyperv-vm/figure7.png">
 <meta property="og:image" content="http://localhost:4000/2020/how-to-installing-k8s-in-a-hyperv-vm/figure8.png">
 <meta property="og:image" content="http://localhost:4000/2020/how-to-installing-k8s-in-a-hyperv-vm/figure9.png">
-<meta property="og:updated_time" content="2020-01-11T15:38:32.993Z">
+<meta property="og:updated_time" content="2020-01-20T06:30:42.838Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何在Hyper-V上的Ubuntu VM上安装kubernetes">
 <meta name="twitter:description" content="借着微服务这阵风，K8S突然之间就火起来。阿里，微软，AWS，Google等等大厂都在大力支持k8s。学习k8s的最好方法就是自己动手练习。由于手头上没有那么多physical machine, 所以在Windows 10上的hyper-v搭建了3台ubuntu，用来组建k8s的cluster. 这篇文章记录整个搭建的过程，方便查阅。">
@@ -385,7 +385,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-01-11 23:38:32" itemprop="dateModified" datetime="2020-01-11T23:38:32+08:00">2020-01-11</time>
+                <time title="Modified: 2020-01-20 14:30:42" itemprop="dateModified" datetime="2020-01-20T14:30:42+08:00">2020-01-20</time>
               
             
           </span>
@@ -462,7 +462,7 @@
 <li>Other CRI runtimes: frakti</li>
 </ul>
 <p>这里我使用的是Docker. 安装的步骤如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install apt-transport-https ca-certificates curl software-properties-common</span><br><span class="line">curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -</span><br><span class="line">sudo add-apt-repository &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable&quot;</span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install docker-ce</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install apt-transport-https ca-certificates curl software-properties-common</span><br><span class="line">curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -</span><br><span class="line">sudo add-apt-repository &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable edge&quot;</span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install docker-ce</span><br></pre></td></tr></table></figure>
 <p>如果需要给当前用户允许docker的权限，需要执行下面的命令：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo usermod -aG docker $USER</span><br></pre></td></tr></table></figure>
 <p>验证一下docker的版本：</p>
