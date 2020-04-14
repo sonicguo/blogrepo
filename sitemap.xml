@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://localhost:4000/2020/k8s-Managing-Container-Resources/</loc>
+    
+    <lastmod>2020-04-14T11:07:57.111Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://localhost:4000/2020/how-to-deploy-a-web-app-with-k8s/</loc>
+    
+    <lastmod>2020-02-07T08:26:00.690Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://localhost:4000/2020/how-to-installing-k8s-in-a-hyperv-vm/</loc>
     
     <lastmod>2020-01-20T07:49:29.024Z</lastmod>

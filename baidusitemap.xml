@@ -4,6 +4,48 @@
 
     
   <url>
+    <loc>http://localhost:4000/2020/k8s-Managing-Container-Resources/</loc>
+    <lastmod>2020-04-14T11:07:57.111Z</lastmod>
+    <data>
+        <display>
+        <title>学习笔记 K8S Managing Compute Resources for Containers</title>
+        <pubTime>2020-04-13T10:29:59.000Z</pubTime>
+        
+        <tag>kubernetes</tag>
+         
+        <tag>kubectl</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kubernetes" url="http://localhost:4000/categories/Kubernetes/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://localhost:4000/2020/how-to-deploy-a-web-app-with-k8s/</loc>
+    <lastmod>2020-02-07T08:26:00.690Z</lastmod>
+    <data>
+        <display>
+        <title>如何将web app发布到kubernetes上</title>
+        <pubTime>2020-02-07T07:40:11.000Z</pubTime>
+        
+        <tag>kubernetes</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kubernetes" url="http://localhost:4000/categories/Kubernetes/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2020/how-to-installing-k8s-in-a-hyperv-vm/</loc>
     <lastmod>2020-01-20T07:49:29.024Z</lastmod>
     <data>

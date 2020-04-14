@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Pod作为Kubernetes上的基本的执行单元，在运行的时候可以设置Memory和CPU资源下限和上限。这篇学习笔记是记录如何进行这方面的设置，以及一些相关的概念。">
+<meta name="keywords" content="kubernetes,kubectl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习笔记 K8S Managing Compute Resources for Containers">
+<meta property="og:url" content="http://localhost:4000/2020/k8s-Managing-Container-Resources/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="Pod作为Kubernetes上的基本的执行单元，在运行的时候可以设置Memory和CPU资源下限和上限。这篇学习笔记是记录如何进行这方面的设置，以及一些相关的概念。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2020/k8s-Managing-Container-Resources/figure1.png">
+<meta property="og:image" content="http://localhost:4000/2020/k8s-Managing-Container-Resources/figure2.png">
+<meta property="og:updated_time" content="2020-04-14T11:07:57.111Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="学习笔记 K8S Managing Compute Resources for Containers">
+<meta name="twitter:description" content="Pod作为Kubernetes上的基本的执行单元，在运行的时候可以设置Memory和CPU资源下限和上限。这篇学习笔记是记录如何进行这方面的设置，以及一些相关的概念。">
+<meta name="twitter:image" content="http://localhost:4000/2020/k8s-Managing-Container-Resources/figure1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2020/k8s-Managing-Container-Resources/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>学习笔记 K8S Managing Compute Resources for Containers | Sonic Guo Blog</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109686353-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109686353-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2020/k8s-Managing-Container-Resources/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">学习笔记 K8S Managing Compute Resources for Containers
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-04-13 18:29:59" itemprop="dateCreated datePublished" datetime="2020-04-13T18:29:59+08:00">2020-04-13</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-04-14 19:07:57" itemprop="dateModified" datetime="2020-04-14T19:07:57+08:00">2020-04-14</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>Pod作为Kubernetes上的基本的执行单元，在运行的时候可以设置Memory和CPU资源下限和上限。这篇学习笔记是记录如何进行这方面的设置，以及一些相关的概念。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="Limit-Ranges"><a href="#Limit-Ranges" class="headerlink" title="Limit Ranges"></a>Limit Ranges</h2><p>默认情况下，Pod/Container是没有compute resources的限制的。如果想要为某个namespace下的container增加一个默认的限制，就需要定义一个Limit Ranges.</p>
+<ol>
+<li>Limit Ranges会应用到一个namespace下所有的Pod/Container，会使其资源限制在request和limit之间。</li>
+<li>Limit Ranges强制PersistentVolumeClaim (PVC)的最大最小值</li>
+<li>Limit Ranges设置的是默认值。如果Container要修改这些限制，就要overwrite掉这个值。</li>
+</ol>
+<h3 id="修改默认的Limit-Ranges"><a href="#修改默认的Limit-Ranges" class="headerlink" title="修改默认的Limit Ranges"></a>修改默认的Limit Ranges</h3><p>首先看看一个默认情况下Pod在运行时候的状态。默认情况下是没有CPU 和 Memory的限制。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">sonic@k8smaster:~/k8syaml$</span> <span class="string">kubectl</span> <span class="string">describe</span> <span class="string">po</span> <span class="string">default-mem-demo</span>  <span class="bullet">-n</span> <span class="string">limitrange-test</span></span><br><span class="line"><span class="attr">Name:</span>         <span class="string">default-mem-demo</span></span><br><span class="line"><span class="attr">Namespace:</span>    <span class="string">limitrange-test</span></span><br><span class="line"><span class="attr">Priority:</span>     <span class="number">0</span></span><br><span class="line"><span class="attr">Node:</span>         <span class="string">k8snode1/10.190.155.28</span></span><br><span class="line"><span class="string">Start</span> <span class="attr">Time:</span>   <span class="string">Mon,</span> <span class="number">13</span> <span class="string">Apr</span> <span class="number">2020</span> <span class="number">14</span><span class="string">:55:10</span> <span class="string">+0000</span></span><br><span class="line"><span class="attr">Labels:</span>       <span class="string">&lt;none&gt;</span></span><br><span class="line"><span class="attr">Annotations:</span>  <span class="string">&lt;none&gt;</span></span><br><span class="line"><span class="attr">Status:</span>       <span class="string">Running</span></span><br><span class="line"><span class="attr">IP:</span>           <span class="number">10.244</span><span class="number">.2</span><span class="number">.30</span></span><br><span class="line"><span class="attr">IPs:</span></span><br><span class="line"><span class="attr">  IP:</span>  <span class="number">10.244</span><span class="number">.2</span><span class="number">.30</span></span><br><span class="line"><span class="attr">Containers:</span></span><br><span class="line"><span class="attr">  default-memo-demo-ctr:</span></span><br><span class="line">    <span class="string">Container</span> <span class="attr">ID:</span>   <span class="attr">docker://a45a34ed450fd1cdbac7d4f69f63ee769c03145b5a58d64d49ac1ebfb5300423</span></span><br><span class="line"><span class="attr">    Image:</span>          <span class="string">nginx</span></span><br><span class="line">    <span class="string">Image</span> <span class="attr">ID:</span>       <span class="attr">docker-pullable://nginx@sha256:282530fcb7cd19f3848c7b611043f82ae4be3781cb00105a1d593d7e6286b596</span></span><br><span class="line"><span class="attr">    Port:</span>           <span class="string">&lt;none&gt;</span></span><br><span class="line">    <span class="string">Host</span> <span class="attr">Port:</span>      <span class="string">&lt;none&gt;</span></span><br><span class="line"><span class="attr">    State:</span>          <span class="string">Running</span></span><br><span class="line"><span class="attr">      Started:</span>      <span class="string">Mon,</span> <span class="number">13</span> <span class="string">Apr</span> <span class="number">2020</span> <span class="number">14</span><span class="string">:55:20</span> <span class="string">+0000</span></span><br><span class="line"><span class="attr">    Ready:</span>          <span class="literal">True</span></span><br><span class="line">    <span class="string">Restart</span> <span class="attr">Count:</span>  <span class="number">0</span></span><br><span class="line"><span class="attr">    Environment:</span>    <span class="string">&lt;none&gt;</span></span><br><span class="line"><span class="attr">    Mounts:</span></span><br><span class="line">      <span class="string">/var/run/secrets/kubernetes.io/serviceaccount</span> <span class="string">from</span> <span class="string">default-token-n6vnt</span> <span class="string">(ro)</span></span><br><span class="line"><span class="attr">Conditions:</span></span><br><span class="line">  <span class="string">Type</span>              <span class="string">Status</span></span><br><span class="line">  <span class="string">Initialized</span>       <span class="literal">True</span></span><br><span class="line">  <span class="string">Ready</span>             <span class="literal">True</span></span><br><span class="line">  <span class="string">ContainersReady</span>   <span class="literal">True</span></span><br><span class="line">  <span class="string">PodScheduled</span>      <span class="literal">True</span></span><br><span class="line"><span class="attr">Volumes:</span></span><br><span class="line"><span class="attr">  default-token-n6vnt:</span></span><br><span class="line"><span class="attr">    Type:</span>        <span class="string">Secret</span> <span class="string">(a</span> <span class="string">volume</span> <span class="string">populated</span> <span class="string">by</span> <span class="string">a</span> <span class="string">Secret)</span></span><br><span class="line"><span class="attr">    SecretName:</span>  <span class="string">default-token-n6vnt</span></span><br><span class="line"><span class="attr">    Optional:</span>    <span class="literal">false</span></span><br><span class="line"><span class="string">QoS</span> <span class="attr">Class:</span>       <span class="string">BestEffort</span></span><br><span class="line"><span class="attr">Node-Selectors:</span>  <span class="string">&lt;none&gt;</span></span><br><span class="line"><span class="attr">Tolerations:</span>     <span class="string">node.kubernetes.io/not-ready:NoExecute</span> <span class="string">for</span> <span class="number">300</span><span class="string">s</span></span><br><span class="line">                 <span class="string">node.kubernetes.io/unreachable:NoExecute</span> <span class="string">for</span> <span class="number">300</span><span class="string">s</span></span><br><span class="line"><span class="attr">Events:</span></span><br><span class="line">  <span class="string">Type</span>    <span class="string">Reason</span>     <span class="string">Age</span>        <span class="string">From</span>               <span class="string">Message</span></span><br><span class="line"><span class="bullet">  -</span><span class="meta">---</span>    <span class="bullet">------</span>     <span class="bullet">----</span>       <span class="bullet">----</span>               <span class="bullet">-------</span></span><br><span class="line">  <span class="string">Normal</span>  <span class="string">Scheduled</span>  <span class="string">&lt;unknown&gt;</span>  <span class="string">default-scheduler</span>  <span class="string">Successfully</span> <span class="string">assigned</span> <span class="string">limitrange-test/default-mem-demo</span> <span class="string">to</span> <span class="string">k8snode1</span></span><br><span class="line">  <span class="string">Normal</span>  <span class="string">Pulling</span>    <span class="number">118</span><span class="string">s</span>       <span class="string">kubelet,</span> <span class="string">k8snode1</span>  <span class="string">Pulling</span> <span class="string">image</span> <span class="string">"nginx"</span></span><br><span class="line">  <span class="string">Normal</span>  <span class="string">Pulled</span>     <span class="number">113</span><span class="string">s</span>       <span class="string">kubelet,</span> <span class="string">k8snode1</span>  <span class="string">Successfully</span> <span class="string">pulled</span> <span class="string">image</span> <span class="string">"nginx"</span></span><br><span class="line">  <span class="string">Normal</span>  <span class="string">Created</span>    <span class="number">112</span><span class="string">s</span>       <span class="string">kubelet,</span> <span class="string">k8snode1</span>  <span class="string">Created</span> <span class="string">container</span> <span class="string">default-memo-demo-ctr</span></span><br><span class="line">  <span class="string">Normal</span>  <span class="string">Started</span>    <span class="number">111</span><span class="string">s</span>       <span class="string">kubelet,</span> <span class="string">k8snode1</span>  <span class="string">Started</span> <span class="string">container</span> <span class="string">default-memo-demo-ctr</span></span><br></pre></td></tr></table></figure>
+<p>下面是定义一个默认的Limit Ranges, 并且将这个Limit Ranges应用到这个namespace下。再看看会发生什么变化。<br>这里的Limit Range定义了最低memory为256M，CPU为单核的10%。上限为Memory = 512MB, CPU为单核的100%。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">LimitRange</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">mem-limit-range</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  limits:</span></span><br><span class="line"><span class="attr">  - default:</span></span><br><span class="line"><span class="attr">      memory:</span> <span class="number">512</span><span class="string">Mi</span></span><br><span class="line"><span class="attr">      cpu:</span> <span class="string">"1.0"</span></span><br><span class="line"><span class="attr">    defaultRequest:</span></span><br><span class="line"><span class="attr">      memory:</span> <span class="number">256</span><span class="string">Mi</span></span><br><span class="line"><span class="attr">      cpu:</span> <span class="string">"0.1"</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">Container</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sonic@k8smaster:~/k8syaml$ kubectl apply -f memory-defaults.yaml -n limitrange-test</span><br><span class="line">limitrange/mem-limit-range created</span><br></pre></td></tr></table></figure>
+<p>接下来重新创建刚才的Pod, 情况就会发生变化。可以看到这个Pod已经出现了Limit和Request的设置。</p>
+<p><img src="figure1.png" alt="img"></p>
+<h3 id="Overwrite-Limit-Ranges"><a href="#Overwrite-Limit-Ranges" class="headerlink" title="Overwrite Limit Ranges"></a>Overwrite Limit Ranges</h3><p>同一个namespace下如果已经有了Limit Ranges, 那么创建的Pod下面没有针对Limit和Request的定义时就会采用Limit Ranges的默认值。Pod的定义里面可以显示的overwrite。例如下面的例子。将Limits提升到了1GB.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">default-mem-demo-2</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">default-mem-demo-2-ctr</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">    resources:</span></span><br><span class="line"><span class="attr">      limits:</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="string">"1Gi"</span></span><br></pre></td></tr></table></figure>
+<p>这个时候发现Pod的limit.memory被提升到了1GB.其他值并没有变化。<br><img src="figure2.png" alt="img"></p>
+<p>如果单独修改Requests,并且在<strong>不超过</strong>limit的情况下，request也会做相应的调整。<br>但是如果requests超过limit的限制，则会出现一个错误。例如下面的实例中，设定requests为1GB，好过了limit:512M的限制。那么会出现错 <code>Invalid value: &quot;1Gi&quot;: must be less than or equal to memory limit</code>.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">default-mem-demo-2</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">default-mem-demo-2-ctr</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">    resources:</span></span><br><span class="line"><span class="attr">      requests:</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="string">"1Gi"</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sonic@k8smaster:~/k8syaml$ kubectl create -f memory-defaults-pod-3.yaml -n limitrange-test</span><br><span class="line">The Pod &quot;default-mem-demo-2&quot; is invalid: spec.containers[0].resources.requests: Invalid value: &quot;1Gi&quot;: must be less than or equal to memory limit</span><br></pre></td></tr></table></figure>
+<h2 id="Requests-vs-Limits"><a href="#Requests-vs-Limits" class="headerlink" title="Requests vs. Limits"></a>Requests vs. Limits</h2><p>资源的Requests和Limits这两个属性分别代表着不同的意思。</p>
+<ol>
+<li>Requests: Pod或Container使用的最小资源需求。这个是作为Container调度资源分配的判断依据。只有当node上可分配资源量&gt;=Requests的要求时才允许将Container调度到该节点。如果分配资源量 &lt; Requests的要求，创建可能失败，或者可能被驱逐。</li>
+<li>Limits: Pod或Container使用的最大资源需求。</li>
+</ol>
+<p>Requests的意义在于确保Pod/Container的最小工作资源。假设Node的资源非常的丰富，无论何时都可以 保证memory和CPU的使用，对于Pod/Container来说非常富足。这种情况下，Requests是没有太多的意义的。但是反过来，如果memory/CPU的情况非常吃紧。要让Pod/Container能够良好的工作，必须要保证memory/CPU维持在某个合理值之上，这个时候可以通过设置Requests来达到要求。</p>
+<p>Limits的意义在于确保Pod/Container使用的资源memory/CPU维持在给定值之下。将Node上的资源留给其他的Node来使用，确保其他Pod/Container的正常运行。如果超过Limit，将有可能遇到被中止、节流、驱逐等风险。</p>
+<h2 id="Memory"><a href="#Memory" class="headerlink" title="Memory"></a>Memory</h2><p>内存的Limits和Requests以bytes为单位。可以使用以下后缀之一作为平均整数或定点整数表示内存：E，P，T，G，M，K。您还可以使用两个字母的等效的幂数：Ei，Pi，Ti ，Gi，Mi，Ki。例如，<code>1G = 1,000,000,000</code> 或者 <code>1Gi = 1GB = 1024 * 1024 * 1024</code>.</p>
+<p>Kubernetes scheduler会选择一个合适Node来运行这个Pod. 当Requests必须要低于Limits，否则显示下面错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sonic@k8smaster:~/k8syaml$ kubectl create -f memory-defaults-pod-4.yaml -n limitrange-test</span><br><span class="line">The Pod &quot;default-mem-demo-4&quot; is invalid: spec.containers[0].resources.requests: Invalid value: &quot;4Gi&quot;: must be less than or equal to memory limit</span><br></pre></td></tr></table></figure>
+<p>Requests也不能设置太高。如果没有任何一个node达到资源要求，Pod的创建将会发生问题。比如下面这个例子，将Requests设定在32GB，没有任何一个node有这么高的可用memory, 出现下面的错误<code>0/3 nodes are available: 3 Insufficient memory.</code>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">sonic@k8smaster:~/k8syaml$</span> <span class="string">kubectl</span> <span class="string">describe</span> <span class="bullet">-f</span> <span class="string">memory-defaults-pod-5.yaml</span> <span class="bullet">-n</span> <span class="string">limitrange-test</span></span><br><span class="line"><span class="attr">Name:</span>         <span class="string">default-mem-demo-5</span></span><br><span class="line"><span class="attr">Namespace:</span>    <span class="string">limitrange-test</span></span><br><span class="line"><span class="attr">Priority:</span>     <span class="number">0</span></span><br><span class="line"><span class="attr">Node:</span>         <span class="string">&lt;none&gt;</span></span><br><span class="line"><span class="attr">Labels:</span>       <span class="string">&lt;none&gt;</span></span><br><span class="line"><span class="attr">Annotations:</span>  <span class="string">kubernetes.io/limit-ranger:</span></span><br><span class="line">                <span class="string">LimitRanger</span> <span class="string">plugin</span> <span class="attr">set:</span> <span class="string">cpu</span> <span class="string">request</span> <span class="string">for</span> <span class="string">container</span> <span class="string">default-mem-demo-5-ctr;</span> <span class="string">cpu</span> <span class="string">limit</span> <span class="string">for</span> <span class="string">container</span> <span class="string">default-mem-demo-5-ctr</span></span><br><span class="line"><span class="attr">Status:</span>       <span class="string">Pending</span></span><br><span class="line"><span class="attr">IP:</span></span><br><span class="line"><span class="attr">IPs:</span>          <span class="string">&lt;none&gt;</span></span><br><span class="line"><span class="attr">Containers:</span></span><br><span class="line"><span class="attr">  default-mem-demo-5-ctr:</span></span><br><span class="line"><span class="attr">    Image:</span>      <span class="string">nginx</span></span><br><span class="line"><span class="attr">    Port:</span>       <span class="string">&lt;none&gt;</span></span><br><span class="line">    <span class="string">Host</span> <span class="attr">Port:</span>  <span class="string">&lt;none&gt;</span></span><br><span class="line"><span class="attr">    Limits:</span></span><br><span class="line"><span class="attr">      cpu:</span>     <span class="number">1</span></span><br><span class="line"><span class="attr">      memory:</span>  <span class="number">64</span><span class="string">Gi</span></span><br><span class="line"><span class="attr">    Requests:</span></span><br><span class="line"><span class="attr">      cpu:</span>        <span class="number">100</span><span class="string">m</span></span><br><span class="line"><span class="attr">      memory:</span>     <span class="number">32</span><span class="string">Gi</span></span><br><span class="line"><span class="attr">    Environment:</span>  <span class="string">&lt;none&gt;</span></span><br><span class="line"><span class="attr">    Mounts:</span></span><br><span class="line">      <span class="string">/var/run/secrets/kubernetes.io/serviceaccount</span> <span class="string">from</span> <span class="string">default-token-n6vnt</span> <span class="string">(ro)</span></span><br><span class="line"><span class="attr">Conditions:</span></span><br><span class="line">  <span class="string">Type</span>           <span class="string">Status</span></span><br><span class="line">  <span class="string">PodScheduled</span>   <span class="literal">False</span></span><br><span class="line"><span class="attr">Volumes:</span></span><br><span class="line"><span class="attr">  default-token-n6vnt:</span></span><br><span class="line"><span class="attr">    Type:</span>        <span class="string">Secret</span> <span class="string">(a</span> <span class="string">volume</span> <span class="string">populated</span> <span class="string">by</span> <span class="string">a</span> <span class="string">Secret)</span></span><br><span class="line"><span class="attr">    SecretName:</span>  <span class="string">default-token-n6vnt</span></span><br><span class="line"><span class="attr">    Optional:</span>    <span class="literal">false</span></span><br><span class="line"><span class="string">QoS</span> <span class="attr">Class:</span>       <span class="string">Burstable</span></span><br><span class="line"><span class="attr">Node-Selectors:</span>  <span class="string">&lt;none&gt;</span></span><br><span class="line"><span class="attr">Tolerations:</span>     <span class="string">node.kubernetes.io/not-ready:NoExecute</span> <span class="string">for</span> <span class="number">300</span><span class="string">s</span></span><br><span class="line">                 <span class="string">node.kubernetes.io/unreachable:NoExecute</span> <span class="string">for</span> <span class="number">300</span><span class="string">s</span></span><br><span class="line"><span class="attr">Events:</span></span><br><span class="line">  <span class="string">Type</span>     <span class="string">Reason</span>            <span class="string">Age</span>        <span class="string">From</span>               <span class="string">Message</span></span><br><span class="line"><span class="bullet">  -</span><span class="meta">---</span>     <span class="bullet">------</span>            <span class="bullet">----</span>       <span class="bullet">----</span>               <span class="bullet">-------</span></span><br><span class="line">  <span class="string">Warning</span>  <span class="string">FailedScheduling</span>  <span class="string">&lt;unknown&gt;</span>  <span class="string">default-scheduler</span>  <span class="number">0</span><span class="string">/3</span> <span class="string">nodes</span> <span class="string">are</span> <span class="attr">available:</span> <span class="number">3</span> <span class="string">Insufficient</span> <span class="string">memory.</span></span><br><span class="line">  <span class="string">Warning</span>  <span class="string">FailedScheduling</span>  <span class="string">&lt;unknown&gt;</span>  <span class="string">default-scheduler</span>  <span class="number">0</span><span class="string">/3</span> <span class="string">nodes</span> <span class="string">are</span> <span class="attr">available:</span> <span class="number">3</span> <span class="string">Insufficient</span> <span class="string">memory.</span></span><br></pre></td></tr></table></figure>
+<p>当Pod使用的memory超过上限的时候，Pod就会有被terminated的风险。会出现如下的错误exitCode:137.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">lastState:</span><br><span class="line">   terminated:</span><br><span class="line">     containerID: docker://65183c1877aaec2e8427bc95609cc52677a454b56fcb24340dbd22917c23b10f</span><br><span class="line">     exitCode: 137</span><br><span class="line">     finishedAt: 2017-06-20T20:52:19Z</span><br><span class="line">     reason: OOMKilled</span><br><span class="line">     startedAt: null</span><br></pre></td></tr></table></figure>
+<h2 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h2><p>这里设置的CPU等同于Node在操作系统层面所能提供的一个CPU的资源, 相当于 1 vCPU/Core。</p>
+<p>CPU的Requests和Limits可以设定为部分CPU。例如0.1这样的情况。这里的小数部分是按照毫秒(millisecond)来进行计算。例如，0.1代表着 0.1 * 1000 ms = 100 ms. 以1s的CPU时间为例，将会分配到 100ms, 也就是单个CPU的10%的CPU时间。这个是一开始让我比较疑惑的地方。</p>
+<p>例如下面的设置，代表着最大可用使用2个CPU。能运行2个CPU的使用率达到100%。如果这个node上有4个CPU的话，意味着最高能使用node上50%的CPU Usage.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">limits:</span><br><span class="line">- default:</span><br><span class="line">    cpu: &quot;2.0&quot;</span><br></pre></td></tr></table></figure>
+<p>例如下面的设置，代表着最大可用1个CPU的10%的使用率。如果这个node上有4个CPU的话，意味着更低的CPU Usage.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">limits:</span><br><span class="line">- default:</span><br><span class="line">    cpu: &quot;0.1&quot;</span><br></pre></td></tr></table></figure>
+<p>由于K8S上CPU资源是可用压缩的。当Pod/Container的CPU使用率超过了限制，POD/Container将会被节流(throttling)。而不是像memory那样被强制关闭。这一点跟memory的区别还是比较大的。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>默认情况下，Pod/Container是没有使用资源限制的，Memory,CPU随便用。</li>
+<li>通过设定LimitRange能够在指定的namespace下设定资源限制。</li>
+<li>Limits用来设置上限，Requets用来指定下限。</li>
+<li>达到Memory上限，Pod会被关闭。达到CPU上限，Pod会被节流。</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/kubernetes/" rel="tag"># kubernetes</a>
+          
+            <a href="/tags/kubectl/" rel="tag"># kubectl</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/how-to-deploy-a-web-app-with-k8s/" rel="next" title="如何将web app发布到kubernetes上">
+                <i class="fa fa-chevron-left"></i> 如何将web app发布到kubernetes上
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Limit-Ranges"><span class="nav-number">1.</span> <span class="nav-text">Limit Ranges</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#修改默认的Limit-Ranges"><span class="nav-number">1.1.</span> <span class="nav-text">修改默认的Limit Ranges</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Overwrite-Limit-Ranges"><span class="nav-number">1.2.</span> <span class="nav-text">Overwrite Limit Ranges</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Requests-vs-Limits"><span class="nav-number">2.</span> <span class="nav-text">Requests vs. Limits</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Memory"><span class="nav-number">3.</span> <span class="nav-text">Memory</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU"><span class="nav-number">4.</span> <span class="nav-text">CPU</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
