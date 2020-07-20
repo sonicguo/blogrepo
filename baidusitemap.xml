@@ -4,6 +4,28 @@
 
     
   <url>
+    <loc>http://localhost:4000/2020/k8s-port-targetport-nodeport/</loc>
+    <lastmod>2020-07-20T10:49:32.584Z</lastmod>
+    <data>
+        <display>
+        <title>Kubernetes -- port, targetport, nodeport的区别</title>
+        <pubTime>2020-07-14T15:52:12.000Z</pubTime>
+        
+        <tag>kubernetes</tag>
+         
+        <tag>service</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kubernetes" url="http://localhost:4000/categories/Kubernetes/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2020/k8s-Managing-Container-Resources/</loc>
     <lastmod>2020-04-14T16:12:10.710Z</lastmod>
     <data>
