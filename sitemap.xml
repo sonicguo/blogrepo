@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://localhost:4000/2020/Azure-SignalR-Service-Things-about-upstream/</loc>
+    
+    <lastmod>2021-03-01T10:44:41.696Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://localhost:4000/2020/k8s-port-targetport-nodeport/</loc>
     
-    <lastmod>2020-07-20T10:49:32.584Z</lastmod>
+    <lastmod>2020-07-21T09:05:51.596Z</lastmod>
     
   </url>
   

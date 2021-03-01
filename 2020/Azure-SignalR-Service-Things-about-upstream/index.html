@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Upstream is a new feature that allows Azure SignalR Service to send messages and connection events to a set of endpoints in serverless mode. This post is explain more details about this feature.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Azure SignalR Service - Things about upstream">
+<meta property="og:url" content="http://localhost:4000/2020/Azure-SignalR-Service-Things-about-upstream/index.html">
+<meta property="og:site_name" content="Sonic Guo Blog">
+<meta property="og:description" content="Upstream is a new feature that allows Azure SignalR Service to send messages and connection events to a set of endpoints in serverless mode. This post is explain more details about this feature.">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://localhost:4000/2020/Azure-SignalR-Service-Things-about-upstream/defaultmode.png">
+<meta property="og:image" content="http://localhost:4000/2020/Azure-SignalR-Service-Things-about-upstream/serverless-arch.png">
+<meta property="og:image" content="http://localhost:4000/2020/Azure-SignalR-Service-Things-about-upstream/upstream-arch.png">
+<meta property="og:image" content="http://localhost:4000/2020/Azure-SignalR-Service-Things-about-upstream/WebSocket.png">
+<meta property="og:updated_time" content="2021-03-01T10:44:41.696Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Azure SignalR Service - Things about upstream">
+<meta name="twitter:description" content="Upstream is a new feature that allows Azure SignalR Service to send messages and connection events to a set of endpoints in serverless mode. This post is explain more details about this feature.">
+<meta name="twitter:image" content="http://localhost:4000/2020/Azure-SignalR-Service-Things-about-upstream/defaultmode.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://localhost:4000/2020/Azure-SignalR-Service-Things-about-upstream/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Azure SignalR Service - Things about upstream | Sonic Guo Blog</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109686353-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-109686353-1');
+</script>
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8711182082021480248d6f62293c551";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sonic Guo Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2020/Azure-SignalR-Service-Things-about-upstream/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sonic Guo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sonic Guo Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Azure SignalR Service - Things about upstream
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-12-29 11:37:34" itemprop="dateCreated datePublished" datetime="2020-12-29T11:37:34+08:00">2020-12-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2021-03-01 18:44:41" itemprop="dateModified" datetime="2021-03-01T18:44:41+08:00">2021-03-01</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>Upstream is a new feature that allows Azure SignalR Service to send messages and connection events to a set of endpoints in serverless mode. This post is explain more details about this feature.</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="What-is-upstream-for-in-Azure-Azure-SignalR-Service"><a href="#What-is-upstream-for-in-Azure-Azure-SignalR-Service" class="headerlink" title="What is upstream for in Azure Azure SignalR Service"></a>What is upstream for in Azure Azure SignalR Service</h2><p>The Azure SignalR Service introduced a <a href="https://docs.microsoft.com/en-us/azure/azure-signalr/concept-upstream#details-of-upstream-settings" target="_blank" rel="noopener">new feature Upstream</a> on June 2020. Upstream allows Azure SignalR Service to send messages and connection events to a set of endpoints in serverless mode. You can use upstream to invoke a hub method from clients in serverless mode and let endpoints get notified when client connections are connected or disconnected.</p>
+<h2 id="Why-introduced-the-Upstream"><a href="#Why-introduced-the-Upstream" class="headerlink" title="Why introduced the Upstream"></a>Why introduced the Upstream</h2><p>The Azure SignalR Service has 2 <a href="https://docs.microsoft.com/en-us/azure/azure-signalr/concept-service-mode#choose-the-right-service-mode" target="_blank" rel="noopener">service modes</a>, default mode and serverless mode.</p>
+<p>The goal of Serverless Websocket is to allow the Azure SignalR Service to handle pure WebSocket requests without SignalR:</p>
+<ul>
+<li>Talk to an upstream application using the HTTP protocol.</li>
+<li>Handle connection connect/disconnect events.</li>
+<li>Handle the WebSocket handshake, with the ability to configure the SubProtocol and reject connections.</li>
+<li>Handle WebSocket messages, supporting both text and binary messages within one connection.</li>
+</ul>
+<p>The Upstream is a feature that introduces an upstream server that processes WebSocket connections and messages. The upstream server can be any kind of server that can handle HTTP requests, like the Azure Function service.</p>
+<h3 id="Default-Mode"><a href="#Default-Mode" class="headerlink" title="Default Mode"></a>Default Mode</h3><p>Default mode is the default value for service mode when you create a new SignalR resource. In this mode, your application works as a typical ASP.NET Core (or ASP.NET) SignalR application, where you have a web server that hosts a hub (called hub server hereinafter) and clients can have duplex real-time communication with the hub server. The only difference is instead of connecting client and server directly, client and server both connect to SignalR service and use the service as a proxy. Below is a diagram that illustrates the typical application structure in default mode:</p>
+<p><img src="defaultmode.png" alt="Default Mode"></p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>With Default mode, the app server hosts a hub. The clients can have duplex real-time communication. It allows the client to receive and sends messages.</li>
+<li>The server is stateful, the client is bond with a server connection, the client’s data stores in the app server.</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>The app server only supports Asp.Net Core and/or Asp.Net SignalR application. And not supports other languages like Java, NodeJS, Python, etc.</li>
+<li>Client connections will be bond with a server connection. In case a server connection dropped for a reason, multiple client connections are affected. Here is an example, there are 5 server connections and 1000 client connections connected to the Azure SignalR Service. The Azure SignalR Server routes the 1000 clients to 5 server connections. For each server connection, it maps to 200 client connections. If a server connection dropped, then 200 client connections will be dropped by the SignalR Service at once.</li>
+</ul>
+<h3 id="Serverless-Mode-Typical"><a href="#Serverless-Mode-Typical" class="headerlink" title="Serverless Mode - Typical"></a>Serverless Mode - Typical</h3><p>With the Serverless mode, there is not any hub server. Comparing to default mode, in this mode client doesn’t require a hub server to get connected. All connections are connected to the SignalR service in a “serverless” mode and SignalR Service is responsible for maintaining client connections. If you try to use service SDK to establish a <strong>server connection</strong>, you will get an error. Therefore there is also no connection routing and server-client stickiness. The clients have persistent connections to Azure SignalR Service. Since there is no application server to handle traffic, clients are in <strong>LISTEN</strong> mode, which means they can only receive messages but can’t send messages. <strong>SignalR Service will disconnect any client who sends messages because it is an invalid operation</strong>.</p>
+<p><img src="serverless-arch.png" alt="Serverless mode"></p>
+<p>As there is no hub, you have another choice to send message to the clients through SignalR service. You can use <a href="https://github.com/Azure/azure-signalr/blob/dev/docs/rest-api.md" target="_blank" rel="noopener">REST APIs</a> for one-time send. For the .Net application, you can leverage <a href="https://github.com/Azure/azure-signalr/blob/dev/docs/management-sdk-guide.md" target="_blank" rel="noopener">SignalR service management SDK</a>, for other languages should invoke the REST APIs following this <a href="https://github.com/Azure/azure-signalr/blob/dev/docs/swagger/v1.json" target="_blank" rel="noopener">spec</a>.</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>The client connects to the SignalR Serivce directly.</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>The client can only receives messages, and can’t send message to the SignalR Service.</li>
+</ul>
+<h3 id="Serverless-Mode-Upstream"><a href="#Serverless-Mode-Upstream" class="headerlink" title="Serverless Mode - Upstream"></a>Serverless Mode - Upstream</h3><p>Upstream is a new feature of Azure SignalR Service. It allows Azure SignalR Service to send messages and connection events to a set of endpoints in <strong>serverless</strong> mode.<br>As it’s the serverless mode, there is no application hub, clients connect to the SignalR Service directly.<br>Furthermore, upstream allows the client to send messages to the SignalR Service, and the service will process to invoke a proper method in the upstream server. And notify the upstream server when client connections are connected or disconnected.</p>
+<p><img src="upstream-arch.png" alt="upstream arch"></p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>As the serverless mode, the client connection connects to the SignalR Service directly.</li>
+<li>With the Upstream, the client can also send messages to the SignalR Service.</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>Compare with the default mode, the upstream server is used to receive the message, but not to store the client’s status. The upstream server is stateless.</li>
+</ul>
+<h2 id="How-it-works"><a href="#How-it-works" class="headerlink" title="How it works"></a>How it works</h2><h3 id="How-to-Configure-the-Upstream"><a href="#How-to-Configure-the-Upstream" class="headerlink" title="How to Configure the Upstream"></a>How to Configure the Upstream</h3><p>Configure the upstream setting is very simple. Firstly, you need an app server which can receive HTTP request. Then, <a href="https://docs.microsoft.com/en-us/azure/azure-signalr/concept-upstream#create-upstream-settings-via-the-azure-portal" target="_blank" rel="noopener">Create upstream settings via the Azure portal</a> to in the Azure SignalR Service.</p>
+<h3 id="Client-Connection"><a href="#Client-Connection" class="headerlink" title="Client Connection"></a>Client Connection</h3><p>The Client connection is similar to the default mode, the client is authorized with the app server, then negotiate a connection with Azure SignalR Service. With an upstream setting, it enables the client to send the message.</p>
+<ol>
+<li>App server authorized the client.</li>
+<li>A CORS check with Azure SignalR Service.</li>
+<li>Negotiate a connection with Azure SignalR Service, upgrade to WebSocket.</li>
+<li>Start to send messages.</li>
+</ol>
+<h4 id="App-server-authorized-the-client"><a href="#App-server-authorized-the-client" class="headerlink" title="App server authorized the client"></a>App server authorized the client</h4><p>The below HTTP content demonstrate the authorization.</p>
+<p><strong>Request:</strong></p>
+<p>The client sends a token to the app server. The app server checks the token and authorized the client。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">POST</span> <span class="attr">https://sgfuncbidirectional.azurewebsites.net/api/negotiate</span> <span class="string">HTTP/1.1</span></span><br><span class="line"><span class="attr">Host:</span> <span class="string">sgfuncbidirectional.azurewebsites.net</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">keep-alive</span></span><br><span class="line"><span class="attr">Content-Length:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">User-Agent:</span> <span class="string">Mozilla/5.0</span> <span class="string">(Windows</span> <span class="string">NT</span> <span class="number">10.0</span><span class="string">;</span> <span class="string">Win64;</span> <span class="string">x64)</span> <span class="string">AppleWebKit/537.36</span> <span class="string">(KHTML,</span> <span class="string">like</span> <span class="string">Gecko)</span> <span class="string">Chrome/87.0.4280.88</span> <span class="string">Safari/537.36</span></span><br><span class="line"><span class="attr">X-Requested-With:</span> <span class="string">XMLHttpRequest</span></span><br><span class="line"><span class="attr">Authorization:</span> <span class="string">Bearer</span>   </span><br><span class="line"><span class="attr">Content-Type:</span> <span class="string">text/plain;charset=UTF-8</span></span><br><span class="line"><span class="attr">Accept:</span> <span class="string">*/*</span></span><br><span class="line"><span class="attr">Origin:</span> <span class="attr">http://127.0.0.1:5500</span></span><br><span class="line"><span class="attr">Sec-Fetch-Site:</span> <span class="string">cross-site</span></span><br><span class="line"><span class="attr">Sec-Fetch-Mode:</span> <span class="string">cors</span></span><br><span class="line"><span class="attr">Sec-Fetch-Dest:</span> <span class="string">empty</span></span><br><span class="line"><span class="attr">Referer:</span> <span class="attr">http://127.0.0.1:5500/</span></span><br><span class="line"><span class="attr">Accept-Encoding:</span> <span class="string">gzip,</span> <span class="string">deflate,</span> <span class="string">br</span></span><br><span class="line"><span class="attr">Accept-Language:</span> <span class="string">zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7,de;q=0.6</span></span><br><span class="line"><span class="attr">Cookie:</span> <span class="string">ARRAffinitySameSite=fe426c2b3f59aea53da10ec07007362de3a309eb4eea448e8a780f2c5e203c41</span></span><br></pre></td></tr></table></figure>
+<p><strong>Response:</strong></p>
+<p>The app server authorized the client, and return the SiganlR Service URL and a token as a JSON string. The SignalR Service’s URL contains in the URL field, the token contains in the accessToken field.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">HTTP/1.1</span> <span class="number">200</span> <span class="string">OK</span></span><br><span class="line"><span class="attr">Content-Length:</span> <span class="number">394</span></span><br><span class="line"><span class="attr">Content-Type:</span> <span class="string">application/json;</span> <span class="string">charset=utf-8</span></span><br><span class="line"><span class="attr">Vary:</span> <span class="string">Accept-Encoding</span></span><br><span class="line"><span class="attr">Set-Cookie:</span> <span class="string">ARRAffinity=b6ea3b3c934d4da5aa14d06ea7be650e3f33d2bb2477b5e43c7b747af936eb02;Path=/;HttpOnly;Domain=sgfuncbidirectional.azurewebsites.net</span></span><br><span class="line"><span class="attr">Request-Context:</span> <span class="string">appId=cid-v1:ba0fcbf3-a61e-4cc1-9b01-86a0058aef23</span></span><br><span class="line"><span class="attr">Access-Control-Allow-Origin:</span> <span class="attr">http://127.0.0.1:5500</span></span><br><span class="line"><span class="attr">Access-Control-Allow-Credentials:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">Date:</span> <span class="string">Mon,</span> <span class="number">28</span> <span class="string">Dec</span> <span class="number">2020</span> <span class="number">02</span><span class="string">:51:29</span> <span class="string">GMT</span></span><br><span class="line"></span><br><span class="line"><span class="string">&#123;"url":"https://sgtest.service.signalr.net/client/?hub=simplechat","accessToken":"eyJhbGciOiJIUzI1NiIsImtpZCI6IjIxMDExMDU4NDEiLCJ0eXAiOiJKV1QifQ.eyJuYW1laWQiOiJTb25pYyBHdW8iLCJleHAiOjE2MDkxMjc0ODksImFkbWluIjp0cnVlLCJuYmYiOjE2MDkxMjM4ODksImlhdCI6MTYwOTEyMzg4OSwiYXVkIjoiaHR0cHM6Ly9zZ3Rlc3Quc2VydmljZS5zaWduYWxyLm5ldC9jbGllbnQvP2h1Yj1zaW1wbGVjaGF0In0.1K3RttJeAg1FP3gi1GYJrd_2y-hWvGZwGQQJRq0d9LM"&#125;</span></span><br></pre></td></tr></table></figure>
+<h4 id="A-CORS-check-with-Azure-SignalR-Service"><a href="#A-CORS-check-with-Azure-SignalR-Service" class="headerlink" title="A CORS check with Azure SignalR Service"></a>A CORS check with Azure SignalR Service</h4><p>The client sends a request to the Azure SignalR Service for the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank" rel="noopener">CORS check</a>.<br>The verbose is OPTIONS, URL was provided by the app server.</p>
+<p><strong>Request:</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">OPTIONS</span> <span class="attr">https://sgtest.service.signalr.net/client/negotiate?hub=simplechat</span> <span class="string">HTTP/1.1</span></span><br><span class="line"><span class="attr">Host:</span> <span class="string">sgtest.service.signalr.net</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">keep-alive</span></span><br><span class="line"><span class="attr">Accept:</span> <span class="string">*/*</span></span><br><span class="line"><span class="attr">Access-Control-Request-Method:</span> <span class="string">POST</span></span><br><span class="line"><span class="attr">Access-Control-Request-Headers:</span> <span class="string">authorization,x-requested-with</span></span><br><span class="line"><span class="attr">Origin:</span> <span class="attr">http://127.0.0.1:5500</span></span><br><span class="line"><span class="attr">User-Agent:</span> <span class="string">Mozilla/5.0</span> <span class="string">(Windows</span> <span class="string">NT</span> <span class="number">10.0</span><span class="string">;</span> <span class="string">Win64;</span> <span class="string">x64)</span> <span class="string">AppleWebKit/537.36</span> <span class="string">(KHTML,</span> <span class="string">like</span> <span class="string">Gecko)</span> <span class="string">Chrome/87.0.4280.88</span> <span class="string">Safari/537.36</span></span><br><span class="line"><span class="attr">Sec-Fetch-Mode:</span> <span class="string">cors</span></span><br><span class="line"><span class="attr">Sec-Fetch-Site:</span> <span class="string">cross-site</span></span><br><span class="line"><span class="attr">Sec-Fetch-Dest:</span> <span class="string">empty</span></span><br><span class="line"><span class="attr">Referer:</span> <span class="attr">http://127.0.0.1:5500/</span></span><br><span class="line"><span class="attr">Accept-Encoding:</span> <span class="string">gzip,</span> <span class="string">deflate,</span> <span class="string">br</span></span><br><span class="line"><span class="attr">Accept-Language:</span> <span class="string">zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7,de;q=0.6</span></span><br></pre></td></tr></table></figure>
+<p><strong>Response:</strong></p>
+<p>If it succeeded, the response seems like the below.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">HTTP/1.1</span> <span class="number">204</span> <span class="literal">No</span> <span class="string">Content</span></span><br><span class="line"><span class="attr">Server:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">Date:</span> <span class="string">Mon,</span> <span class="number">28</span> <span class="string">Dec</span> <span class="number">2020</span> <span class="number">02</span><span class="string">:51:29</span> <span class="string">GMT</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">keep-alive</span></span><br><span class="line"><span class="attr">Access-Control-Allow-Credentials:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">Access-Control-Allow-Headers:</span> <span class="string">authorization,x-requested-with</span></span><br><span class="line"><span class="attr">Access-Control-Allow-Methods:</span> <span class="string">POST</span></span><br><span class="line"><span class="attr">Access-Control-Allow-Origin:</span> <span class="attr">http://127.0.0.1:5500</span></span><br></pre></td></tr></table></figure>
+<h4 id="Negotiate-a-connection-with-Azure-SignalR-Service-upgrade-to-WebSocket"><a href="#Negotiate-a-connection-with-Azure-SignalR-Service-upgrade-to-WebSocket" class="headerlink" title="Negotiate a connection with Azure SignalR Service, upgrade to WebSocket"></a>Negotiate a connection with Azure SignalR Service, upgrade to WebSocket</h4><p>In the next action, the client posts the token to negotiate a connection.</p>
+<p><strong>Request:</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">POST</span> <span class="attr">https://sgtest.service.signalr.net/client/negotiate?hub=simplechat</span> <span class="string">HTTP/1.1</span></span><br><span class="line"><span class="attr">Host:</span> <span class="string">sgtest.service.signalr.net</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">keep-alive</span></span><br><span class="line"><span class="attr">Content-Length:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">User-Agent:</span> <span class="string">Mozilla/5.0</span> <span class="string">(Windows</span> <span class="string">NT</span> <span class="number">10.0</span><span class="string">;</span> <span class="string">Win64;</span> <span class="string">x64)</span> <span class="string">AppleWebKit/537.36</span> <span class="string">(KHTML,</span> <span class="string">like</span> <span class="string">Gecko)</span> <span class="string">Chrome/87.0.4280.88</span> <span class="string">Safari/537.36</span></span><br><span class="line"><span class="attr">X-Requested-With:</span> <span class="string">XMLHttpRequest</span></span><br><span class="line"><span class="attr">Authorization:</span> <span class="string">Bearer</span> <span class="string">eyJhbGciOiJIUzI1NiIsImtpZCI6IjIxMDExMDU4NDEiLCJ0eXAiOiJKV1QifQ.eyJuYW1laWQiOiJTb25pYyBHdW8iLCJleHAiOjE2MDkxMjc0ODksImFkbWluIjp0cnVlLCJuYmYiOjE2MDkxMjM4ODksImlhdCI6MTYwOTEyMzg4OSwiYXVkIjoiaHR0cHM6Ly9zZ3Rlc3Quc2VydmljZS5zaWduYWxyLm5ldC9jbGllbnQvP2h1Yj1zaW1wbGVjaGF0In0.1K3RttJeAg1FP3gi1GYJrd_2y-hWvGZwGQQJRq0d9LM</span></span><br><span class="line"><span class="attr">Content-Type:</span> <span class="string">text/plain;charset=UTF-8</span></span><br><span class="line"><span class="attr">Accept:</span> <span class="string">*/*</span></span><br><span class="line"><span class="attr">Origin:</span> <span class="attr">http://127.0.0.1:5500</span></span><br><span class="line"><span class="attr">Sec-Fetch-Site:</span> <span class="string">cross-site</span></span><br><span class="line"><span class="attr">Sec-Fetch-Mode:</span> <span class="string">cors</span></span><br><span class="line"><span class="attr">Sec-Fetch-Dest:</span> <span class="string">empty</span></span><br><span class="line"><span class="attr">Referer:</span> <span class="attr">http://127.0.0.1:5500/</span></span><br><span class="line"><span class="attr">Accept-Encoding:</span> <span class="string">gzip,</span> <span class="string">deflate,</span> <span class="string">br</span></span><br><span class="line"><span class="attr">Accept-Language:</span> <span class="string">zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7,de;q=0.6</span></span><br></pre></td></tr></table></figure>
+<p><strong>Response:</strong></p>
+<p>The Azure SignalR Service authorized the client, generate a connectionId <code>VBS_IXc_uyOqFiFOSeGvmAdd6eeb0d1</code>. Also provided a support transport list.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">HTTP/1.1</span> <span class="number">200</span> <span class="string">OK</span></span><br><span class="line"><span class="attr">Server:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">Date:</span> <span class="string">Mon,</span> <span class="number">28</span> <span class="string">Dec</span> <span class="number">2020</span> <span class="number">02</span><span class="string">:51:29</span> <span class="string">GMT</span></span><br><span class="line"><span class="attr">Content-Type:</span> <span class="string">application/json</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">keep-alive</span></span><br><span class="line"><span class="attr">Vary:</span> <span class="string">Accept-Encoding</span></span><br><span class="line"><span class="attr">Access-Control-Allow-Credentials:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">Access-Control-Allow-Origin:</span> <span class="attr">http://127.0.0.1:5500</span></span><br><span class="line"><span class="attr">Content-Length:</span> <span class="number">282</span></span><br><span class="line"></span><br><span class="line"><span class="string">&#123;"negotiateVersion":0,"connectionId":"VBS_IXc_uyOqFiFOSeGvmAdd6eeb0d1","availableTransports":[&#123;"transport":"WebSockets","transferFormats":["Text","Binary"]&#125;,&#123;"transport":"ServerSentEvents","transferFormats":["Text"]&#125;,&#123;"transport":"LongPolling","transferFormats":["Text","Binary"]&#125;]&#125;</span></span><br></pre></td></tr></table></figure>
+<h4 id="Start-to-send-message"><a href="#Start-to-send-message" class="headerlink" title="Start to send message"></a>Start to send message</h4><p>When the client supports the Websocket, its connection will upgrade to WebSocket, it sends <code>Connection: Upgrade</code>. The connection will turn into a persistent connection.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">GET</span> <span class="attr">https://sgtest.service.signalr.net/client/?hub=simplechat&amp;id=VBS_IXc_uyOqFiFOSeGvmAdd6eeb0d1&amp;access_token=eyJhbGciOiJIUzI1NiIsImtpZCI6IjIxMDExMDU4NDEiLCJ0eXAiOiJKV1QifQ.eyJuYW1laWQiOiJTb25pYyBHdW8iLCJleHAiOjE2MDkxMjc0ODksImFkbWluIjp0cnVlLCJuYmYiOjE2MDkxMjM4ODksImlhdCI6MTYwOTEyMzg4OSwiYXVkIjoiaHR0cHM6Ly9zZ3Rlc3Quc2VydmljZS5zaWduYWxyLm5ldC9jbGllbnQvP2h1Yj1zaW1wbGVjaGF0In0.1K3RttJeAg1FP3gi1GYJrd_2y-hWvGZwGQQJRq0d9LM</span> <span class="string">HTTP/1.1</span></span><br><span class="line"><span class="attr">Host:</span> <span class="string">sgtest.service.signalr.net</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">Upgrade</span></span><br><span class="line"><span class="attr">Pragma:</span> <span class="literal">no</span><span class="bullet">-cache</span></span><br><span class="line"><span class="attr">Cache-Control:</span> <span class="literal">no</span><span class="bullet">-cache</span></span><br><span class="line"><span class="attr">User-Agent:</span> <span class="string">Mozilla/5.0</span> <span class="string">(Windows</span> <span class="string">NT</span> <span class="number">10.0</span><span class="string">;</span> <span class="string">Win64;</span> <span class="string">x64)</span> <span class="string">AppleWebKit/537.36</span> <span class="string">(KHTML,</span> <span class="string">like</span> <span class="string">Gecko)</span> <span class="string">Chrome/87.0.4280.88</span> <span class="string">Safari/537.36</span></span><br><span class="line"><span class="attr">Upgrade:</span> <span class="string">websocket</span></span><br><span class="line"><span class="attr">Origin:</span> <span class="attr">http://127.0.0.1:5500</span></span><br><span class="line"><span class="attr">Sec-WebSocket-Version:</span> <span class="number">13</span></span><br><span class="line"><span class="attr">Accept-Encoding:</span> <span class="string">gzip,</span> <span class="string">deflate,</span> <span class="string">br</span></span><br><span class="line"><span class="attr">Accept-Language:</span> <span class="string">zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7,de;q=0.6</span></span><br><span class="line"><span class="attr">Sec-WebSocket-Key:</span> <span class="string">zT38k+AZ6O5lwJbPp+lhGg==</span></span><br><span class="line"><span class="attr">Sec-WebSocket-Extensions:</span> <span class="string">permessage-deflate;</span> <span class="string">client_max_window_bits</span></span><br></pre></td></tr></table></figure>
+<p>The message sends to the WebSocket looks like below.</p>
+<p><img src="WebSocket.png" alt="websocket"></p>
+<h3 id="Server-Connection"><a href="#Server-Connection" class="headerlink" title="Server Connection"></a>Server Connection</h3><p>The Server connection is not required. In most of the scenarios, there is no server connection between the Upstream server and the SingnalR Service. Because both REST API and WebSocket are supported in SignalR service <strong>management SDK</strong>. If using a language other than .NET, you can also manually invoke the REST APIs following this <a href="https://github.com/Azure/azure-signalr/blob/dev/docs/rest-api.md" target="_blank" rel="noopener">spec</a>.</p>
+<p>When the Upstream server uses the SignalR Service Management SDK, and the app server supports Web Socket. The Upstream server can negotiate server connections with the SignalR Service. The server connection is a weak connection. The client connection will not route to the server connection. The reason is, in the serverless mode, the app server doesn’t store any client status. This is different from the Server Mode (default). In the <strong>Server Mode</strong>, the server connection is a <strong>strong</strong> connection. The server connection associates with client connections. The connection is session sticky. So the app server ables to store clients’ status.</p>
+<h2 id="Communications"><a href="#Communications" class="headerlink" title="Communications"></a>Communications</h2><h3 id="Calling-the-Upstream-from-the-Client"><a href="#Calling-the-Upstream-from-the-Client" class="headerlink" title="Calling the Upstream from the Client"></a>Calling the Upstream from the Client</h3><p>Not like the typical Serverless mode, the clients are able to send messages to the upstream app server. The client sent messages to the SignalR Service. The service then leverages the HTTP protocol to deliver WebSocket messages to Upstream. The dataflow is as below:</p>
+<p><code>Client send message -- Client Connection -&gt; ASRS -- HTTP --&gt; Upstream sever</code></p>
+<p>SignalR Service sends messages to the Upstream follow the following protocols.</p>
+<p>Method: POST</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/azure-signalr/concept-upstream#request-header" target="_blank" rel="noopener">Request header</a></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X-ASRS-Connection-Id</td>
+<td>The connection ID for the client connection.</td>
+</tr>
+<tr>
+<td>X-ASRS-Hub</td>
+<td>The hub that the client connection belongs to.</td>
+</tr>
+<tr>
+<td>X-ASRS-Category</td>
+<td>The category that the message belongs to.</td>
+</tr>
+<tr>
+<td>X-ASRS-Event</td>
+<td>The event that the message belongs to.</td>
+</tr>
+<tr>
+<td>X-ASRS-Signature</td>
+<td>A hash-based message authentication code (HMAC) that’s used for validation. See Signature for details.</td>
+</tr>
+<tr>
+<td>X-ASRS-User-Claims</td>
+<td>A group of claims of the client connection.</td>
+</tr>
+<tr>
+<td>X-ASRS-User-Id</td>
+<td>The user identity of the client that sends the message.</td>
+</tr>
+<tr>
+<td>X-ASRS-Client-Query</td>
+<td>The query of the request when clients connect to the service.</td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td>An optional token when you’re using ManagedIdentity.</td>
+</tr>
+</tbody>
+</table>
+<p>Request Body</p>
+<p>Connected<br>Content-Type: application/json</p>
+<p>Disconnected<br>Content-Type: application/json</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Error</td>
+<td>string</td>
+<td>The error message of a closed connection. Empty when connections close with no error.</td>
+</tr>
+</tbody>
+</table>
+<p>Invocation message<br>Content-Type: application/json or application/x-msgpack</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>InvocationId</td>
+<td>string</td>
+<td>An optional string that represents an invocation message. Find details in Invocations.</td>
+</tr>
+<tr>
+<td>Target</td>
+<td>string</td>
+<td>The same as the event and the same as the target in an invocation message.</td>
+</tr>
+<tr>
+<td>Arguments</td>
+<td>Array of object</td>
+<td>An array that contains arguments to apply to the method referred to in Target.</td>
+</tr>
+</tbody>
+</table>
+<p>If the Upstream server is a Web App server, you should extract the HTTP contents in your code. If the Upstream is Function App, you can use <a href="https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-trigger?tabs=csharp" target="_blank" rel="noopener">SignalR Service trigger binding</a>, it handles these protocols.</p>
+<h2 id="Send-message-from-Upstream-to-client"><a href="#Send-message-from-Upstream-to-client" class="headerlink" title="Send message from Upstream to client"></a>Send message from Upstream to client</h2><p>The Azure SignalR Service tracks clients and has a result that can be used to send messages to a specific client or a set of clients. From the upstream, you can use the <a href="https://github.com/Azure/azure-signalr-vnext-features/blob/master/serverless-websocket/specs/swagger.json" target="_blank" rel="noopener">REST API</a> to send messages to clients. For the .Net Core Application, you can leverage SignalR service management SDK。</p>
+<h2 id="Sample"><a href="#Sample" class="headerlink" title="Sample"></a>Sample</h2><p>This is a <a href="https://github.com/aspnet/AzureSignalR-samples/tree/master/samples/BidirectionChat" target="_blank" rel="noopener">chatroom sample</a> that demonstrates bidirectional message pushing between Azure SignalR Service and Azure Function in the serverless scenario. It leverages the <strong>upstream</strong> provided by Azure SignalR Service that features proxying messages from client to upstream endpoints in the serverless scenario. Azure Functions with SignalR trigger binding allows you to write code to receive and push messages in several languages, including JavaScript, Python, C#, etc.</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/azure-signalr/concept-upstream#create-upstream-settings-via-the-azure-portal" target="_blank" rel="noopener">ASRS - Upstream Settings</a></li>
+<li><a href="https://github.com/Azure/azure-signalr/blob/dev/docs/rest-api.md#serverless" target="_blank" rel="noopener">REST API in Azure SignalR Service</a></li>
+<li><a href="https://github.com/Azure/azure-signalr/blob/dev/docs/swagger/v1.json" target="_blank" rel="noopener">REST API swagger</a></li>
+<li><a href="https://github.com/aspnet/AzureSignalR-samples/tree/master/samples/BidirectionChat" target="_blank" rel="noopener">Github Sample - bidirectionChat</a></li>
+<li><a href="https://github.com/aspnet/AzureSignalR-samples/blob/e9890b976d59f3b4177ccb9f9e7f8553c5ab26e3/samples/BidirectionChat/csharp/local.settings.json#L8" target="_blank" rel="noopener">Github Sample - How to determine server connection is WS or HTTP</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/k8s-port-targetport-nodeport/" rel="next" title="Kubernetes -- port, targetport, nodeport的区别">
+                <i class="fa fa-chevron-left"></i> Kubernetes -- port, targetport, nodeport的区别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Sonic Guo" />
+            
+              <p class="site-author-name" itemprop="name">Sonic Guo</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-upstream-for-in-Azure-Azure-SignalR-Service"><span class="nav-number">1.</span> <span class="nav-text">What is upstream for in Azure Azure SignalR Service</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Why-introduced-the-Upstream"><span class="nav-number">2.</span> <span class="nav-text">Why introduced the Upstream</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Default-Mode"><span class="nav-number">2.1.</span> <span class="nav-text">Default Mode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Serverless-Mode-Typical"><span class="nav-number">2.2.</span> <span class="nav-text">Serverless Mode - Typical</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Serverless-Mode-Upstream"><span class="nav-number">2.3.</span> <span class="nav-text">Serverless Mode - Upstream</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-it-works"><span class="nav-number">3.</span> <span class="nav-text">How it works</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#How-to-Configure-the-Upstream"><span class="nav-number">3.1.</span> <span class="nav-text">How to Configure the Upstream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Client-Connection"><span class="nav-number">3.2.</span> <span class="nav-text">Client Connection</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#App-server-authorized-the-client"><span class="nav-number">3.2.1.</span> <span class="nav-text">App server authorized the client</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-CORS-check-with-Azure-SignalR-Service"><span class="nav-number">3.2.2.</span> <span class="nav-text">A CORS check with Azure SignalR Service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Negotiate-a-connection-with-Azure-SignalR-Service-upgrade-to-WebSocket"><span class="nav-number">3.2.3.</span> <span class="nav-text">Negotiate a connection with Azure SignalR Service, upgrade to WebSocket</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Start-to-send-message"><span class="nav-number">3.2.4.</span> <span class="nav-text">Start to send message</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Server-Connection"><span class="nav-number">3.3.</span> <span class="nav-text">Server Connection</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Communications"><span class="nav-number">4.</span> <span class="nav-text">Communications</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Calling-the-Upstream-from-the-Client"><span class="nav-number">4.1.</span> <span class="nav-text">Calling the Upstream from the Client</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Send-message-from-Upstream-to-client"><span class="nav-number">5.</span> <span class="nav-text">Send message from Upstream to client</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sample"><span class="nav-number">6.</span> <span class="nav-text">Sample</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">7.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sonic Guo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -4,8 +4,23 @@
 
     
   <url>
+    <loc>http://localhost:4000/2020/Azure-SignalR-Service-Things-about-upstream/</loc>
+    <lastmod>2021-03-01T10:44:41.696Z</lastmod>
+    <data>
+        <display>
+        <title>Azure SignalR Service - Things about upstream</title>
+        <pubTime>2020-12-29T03:37:34.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://localhost:4000/2020/k8s-port-targetport-nodeport/</loc>
-    <lastmod>2020-07-20T10:49:32.584Z</lastmod>
+    <lastmod>2020-07-21T09:05:51.596Z</lastmod>
     <data>
         <display>
         <title>Kubernetes -- port, targetport, nodeport的区别</title>
