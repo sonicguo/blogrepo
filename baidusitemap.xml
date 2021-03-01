@@ -5,14 +5,19 @@
     
   <url>
     <loc>http://localhost:4000/2020/Azure-SignalR-Service-Things-about-upstream/</loc>
-    <lastmod>2021-03-01T10:44:41.696Z</lastmod>
+    <lastmod>2021-03-01T10:47:49.560Z</lastmod>
     <data>
         <display>
         <title>Azure SignalR Service - Things about upstream</title>
         <pubTime>2020-12-29T03:37:34.000Z</pubTime>
         
+        <tag>Azure SignalR Serivce</tag>
+         
          
            
+             
+              <breadCrumb title="Development" url="http://localhost:4000/categories/Development/"/>
+          
         </display>
     </data>
     </url>
